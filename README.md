@@ -1,82 +1,176 @@
-# Workspace
+# AI Framework 專案
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+✨ 基於 Nx 的 AI Framework 開發環境 ✨
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+這是一個使用 [Nx monorepo](https://nx.dev) 架構構建的 AI Framework 專案，整合了 React、TypeScript 和 Tailwind CSS。
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 專案概述
 
-## Finish your CI setup
+此專案採用現代化的前端技術棧：
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/eXkhMRItch)
+- **框架**: React 18 + TypeScript
+- **樣式**: Tailwind CSS v4 + 自定義設計系統
+- **構建工具**: Vite
+- **包管理**: Nx monorepo
+- **主題**: 支援明暗模式切換
 
+## 快速開始
 
-## Run tasks
+### 安裝依賴
 
-To run the dev server for your app, use:
+```sh
+npm install
+```
+
+### 開發模式
+
+啟動開發伺服器：
 
 ```sh
 npx nx serve ai-framework
 ```
 
-To create a production bundle:
+### 生產構建
+
+建立生產環境打包：
 
 ```sh
 npx nx build ai-framework
 ```
 
-To see all available targets to run for a project, run:
+### 查看專案資訊
+
+檢視專案可用的任務：
 
 ```sh
 npx nx show project ai-framework
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### 視覺化專案結構
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
+查看專案依賴關係圖：
 
 ```sh
-npx nx g @nx/react:app demo
+npx nx graph
 ```
 
-To generate a new library, use:
+## 專案結構
+
+```
+workspace/
+├── apps/
+│   └── ai-framework/          # 主應用
+│       ├── src/
+│       │   ├── styles.css     # 全域樣式與主題
+│       │   └── ...
+│       └── lib/
+│           └── utils.ts       # 工具函數
+├── libs/                      # 共享函式庫
+└── tools/                     # 構建工具
+```
+
+## 技術特色
+
+### 🎨 設計系統
+
+- 完整的明暗主題支援
+- 使用 OKLCH 色彩空間
+- 響應式設計
+- 可重用的 UI 組件
+
+### 🛠️ 開發工具
+
+- TypeScript 類型安全
+- Tailwind CSS 快速樣式開發
+- Nx 強大的 monorepo 管理
+- Vite 快速熱更新
+
+### 📦 工具函數
+
+- `cn()` 函數：智能合併 CSS 類名
+- 支援條件樣式和變體
+- 與 Tailwind CSS 無縫整合
+
+## 新增專案
+
+### 建立新應用
 
 ```sh
-npx nx g @nx/react:lib mylib
+npx nx g @nx/react:app 新應用名稱
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### 建立新函式庫
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```sh
+npx nx g @nx/react:lib 函式庫名稱
+```
 
+### 查看可用生成器
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```sh
+npx nx list
+npx nx list @nx/react
+```
 
-## Install Nx Console
+## 開發建議
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+### 安裝 Nx Console
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+推薦安裝 [Nx Console](https://nx.dev/getting-started/editor-setup) VS Code 擴展，提供：
 
-## Useful links
+- 視覺化任務執行
+- 代碼生成器
+- 智能提示增強
 
-Learn more:
+### 樣式開發
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- 使用 `cn()` 函數合併 CSS 類名
+- 遵循設計系統的色彩變數
+- 善用 Tailwind CSS 的響應式前綴
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### 代碼品質
+
+- 遵循 TypeScript 最佳實踐
+- 使用 ESLint 和 Prettier
+- 編寫單元測試
+
+## 常用指令
+
+```sh
+# 執行測試
+npx nx test ai-framework
+
+# 程式碼檢查
+npx nx lint ai-framework
+
+# 格式化代碼
+npx nx format
+
+# 建立所有專案
+npx nx build-all
+```
+
+## 部署
+
+### 本地預覽
+
+```sh
+npx nx preview ai-framework
+```
+
+### 環境變數
+
+在根目錄建立 `.env` 檔案：
+
+```env
+VITE_API_URL=your_api_url
+VITE_APP_TITLE=AI Framework
+```
+
+## 貢獻指南
+
+1. Fork 此專案
+2. 建立功能分支 (`git checkout -b feature/新功能`)
+3. 提交變更 (`git commit -am '新增某功能'`)
+4. 推送到分支 (`git push origin feature/新功能`)
+5. 建立 Pull Request
