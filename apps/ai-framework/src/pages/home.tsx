@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-export default function Home() {
+function Home() {
   return (
     <>
       <p className="text-blue-500">/home</p>
@@ -10,3 +10,5 @@ export default function Home() {
     </>
   );
 }
+
+export default Home;
