@@ -7,6 +7,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/ai-framework',
+  proxy: {
+    '/api': {
+      target: 'http://localhost:3000',
+      changeOrigin: true,
+      rewrite: (path: string) => path.replace(/^\/api/, '/api'),
+    },
+  },
   server: {
     port: 4200,
     host: 'localhost',

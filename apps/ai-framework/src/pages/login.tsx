@@ -3,8 +3,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import validateField from '../utils/validators';
+// import { login as loginApi } from '@/api/auth';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<{ email?: string; password?: string }>({});
@@ -19,7 +22,17 @@ function Login() {
   const handleLogin = () => {
     if (validate()) {
       console.log('login', { email, password });
-      // TODO: call API
+      navigate('/dashboard');
+      /**todo */
+      /**
+      try {
+        const result = await loginApi(email, password);
+        console.log('登入成功', result);
+      } catch (err) {
+        const message = (err as Error).message;
+        alert(`登入失敗：${message}`);
+      }
+      */
     }
   };
 
@@ -87,18 +100,11 @@ function Login() {
             />
           </div>
           <p className="text-left text-rose-600 text-sm mt-1 h-[20px]">
-            {(() => {
-              if (error.email && error.password) {
-                return `Please enter a valid ${error.email} and ${error.password}.`;
-              } else if (
-                (error.email && !error.password) ||
-                (!error.email && error.password)
-              ) {
-                return `Please enter a valid ${error.email || error.password}.`;
-              } else {
-                return '';
-              }
-            })()}
+            {error.email || error.password
+              ? `Please enter a valid ${[error.email, error.password]
+                  .filter(Boolean)
+                  .join(' and ')}.`
+              : ''}
           </p>
           {/* Remember me */}
           <div className="remember pt-3">
