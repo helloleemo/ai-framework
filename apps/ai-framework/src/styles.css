@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 @import url('https://fonts.googleapis.com/css2?family=Inder&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import 'tw-animate-css';
 
 /* Colors */
 
@@ -153,4 +153,28 @@
     font-family: 'Roboto', sans-serif;
     cursor: default;
   }
+}
+
+/* 滑桿不使用時消失 */
+.scrollbar-fade {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0) transparent;
+  -ms-overflow-style: none;
+  transition: scrollbar-color 0.3s ease;
+}
+.scrollbar-fade:hover {
+  scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
+}
+
+/* Webkit (Chrome, Safari) */
+.scrollbar-fade::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-fade::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0);
+  transition: background-color 0.3s ease;
+  border-radius: 4px;
+}
+.scrollbar-fade:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.5);
 }

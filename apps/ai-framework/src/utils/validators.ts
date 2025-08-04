@@ -1,4 +1,4 @@
-const validateField = (
+export const validateField = (
   field: 'email' | 'password',
   value: string
 ): string | undefined => {
@@ -16,5 +16,3 @@ const validateField = (
 
   return undefined;
 };
-
-export default validateField;

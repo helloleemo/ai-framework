@@ -3,6 +3,7 @@ import Home from '@/pages/home';
 import Page1 from '@/pages/page1';
 import Details from '@/components/details';
 import Login from '@/pages/login';
+import Artboard from '@/pages/artboard';
 
 function returnToPrevious() {
   return (
@@ -28,6 +29,7 @@ function AppRoutes() {
       <Route path="/page-1" element={<Page1 />}>
         <Route path="details" element={<Details />} />
       </Route>
+      <Route path="/artboard" element={<Artboard />} />
       <Route path="*" element={returnToPrevious()} />
     </Routes>
   );
