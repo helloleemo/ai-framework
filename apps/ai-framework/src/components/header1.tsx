@@ -8,14 +8,14 @@ import {
 } from '@/components/ui/tooltip';
 import { useState } from 'react';
 import { MenuToggleIcon } from './icon/menu-toggle-icon';
-
+// { toggleMenu }: { toggleMenu: () => void }
 export default function Header({ toggleMenu }: { toggleMenu: () => void }) {
   const [isLogin, setLogin] = useState(false);
   const [userName, setUserName] = useState('');
 
   const handleLogin = () => {
     setLogin(true);
-    setUserName('Pon Klementieff');
+    setUserName('Pon Kelementieff');
   };
   const handleLogout = () => {
     setLogin(false);
@@ -27,10 +27,7 @@ export default function Header({ toggleMenu }: { toggleMenu: () => void }) {
       {/* left */}
       <div className="flex items-center gap-4 ">
         <MenuToggleIcon
-          onClick={() => {
-            toggleMenu();
-            console.log(`toggggle!!!${toggleMenu}`);
-          }}
+          onClick={toggleMenu}
           className="cursor-pointer text-[24px] p-1 rounded-sm hover:bg-neutral-100"
         />
         <img className="w-[120px]" src="logo.svg" alt="" />

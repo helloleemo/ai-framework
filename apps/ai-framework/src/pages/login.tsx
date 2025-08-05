@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { validateField } from '../utils/validators';
 // import { login as loginApi } from '@/api/auth';
 import { useNavigate } from 'react-router-dom';
@@ -19,10 +19,17 @@ function Login() {
     return !emailError && !passwordError;
   };
 
+  useEffect(() => {
+    // fetchUserList()
+    //   .then(setUsers)
+    //   .catch((err) => setError(err.message));
+  }, []);
+
   const handleLogin = () => {
     if (validate()) {
       console.log('login', { email, password });
       navigate('/artboard');
+
       /**
       try {
         const result = await loginApi(email, password);
