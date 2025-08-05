@@ -14,7 +14,7 @@ export default function Layout() {
       <div className="fixed top-0 left-0 right-0 z-50">
         <Header toggleMenu={toggleMenu} />
       </div>
-      <div className="flex overflow-auto w-fit  pt-12 h-screen scrollbar-fade">
+      <div className="flex overflow-auto w-fit pt-12 h-screen scrollbar-fade">
         <Sidebar menuToggle={menuToggle} />
       </div>
     </div>

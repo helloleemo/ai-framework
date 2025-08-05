@@ -26,12 +26,13 @@ export default function Header({ toggleMenu }: { toggleMenu: () => void }) {
     <header className="border-b bg-white px-4 py-2 flex justify-between items-center">
       {/* left */}
       <div className="flex items-center gap-4 ">
+        {/* Removed redundant conditional rendering of MenuToggleIcon */}
         <MenuToggleIcon
           onClick={() => {
             toggleMenu();
             console.log(`toggggle!!!${toggleMenu}`);
           }}
-          className="cursor-pointer text-[24px] p-1 rounded-sm hover:bg-neutral-100"
+          className="cursor-pointer text-[24px] p-2 rounded-sm hover:bg-neutral-100"
         />
         <img className="w-[120px]" src="logo.svg" alt="" />
         <p className="text-lg font-bold text-slate-800">Project name</p>

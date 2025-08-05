@@ -177,48 +177,49 @@ export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
     //
     <>
       <div
-        // menuToggle ? 'w-[320px]' : 'w-0'
         className={`${
-          menuToggle ? 'w-[320px]' : 'w-[50px]'
-        } transition-all duration-200 overflow-hidden bg-white border-r`}
+          menuToggle ? 'w-[320px]' : 'w-[0px]'
+        } transition-all duration-100 overflow-hidden bg-white`}
       >
         {/* Switch menu */}
-        <div
-          className={`${
-            menuToggle ? 'w-[320px]' : 'w-[50px]'
-          } switchMenu fixed bg-white flex gap-5 justify-center items-center py-3`}
-        >
-          {selections.map((selection, index) => {
-            return (
-              <div
-                className="cursor-pointer flex-1 flex justify-center items-center gap-1"
-                key={index}
-                onClick={() => handleSelectionChange(selection.name)}
-              >
-                <div>{selection.icon}</div>
-                <p>{selection.name}</p>
-              </div>
-            );
-          })}
+        {menuToggle && (
           <div
-            className={`absolute border-b-[3px] border-sky-500 top-[43px] transition-translate duration-300
+            className={`w-[320px] switchMenu fixed bg-white flex gap-5 justify-center items-center pt-4 pb-3`}
+          >
+            {selections.map((selection, index) => {
+              return (
+                <div
+                  className="cursor-pointer flex-1 flex justify-center items-center gap-1"
+                  key={index}
+                  onClick={() => handleSelectionChange(selection.name)}
+                >
+                  <div>{selection.icon}</div>
+                  <p>{selection.name}</p>
+                </div>
+              );
+            })}
+            <div
+              className={`absolute border-b-[3px] border-sky-500 top-[43px] transition-translate duration-100
           ${(() => {
             const found = selections.find((s) => s.name === activeSelection);
             return found && found.ui ? found.ui : '';
           })()}`}
-          ></div>
-          <div className="w-full border-b absolute top-[45px] -z-10"></div>
-        </div>
+            ></div>
+            <div className="w-full border-b absolute top-[44px] -z-10"></div>
+          </div>
+        )}
 
         {/* Render menu */}
-        <ul className="flex-1 overflow-auto pt-13 px-2">
-          {selections.map((selection, index) => {
-            if (selection.name === activeSelection && selection.menu) {
-              return renderMenu(selection.menu);
-            }
-            return null;
-          })}
-        </ul>
+        {menuToggle && (
+          <ul className="flex-1 overflow-auto pt-13 px-2">
+            {selections.map((selection, index) => {
+              if (selection.name === activeSelection && selection.menu) {
+                return renderMenu(selection.menu);
+              }
+              return null;
+            })}
+          </ul>
+        )}
       </div>
       <div className="p-3 border">
         <div className="w-[80vw] h-[90vh]">
