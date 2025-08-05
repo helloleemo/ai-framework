@@ -4,6 +4,7 @@ import Page1 from '@/pages/page1';
 import Details from '@/components/details';
 import Login from '@/pages/login';
 import Artboard from '@/pages/artboard';
+import Layout from '@/components/layout';
 
 function returnToPrevious() {
   return (
@@ -24,12 +25,13 @@ function returnToPrevious() {
 function AppRoutes() {
   return (
     <Routes>
-      ` <Route path="/" element={<Home />} />`
-      <Route path="/login" element={<Login />} />
-      <Route path="/page-1" element={<Page1 />}>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />`
+        <Route path="/page-1" element={<Page1 />} />
         <Route path="details" element={<Details />} />
+        <Route path="/artboard" element={<Layout />} />
       </Route>
-      <Route path="/artboard" element={<Artboard />} />
+      <Route path="/login" element={<Login />} />
       <Route path="*" element={returnToPrevious()} />
     </Routes>
   );

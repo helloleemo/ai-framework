@@ -1,6 +1,8 @@
 import Header from '@/components/header';
 import Sidebar from '@/components/sidebar';
+import Artboard from '@/pages/artboard';
 import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 
 export default function Layout() {
   const [menuToggle, setMenuToggle] = useState(false);
@@ -14,8 +16,9 @@ export default function Layout() {
       <div className="fixed top-0 left-0 right-0 z-50">
         <Header toggleMenu={toggleMenu} />
       </div>
-      <div className="flex overflow-auto w-fit pt-12 h-screen scrollbar-fade">
+      <div className="flex w-fit pt-12 min-h-screen overflow-hidden">
         <Sidebar menuToggle={menuToggle} />
+        <Outlet />
       </div>
     </div>
   );

@@ -11,32 +11,6 @@ import { ReactFlow, Controls, Background } from '@xyflow/react';
 export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
   // REACT FLOW
 
-  const defaultNodes = [
-    {
-      id: '1',
-      type: 'input',
-      data: { label: 'input node' },
-      position: { x: 250, y: 25 },
-    },
-
-    {
-      id: '2',
-      // you can also pass a React component as a label
-      data: { label: <div>transform node</div> },
-      position: { x: 100, y: 125 },
-    },
-    {
-      id: '3',
-      type: 'output',
-      data: { label: 'output node' },
-      position: { x: 250, y: 250 },
-    },
-  ];
-  const defaultEdges = [
-    { id: 'e1-2', source: '1', target: '2' },
-    { id: 'e2-3', source: '2', target: '3', animated: true },
-  ];
-
   // Data
 
   const selections: Selections[] = [
@@ -175,14 +149,14 @@ export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
 
   return (
     //
-    <>
+    <div className="border-r bg-white overflow-y-auto scrollbar-thin">
       <div
         className={`${
-          menuToggle ? 'w-[320px]' : 'w-[0px]'
-        } transition-all duration-100 overflow-hidden bg-white`}
+          !menuToggle ? 'w-[320px]' : 'w-[0px]'
+        } transition-all duration-100`}
       >
         {/* Switch menu */}
-        {menuToggle && (
+        {!menuToggle && (
           <div
             className={`w-[320px] switchMenu fixed bg-white flex gap-5 justify-center items-center pt-4 pb-3`}
           >
@@ -210,8 +184,8 @@ export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
         )}
 
         {/* Render menu */}
-        {menuToggle && (
-          <ul className="flex-1 overflow-auto pt-13 px-2">
+        {!menuToggle && (
+          <ul className="flex-1 pt-13 px-2">
             {selections.map((selection, index) => {
               if (selection.name === activeSelection && selection.menu) {
                 return renderMenu(selection.menu);
@@ -221,18 +195,7 @@ export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
           </ul>
         )}
       </div>
-      <div className="p-3 border">
-        <div className="w-[80vw] h-[90vh]">
-          <ReactFlow
-            defaultNodes={defaultNodes}
-            defaultEdges={defaultEdges}
-            fitView
-          >
-            <Controls />
-          </ReactFlow>
-        </div>
-      </div>
-    </>
+    </div>
   );
 
   //
