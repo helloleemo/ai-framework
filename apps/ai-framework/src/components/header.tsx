@@ -8,8 +8,10 @@ import {
 } from '@/components/ui/tooltip';
 import { useState } from 'react';
 import { MenuToggleIcon } from './icon/menu-toggle-icon';
+import { useMenu } from '@/hooks/menu-toggle';
 
-export default function Header({ toggleMenu }: { toggleMenu: () => void }) {
+export default function Header() {
+  const { toggleMenu } = useMenu();
   const [isLogin, setLogin] = useState(false);
   const [userName, setUserName] = useState('');
 
@@ -28,10 +30,7 @@ export default function Header({ toggleMenu }: { toggleMenu: () => void }) {
       <div className="flex items-center gap-4 ">
         {/* Removed redundant conditional rendering of MenuToggleIcon */}
         <MenuToggleIcon
-          onClick={() => {
-            toggleMenu();
-            console.log(`toggggle!!!${toggleMenu}`);
-          }}
+          onClick={toggleMenu}
           className="cursor-pointer text-[24px] p-2 rounded-sm hover:bg-neutral-100"
         />
         <img className="w-[120px]" src="logo.svg" alt="" />

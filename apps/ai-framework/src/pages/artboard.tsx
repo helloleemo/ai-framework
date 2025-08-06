@@ -1,23 +1,37 @@
 import { PipeIcon } from '@/components/icon/pipe-icon';
-import { useState } from 'react';
+import { PipeLineIcon2 } from '@/components/icon/pipeline-icon-2';
+import { useMenu } from '@/hooks/menu-toggle';
+import { Outlet } from 'react-router-dom';
 
 export default function Artboard() {
-  const [menu, setMenu] = useState([0]);
-  const menuSelect = (index: number, menuName: string) => {
-    setMenu([index]);
-  };
+  const { menuToggle } = useMenu();
+  const menus = [
+    {
+      name: '建立新畫布',
+      description: '從空畫布開始新建Pipeline。',
+      icon: <PipeIcon />,
+      linkTo: '/artboard/new',
+    },
+    {
+      name: '從範本建立',
+      description: '從範本建立新的Pipeline。',
+      icon: <PipeLineIcon2 />,
+      linkTo: '/artboard/template',
+    },
+  ];
 
   return (
-    <div className="bg-white border rounded-md">
-      <div className="border p-5 flex items-center gap-3">
-        <div className="icon">
-          <PipeIcon />
-        </div>
-        <div className="word">
-          <p>建立新畫布</p>
-          <p className="text-sm text-neutral-500">從空畫布開始新建Pipeline。</p>
-        </div>
-      </div>
+    // icon
+
+    // menu
+    <div
+      className="border border-red-500 flex flex-col justify-center items-center gap-y-5"
+      style={{
+        width: menuToggle ? 'calc(100vw - 35px)' : 'calc(100vw - 350px)',
+        height: 'calc(100vh - 75px)',
+      }}
+    >
+      <Outlet />
     </div>
   );
 }

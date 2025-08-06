@@ -6,9 +6,10 @@ import { ArrowRightIcon } from './icon/arrow-right-icon';
 import { PipeLineIcon } from './icon/pipeline-icon';
 import { MenuIcon } from './icon/menu-icon';
 import { ArtboardIcon } from './icon/artboard-icon';
+import { useMenu } from '@/hooks/menu-toggle';
 
-export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
-  // REACT FLOW
+export default function Sidebar() {
+  const { menuToggle } = useMenu();
 
   // Data
 
@@ -148,11 +149,11 @@ export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
 
   return (
     //
-    <div className="bord5r-r ">
+    <div className="">
       <div
         className={`${
-          !menuToggle ? 'w-[320px]' : 'w-[0px]'
-        } fixed top-12 mr-2 border-r border-neutral-200 bg-white transition-all duration-100 scrollbar-fade overflow-y-auto h-full`}
+          !menuToggle ? 'w-[320px] fixed' : 'w-[0px] '
+        } border-r border-neutral-200 bg-white transition-all duration-300 scrollbar-fade overflow-y-auto h-full`}
       >
         {/* Switch menu */}
         {!menuToggle && (
@@ -172,20 +173,20 @@ export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
               );
             })}
             <div
-              className={`absolute border-b-[3px] border-sky-500 top-[43px] transition-translate duration-100
+              className={`absolute border-b-[3px] border-sky-500 top-[48px] transition-translate duration-100
           ${(() => {
             const found = selections.find((s) => s.name === activeSelection);
             return found && found.ui ? found.ui : '';
           })()}`}
             ></div>
-            <div className="w-full border-b absolute top-[44px] -z-10"></div>
+            <div className="w-full border-b absolute top-[50px] -z-10"></div>
           </div>
         )}
 
         {/* Render menu */}
         {!menuToggle && (
-          <div className="flex-1 pt-15 px-2">
-            <ul className="h-full  ">
+          <div className="flex-1 pt-15 px-2 ">
+            <ul className="h-full">
               {selections.map((selection, index) => {
                 if (selection.name === activeSelection && selection.menu) {
                   return renderMenu(selection.menu);

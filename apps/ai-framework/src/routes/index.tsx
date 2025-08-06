@@ -5,6 +5,9 @@ import Details from '@/components/details';
 import Login from '@/pages/login';
 import Artboard from '@/pages/artboard';
 import Layout from '@/components/layout';
+import { useState } from 'react';
+import NewArtboard from '@/pages/new-artboard';
+import Menu from '@/components/menu';
 
 function returnToPrevious() {
   return (
@@ -26,10 +29,13 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />`
+        <Route path="/" element={<Home />} />
         <Route path="/page-1" element={<Page1 />} />
         <Route path="details" element={<Details />} />
-        <Route path="/artboard" element={<Artboard />} />
+        <Route path="/artboard" element={<Artboard />}>
+          <Route index element={<Menu />} />
+          <Route path="new" element={<NewArtboard />} />
+        </Route>
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="*" element={returnToPrevious()} />
