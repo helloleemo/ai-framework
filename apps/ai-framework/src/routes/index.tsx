@@ -1,13 +1,10 @@
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from '@/pages/home';
-import Page1 from '@/pages/page1';
-import Details from '@/components/details';
 import Login from '@/pages/login';
-import Artboard from '@/pages/artboard';
 import Layout from '@/components/layout';
-import { useState } from 'react';
 import NewArtboard from '@/pages/new-artboard';
 import Menu from '@/components/menu';
+import ArtboardRoot from '@/pages/artboard-root';
 
 function returnToPrevious() {
   return (
@@ -30,9 +27,7 @@ function AppRoutes() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/page-1" element={<Page1 />} />
-        <Route path="details" element={<Details />} />
-        <Route path="/artboard" element={<Artboard />}>
+        <Route path="/artboard" element={<ArtboardRoot />}>
           <Route index element={<Menu />} />
           <Route path="new" element={<NewArtboard />} />
         </Route>

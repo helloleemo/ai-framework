@@ -4,8 +4,8 @@ function Home() {
   return (
     <>
       <p className="text-blue-500">/home</p>
-      <Link to="/page-1">
-        <p>Go to Page 1</p>
+      <Link to="artboard">
+        <p>Go to Menu</p>
       </Link>
     </>
   );

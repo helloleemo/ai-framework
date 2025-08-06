@@ -6,7 +6,7 @@ import { MenuProvider, useMenu } from '@/hooks/menu-toggle';
 function LayoutContent() {
   const { menuToggle } = useMenu();
   return (
-    <div className="bg-neutral-50 min-h-screen">
+    <div className="bg-neutral-100 min-h-screen">
       <div className="fixed top-0 left-0 right-0 z-50">
         <Header />
       </div>
@@ -15,7 +15,7 @@ function LayoutContent() {
         <div
           className={`${
             menuToggle ? 'ml-0' : 'ml-[320px]'
-          } fixed p-3 transition-all duration-100`}
+          } fixed p-2 transition-all duration-100`}
         >
           <Outlet />
         </div>
