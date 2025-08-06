@@ -12,13 +12,15 @@ export default function Layout() {
   };
 
   return (
-    <div className="bg-neutral-50">
+    <div className="bg-neutral-50 ">
       <div className="fixed top-0 left-0 right-0 z-50">
         <Header toggleMenu={toggleMenu} />
       </div>
-      <div className="flex w-fit pt-12 min-h-screen overflow-hidden">
+      <div className="flex w-fit pt-12">
         <Sidebar menuToggle={menuToggle} />
-        <Outlet />
+        <div className="p-3 ml-[320px]">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

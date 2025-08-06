@@ -29,7 +29,7 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />`
         <Route path="/page-1" element={<Page1 />} />
         <Route path="details" element={<Details />} />
-        <Route path="/artboard" element={<Layout />} />
+        <Route path="/artboard" element={<Artboard />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="*" element={returnToPrevious()} />

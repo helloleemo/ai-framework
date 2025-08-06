@@ -6,7 +6,6 @@ import { ArrowRightIcon } from './icon/arrow-right-icon';
 import { PipeLineIcon } from './icon/pipeline-icon';
 import { MenuIcon } from './icon/menu-icon';
 import { ArtboardIcon } from './icon/artboard-icon';
-import { ReactFlow, Controls, Background } from '@xyflow/react';
 
 export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
   // REACT FLOW
@@ -149,16 +148,16 @@ export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
 
   return (
     //
-    <div className="border-r bg-white overflow-y-auto scrollbar-thin">
+    <div className="bord5r-r ">
       <div
         className={`${
           !menuToggle ? 'w-[320px]' : 'w-[0px]'
-        } transition-all duration-100`}
+        } fixed top-12 mr-2 border-r border-neutral-200 bg-white transition-all duration-100 scrollbar-fade overflow-y-auto h-full`}
       >
         {/* Switch menu */}
         {!menuToggle && (
           <div
-            className={`w-[320px] switchMenu fixed bg-white flex gap-5 justify-center items-center pt-4 pb-3`}
+            className={`w-[318px] switchMenu fixed bg-white flex gap-5 justify-center items-center pt-4 pb-3`}
           >
             {selections.map((selection, index) => {
               return (
@@ -185,14 +184,16 @@ export default function Sidebar({ menuToggle }: { menuToggle?: boolean }) {
 
         {/* Render menu */}
         {!menuToggle && (
-          <ul className="flex-1 pt-13 px-2">
-            {selections.map((selection, index) => {
-              if (selection.name === activeSelection && selection.menu) {
-                return renderMenu(selection.menu);
-              }
-              return null;
-            })}
-          </ul>
+          <div className="flex-1 pt-15 px-2">
+            <ul className="h-full  ">
+              {selections.map((selection, index) => {
+                if (selection.name === activeSelection && selection.menu) {
+                  return renderMenu(selection.menu);
+                }
+                return null;
+              })}
+            </ul>
+          </div>
         )}
       </div>
     </div>
