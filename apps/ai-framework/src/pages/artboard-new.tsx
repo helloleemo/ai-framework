@@ -6,6 +6,7 @@ import {
   addEdge,
   Background,
   BackgroundVariant,
+  Controls,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { CloseIcon } from '@/components/icon/close-icon';
@@ -17,24 +18,38 @@ const initialNodes = [
 const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
 
 export default function NewArtboard() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const defaultNodes = [
+    {
+      id: '1',
+      type: 'input',
+      data: { label: 'Input Node' },
+      position: { x: 250, y: 25 },
+    },
 
-  const onNodesChange = useCallback(
-    (changes: any) =>
-      setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    []
-  );
-  const onEdgesChange = useCallback(
-    (changes: any) =>
-      setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    []
-  );
-  const onConnect = useCallback(
-    (params: any) =>
-      setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-    []
-  );
+    {
+      id: '2',
+      data: {
+        label: (
+          <div>
+            <p>Default Node</p>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+          </div>
+        ),
+      },
+      position: { x: 100, y: 125 },
+    },
+    {
+      id: '3',
+      type: 'output',
+      data: { label: 'Output Node' },
+      position: { x: 250, y: 250 },
+    },
+  ];
+  const defaultEdges = [
+    { id: 'e1-2', source: '1', target: '2' },
+    { id: 'e2-3', source: '2', target: '3', animated: true },
+  ];
+
   return (
     <div className="w-full h-full">
       <div className="w-full h-[calc(100%-40px)]">
@@ -55,17 +70,17 @@ export default function NewArtboard() {
         <ReactFlow
           nodes={initialNodes}
           edges={initialEdges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
+          defaultNodes={defaultNodes}
+          defaultEdges={defaultEdges}
+          fitView
         >
-          {' '}
+          <Controls />{' '}
           <Background
             color="#ddd"
             bgColor="#fff"
             variant={BackgroundVariant.Dots}
             gap={20}
-            size={3}
+            size={2}
           />
         </ReactFlow>
       </div>

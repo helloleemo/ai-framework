@@ -2,9 +2,10 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Home from '@/pages/home';
 import Login from '@/pages/login';
 import Layout from '@/components/layout';
-import NewArtboard from '@/pages/new-artboard';
+import NewArtboard from '@/pages/artboard-new';
 import Menu from '@/components/menu';
 import ArtboardRoot from '@/pages/artboard-root';
+import TempArtboard from '@/pages/artboard-temp';
 
 function returnToPrevious() {
   return (
@@ -30,6 +31,7 @@ function AppRoutes() {
         <Route path="/artboard" element={<ArtboardRoot />}>
           <Route index element={<Menu />} />
           <Route path="new" element={<NewArtboard />} />
+          <Route path="temp" element={<TempArtboard />} />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
