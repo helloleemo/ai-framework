@@ -7,7 +7,6 @@ import Menu from '@/components/menu';
 import ArtboardRoot from '@/pages/artboard-root';
 import TempArtboard from '@/pages/artboard-temp';
 import Dashboard from '@/pages/dashboard';
-import TestDnD from '@/pages/test-dnd';
 
 function returnToPrevious() {
   return (
@@ -42,7 +41,6 @@ function AppRoutes() {
       {/* Others */}
       <Route path="/" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/test" element={<TestDnD />} />
       <Route path="*" element={returnToPrevious()} />
     </Routes>
   );

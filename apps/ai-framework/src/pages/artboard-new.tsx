@@ -1,45 +1,74 @@
 import { useState, useCallback, useRef } from 'react';
 import {
   ReactFlow,
+  ReactFlowProvider,
+  addEdge,
+  useNodesState,
+  useEdgesState,
   Controls,
   Background,
-  applyNodeChanges,
-  applyEdgeChanges,
-  addEdge,
+  type Node,
+  type Edge,
+  type OnConnect,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { CloseIcon } from '@/components/icon/close-icon';
+import { useDnD } from '../hooks/use-dnd-flow';
 
-export default function NewArtboard() {
-  const initialNodes = [
-    {
-      id: 'n1',
-      data: { label: 'Node 1' },
-      position: { x: 0, y: 0 },
-      type: 'input',
-    },
-    {
-      id: 'n2',
-      data: { label: 'Node 2' },
-      position: { x: 100, y: 100 },
-    },
-  ];
+const initialNodes: Node[] = [];
+const initialEdges: Edge[] = [];
 
-  const initialEdges: any[] = [];
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+function NewArtboard() {
+  // const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const { type: nodeType } = useDnD();
+  const { screenToFlowPosition } = useReactFlow();
 
-  const onNodesChange = useCallback(
-    (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    []
+  const onConnect: OnConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
   );
-  const onEdgesChange = useCallback(
-    (changes: any) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    []
-  );
-  const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds)),
-    []
+
+  const handleDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const handleDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+      console.log('Drop triggered, nodeType:', nodeType);
+
+      event.dataTransfer.dropEffect = 'move';
+
+      if (!nodeType) {
+        console.log('No nodeType available');
+        return;
+      }
+
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      const newNode: Node = {
+        id: `${nodeType}-${Date.now()}`,
+        type: 'default', // 暫時固定
+        position,
+        data: { label: `${nodeType} 節點` },
+        style: {
+          backgroundColor: '#ffffff',
+          border: '2px solid #1976d2',
+          borderRadius: '8px',
+          padding: '10px',
+        },
+      };
+      console.log('Creating node:', newNode);
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [nodeType, screenToFlowPosition, setNodes]
   );
 
   return (
@@ -65,13 +94,22 @@ export default function NewArtboard() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
           fitView
-          className=""
         >
-          <Background bgColor="#fff" />
           <Controls />
+          <Background bgColor="#fff" />
         </ReactFlow>
       </div>
     </div>
+  );
+}
+
+export default function TestFlow() {
+  return (
+    <ReactFlowProvider>
+      <NewArtboard />
+    </ReactFlowProvider>
   );
 }

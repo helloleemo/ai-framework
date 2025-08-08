@@ -7,10 +7,9 @@ import { PipeLineIcon } from './icon/pipeline-icon';
 import { MenuIcon } from './icon/menu-icon';
 import { ArtboardIcon } from './icon/artboard-icon';
 import { useMenu } from '@/hooks/menu-toggle';
+import { useDnD } from '@/hooks/use-dnd-flow';
 
 export default function Sidebar() {
-  const { menuToggle } = useMenu();
-
   // Data
 
   const selections: Selections[] = [
@@ -29,6 +28,21 @@ export default function Sidebar() {
       menu: {
         name: '數據接口',
         children: [
+          {
+            name: '測試用Input',
+            nodeType: 'input',
+            children: ['Input1', 'Input2', 'Input3'],
+          },
+          {
+            name: '測試用transform',
+            nodeType: 'transform',
+            children: ['transform1', 'transform2', 'transform3'],
+          },
+          {
+            name: '測試用Output',
+            nodeType: 'output',
+            children: ['Output1', 'Output2', 'Output3'],
+          },
           {
             name: 'shopfloor',
             children: ['OPC UA', 'OPC DA', 'Mobus TCP'],
@@ -58,7 +72,20 @@ export default function Sidebar() {
     },
   ];
 
+  // DnD
+  const { setType } = useDnD();
+
+  const handleDragStart = (
+    event: React.DragEvent<HTMLElement>,
+    nodeType: string
+  ) => {
+    console.log('Drag start:', nodeType);
+    setType(nodeType);
+    event.dataTransfer.effectAllowed = 'move';
+  };
+
   // Switch menu
+  const { menuToggle } = useMenu();
   const [activeSelection, setActiveSelection] = useState<string>(
     selections[1].name
   );
@@ -127,9 +154,18 @@ export default function Sidebar() {
               {menu.children.map((child: any, idx: number) =>
                 typeof child === 'string' ? (
                   <li
-                    onClick={() => console.log(`selected ${child}`)}
+                    draggable
+                    onDragStart={(e) => {
+                      const nodeType = menu.nodeType || 'default';
+                      console.log('Dragging:', child, 'Type:', nodeType);
+                      handleDragStart(e, nodeType);
+                    }}
                     key={idx}
-                    className="pl-2 py-2 text-sm text-gray-600 flex items-center gap-2 hover:bg-neutral-100 rounded-md cursor-pointer"
+                    className="pl-2 py-2 text-sm text-gray-600 flex items-center gap-2 hover:bg-neutral-100 rounded-md cursor-grab active:cursor-grabbing
+                     active:bg-neutral-50 active:border-blue-200 active:scale-[0.98]
+                     active:shadow-md
+                     transition-all duration-150 ease-out
+                     select-none"
                   >
                     <PipeLineIcon fill="#999" />
                     {child}
