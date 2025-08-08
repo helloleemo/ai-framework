@@ -3,7 +3,6 @@ import Sidebar from '@/components/sidebar';
 import { Outlet } from 'react-router-dom';
 import { MenuProvider, useMenu } from '@/hooks/menu-toggle';
 import { DnDProvider } from '@/hooks/use-dnd-flow';
-// import { ReactFlowProvider } from '@xyflow/react';
 
 function LayoutContent() {
   const { menuToggle } = useMenu();

@@ -15,6 +15,7 @@ interface DnDProviderProps {
 
 export const DnDProvider = ({ children }: DnDProviderProps) => {
   const [type, setType] = useState<string | null>(null);
+  // const [value, setValue] = useState<string | null>(null);
 
   return (
     <DnDContext.Provider value={{ type, setType }}>

@@ -10,8 +10,7 @@ import { useMenu } from '@/hooks/menu-toggle';
 import { useDnD } from '@/hooks/use-dnd-flow';
 
 export default function Sidebar() {
-  // Data
-
+  // mock api data
   const selections: Selections[] = [
     {
       name: '資料源管理',
@@ -77,7 +76,8 @@ export default function Sidebar() {
 
   const handleDragStart = (
     event: React.DragEvent<HTMLElement>,
-    nodeType: string
+    nodeType: string,
+    label: string
   ) => {
     console.log('Drag start:', nodeType);
     setType(nodeType);
@@ -158,7 +158,7 @@ export default function Sidebar() {
                     onDragStart={(e) => {
                       const nodeType = menu.nodeType || 'default';
                       console.log('Dragging:', child, 'Type:', nodeType);
-                      handleDragStart(e, nodeType);
+                      handleDragStart(e, nodeType, child);
                     }}
                     key={idx}
                     className="pl-2 py-2 text-sm text-gray-600 flex items-center gap-2 hover:bg-neutral-100 rounded-md cursor-grab active:cursor-grabbing

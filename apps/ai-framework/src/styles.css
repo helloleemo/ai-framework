@@ -178,3 +178,24 @@
 .scrollbar-fade:hover::-webkit-scrollbar-thumb {
   background-color: rgba(100, 100, 100, 0.5);
 }
+
+.react-flow__node-selected {
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+.react-flow__node.react-flow__node-input.nopan.selectable.draggable {
+  box-shadow: none !important;
+  border-color: transparent !important;
+  width: fit-content;
+}
+
+.react-flow__node.react-flow__node-output {
+  box-shadow: none !important;
+  border-color: transparent !important;
+  width: fit-content;
+}
+
+.react-flow__handle.react-flow__handle-right.nodrag.nopan.source.connectable.connectablestart.connectableend.connectionindicator {
+  margin-left: -20px;
+}
