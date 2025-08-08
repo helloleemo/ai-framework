@@ -28,7 +28,7 @@ function Login() {
   const handleLogin = () => {
     if (validate()) {
       console.log('login', { email, password });
-      navigate('/artboard');
+      navigate('/dashboard');
 
       /**
       try {

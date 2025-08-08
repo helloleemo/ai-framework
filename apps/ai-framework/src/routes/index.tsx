@@ -6,6 +6,8 @@ import NewArtboard from '@/pages/artboard-new';
 import Menu from '@/components/menu';
 import ArtboardRoot from '@/pages/artboard-root';
 import TempArtboard from '@/pages/artboard-temp';
+import Dashboard from '@/pages/dashboard';
+import TestDnD from '@/pages/test-dnd';
 
 function returnToPrevious() {
   return (
@@ -26,15 +28,21 @@ function returnToPrevious() {
 function AppRoutes() {
   return (
     <Routes>
+      {/* AI framework */}
       <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/artboard" element={<ArtboardRoot />}>
+        <Route path="/ai-framework" element={<Home />} />
+
+        <Route path="/ai-framework/artboard" element={<ArtboardRoot />}>
           <Route index element={<Menu />} />
           <Route path="new" element={<NewArtboard />} />
           <Route path="temp" element={<TempArtboard />} />
         </Route>
       </Route>
-      <Route path="/login" element={<Login />} />
+
+      {/* Others */}
+      <Route path="/" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/test" element={<TestDnD />} />
       <Route path="*" element={returnToPrevious()} />
     </Routes>
   );

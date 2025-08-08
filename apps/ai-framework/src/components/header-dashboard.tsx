@@ -7,11 +7,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useState } from 'react';
-import { MenuToggleIcon } from './icon/menu-toggle-icon';
-import { useMenu } from '@/hooks/menu-toggle';
 
-export default function Header() {
-  const { toggleMenu } = useMenu();
+export default function HeaderDashboard() {
   const [isLogin, setLogin] = useState(false);
   const [userName, setUserName] = useState('');
 
@@ -25,16 +22,10 @@ export default function Header() {
   };
 
   return (
-    <header className="border-b bg-white px-4 py-2 flex justify-between items-center">
+    <header className="fixed w-full border-b bg-white px-4 py-2 flex justify-between items-center z-50">
       {/* left */}
       <div className="flex items-center gap-4 ">
-        {/* Removed redundant conditional rendering of MenuToggleIcon */}
-        <MenuToggleIcon
-          onClick={toggleMenu}
-          className="cursor-pointer text-[24px] p-2 rounded-sm hover:bg-neutral-100"
-        />
         <img className="w-[120px]" src="logo.svg" alt="" />
-        <p className="text-lg font-bold text-slate-800">Project name</p>
       </div>
       {/* right */}
       <div className="flex items-center gap-4">
