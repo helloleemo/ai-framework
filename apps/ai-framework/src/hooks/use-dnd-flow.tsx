@@ -9,13 +9,14 @@ interface DnDContextType {
 const DnDContext = createContext<DnDContextType | undefined>(undefined);
 
 // Provider
-interface DnDProviderProps {
-  children: ReactNode;
+
+interface DnDContextType {
+  type: string | null;
+  setType: (type: string | null) => void;
 }
 
-export const DnDProvider = ({ children }: DnDProviderProps) => {
+export const DnDProvider = ({ children }: { children: ReactNode }) => {
   const [type, setType] = useState<string | null>(null);
-  // const [value, setValue] = useState<string | null>(null);
 
   return (
     <DnDContext.Provider value={{ type, setType }}>

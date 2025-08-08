@@ -52,6 +52,9 @@ function TempArtboard() {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
+      const nodeType = event.dataTransfer.getData('nodeType');
+      const label = event.dataTransfer.getData('nodeLabel');
+
       console.log('Drop triggered, nodeType:', nodeType);
 
       event.dataTransfer.dropEffect = 'move';
@@ -68,9 +71,11 @@ function TempArtboard() {
 
       const newNode: Node = {
         id: `${nodeType}-${Date.now()}`,
-        type: nodeType || 'default',
+        type: nodeType,
         position,
-        data: { label: `${nodeType} 節點` },
+        data: {
+          label: label || 'New Node',
+        },
       };
       console.log('Creating node:', newNode);
       setNodes((nds) => nds.concat(newNode));
@@ -105,7 +110,6 @@ function TempArtboard() {
           onDrop={onDrop}
           onDragOver={onDragOver}
           nodeTypes={nodeTypes}
-          fitView
         >
           <Controls />
           <Background bgColor="#fff" />

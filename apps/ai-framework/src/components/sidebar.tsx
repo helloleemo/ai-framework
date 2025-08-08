@@ -74,17 +74,19 @@ export default function Sidebar() {
   // DnD
   const { setType } = useDnD();
 
-  const handleDragStart = (
+  const onDragStart = (
     event: React.DragEvent<HTMLElement>,
     nodeType: string,
     label: string
   ) => {
-    console.log('Drag start:', nodeType);
+    console.log('Drag start:', nodeType, label);
     setType(nodeType);
     event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('nodeType', nodeType);
+    event.dataTransfer.setData('nodeLabel', label);
   };
 
-  // Switch menu
+  /** Switch menu */
   const { menuToggle } = useMenu();
   const [activeSelection, setActiveSelection] = useState<string>(
     selections[1].name
@@ -95,7 +97,7 @@ export default function Sidebar() {
     console.log(`switch to ${selection}`);
   };
 
-  // Toggle menu
+  /** Render menu */
   const initialOpenKeys = new Set<string>();
   selections.forEach((s) => {
     if (s.menu) {
@@ -158,7 +160,7 @@ export default function Sidebar() {
                     onDragStart={(e) => {
                       const nodeType = menu.nodeType || 'default';
                       console.log('Dragging:', child, 'Type:', nodeType);
-                      handleDragStart(e, nodeType, child);
+                      onDragStart(e, nodeType, child);
                     }}
                     key={idx}
                     className="pl-2 py-2 text-sm text-gray-600 flex items-center gap-2 hover:bg-neutral-100 rounded-md cursor-grab active:cursor-grabbing
@@ -237,4 +239,7 @@ export default function Sidebar() {
   );
 
   //
+}
+function setLabel(label: string) {
+  throw new Error('Function not implemented.');
 }
