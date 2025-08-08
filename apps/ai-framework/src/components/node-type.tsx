@@ -232,7 +232,12 @@ export const edgeType = (props: EdgeProps) => {
     sourcePosition,
     targetPosition,
     selected,
+    id,
+    // source,
+    // target,
+    // 其餘不需要傳遞給 DOM 的屬性一律不要往下傳
   } = props;
+  
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
@@ -244,13 +249,11 @@ export const edgeType = (props: EdgeProps) => {
 
   return (
     <BaseEdge
-      {...props}
+      id={id}
       path={edgePath}
       style={{
         stroke: selected ? '#38bdf8' : '#aaa',
         strokeWidth: 2,
-        // strokeDasharray: '6 2',
-        // opacity: 0.8,
       }}
     />
   );

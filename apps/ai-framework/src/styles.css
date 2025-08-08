@@ -184,7 +184,7 @@
   border-color: transparent !important;
 }
 
-.react-flow__node.react-flow__node-input.nopan.selectable.draggable {
+.react-flow__node.react-flow__node-input.nopan.draggable {
   box-shadow: none !important;
   border-color: transparent !important;
   width: fit-content;

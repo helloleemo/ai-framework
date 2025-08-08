@@ -110,6 +110,9 @@ function TempArtboard() {
           onDrop={onDrop}
           onDragOver={onDragOver}
           nodeTypes={nodeTypes}
+          nodesDraggable={true}
+          nodesConnectable={true}
+          elementsSelectable={true}
         >
           <Controls />
           <Background bgColor="#fff" />
