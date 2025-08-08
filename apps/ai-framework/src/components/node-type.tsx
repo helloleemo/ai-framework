@@ -232,6 +232,7 @@ export const edgeType = (props: EdgeProps) => {
     sourcePosition,
     targetPosition,
     selected,
+    id,
   } = props;
   const [edgePath] = getBezierPath({
     sourceX,
@@ -244,7 +245,8 @@ export const edgeType = (props: EdgeProps) => {
 
   return (
     <BaseEdge
-      {...props}
+      // {...props}
+      id={id}
       path={edgePath}
       style={{
         stroke: selected ? '#38bdf8' : '#aaa',

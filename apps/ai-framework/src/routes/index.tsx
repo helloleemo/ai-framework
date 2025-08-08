@@ -31,7 +31,7 @@ function AppRoutes() {
         <Route path="/ai-framework" element={<Home />} />
         <Route path="/ai-framework/artboard" element={<ArtboardRoot />}>
           <Route index element={<Menu />} />
-          <Route path="new" element={<TempArtboard />} />
+          <Route path="temp" element={<TempArtboard />} />
         </Route>
       </Route>
 
