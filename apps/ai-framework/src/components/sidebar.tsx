@@ -1,76 +1,13 @@
-import { CableIcon } from '@/components/icon/cable-icon';
 import React, { useState } from 'react';
-import { Selections } from '@/types/selections';
 import { ArrowDownIcon } from './icon/arrow-down-icon';
 import { ArrowRightIcon } from './icon/arrow-right-icon';
 import { PipeLineIcon } from './icon/pipeline-icon';
 import { MenuIcon } from './icon/menu-icon';
-import { ArtboardIcon } from './icon/artboard-icon';
 import { useMenu } from '@/hooks/menu-toggle';
 import { useDnD } from '@/hooks/use-dnd-flow';
+import selections from '@/mock-data/selections';
 
 export default function Sidebar() {
-  // mock api data
-  const selections: Selections[] = [
-    {
-      name: '資料源管理',
-      icon: <CableIcon className="text-slate-800" />,
-      ui: 'left-[5%] w-[40%]',
-      menu: {
-        name: '既有Pipeline',
-      },
-    },
-    {
-      name: '畫布',
-      icon: <ArtboardIcon />,
-      ui: 'left-[60%] w-[35%]',
-      menu: {
-        name: '數據接口',
-        children: [
-          {
-            name: '測試用Input',
-            nodeType: 'input',
-            children: ['Input1', 'Input2', 'Input3'],
-          },
-          {
-            name: '測試用transform',
-            nodeType: 'transform',
-            children: ['transform1', 'transform2', 'transform3'],
-          },
-          {
-            name: '測試用Output',
-            nodeType: 'output',
-            children: ['Output1', 'Output2', 'Output3'],
-          },
-          {
-            name: 'shopfloor',
-            children: ['OPC UA', 'OPC DA', 'Mobus TCP'],
-          },
-          {
-            name: 'IoT',
-            children: [
-              'MQTT (in 訂閱 topic)',
-              {
-                name: 'Https (request) for DAQ',
-                children: ['NIMAX API', 'SKF', 'ADLink'],
-              },
-              'MQTT (Out pub topic)',
-              'Https (response) -> Data API',
-            ],
-          },
-          {
-            name: 'Storge',
-            children: ['ODBC (in)', 'PostgreSQL (Out)', 'MongoDB (Out)'],
-          },
-          {
-            name: 'Transform',
-            children: ['Common', '頻譜 function'],
-          },
-        ],
-      },
-    },
-  ];
-
   // DnD
   const { setType } = useDnD();
 
@@ -158,7 +95,7 @@ export default function Sidebar() {
                   <li
                     draggable
                     onDragStart={(e) => {
-                      const nodeType = menu.nodeType || 'default';
+                      const nodeType = menu.nodeType || 'input';
                       console.log('Dragging:', child, 'Type:', nodeType);
                       onDragStart(e, nodeType, child);
                     }}
@@ -190,7 +127,7 @@ export default function Sidebar() {
     <div className="">
       <div
         className={`${
-          !menuToggle ? 'w-[320px] fixed' : 'w-[0px] '
+          !menuToggle ? 'w-[320px] fixed' : 'w-[0px]'
         } border-r border-neutral-200 bg-white transition-all duration-300 scrollbar-fade overflow-y-auto h-full`}
       >
         {/* Switch menu */}
@@ -223,7 +160,7 @@ export default function Sidebar() {
 
         {/* Render menu */}
         {!menuToggle && (
-          <div className="flex-1 pt-15 px-2 ">
+          <div className="flex-1 pt-15 px-2 pb-15">
             <ul className="h-full">
               {selections.map((selection, index) => {
                 if (selection.name === activeSelection && selection.menu) {
@@ -239,7 +176,4 @@ export default function Sidebar() {
   );
 
   //
-}
-function setLabel(label: string) {
-  throw new Error('Function not implemented.');
 }

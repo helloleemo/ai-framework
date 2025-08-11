@@ -7,10 +7,10 @@ export default function ArtboardRoot() {
 
   return (
     <div
-      className=" flex  flex-col justify-center items-center gap-y-5"
+      className=" flex  flex-col justify-center items-center gap-y-5 border border-red-500"
       style={{
-        width: menuToggle ? 'calc(100vw - 35px)' : 'calc(100vw - 340px)',
-        height: 'calc(100vh - 70px)',
+        width: menuToggle ? 'calc(100vw - 15px)' : 'calc(100vw - 335px)',
+        height: 'calc(100vh - 60px)',
       }}
     >
       <Outlet />
