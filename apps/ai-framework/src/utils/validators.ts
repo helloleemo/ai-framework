@@ -1,10 +1,10 @@
 export const validateField = (
-  field: 'email' | 'password',
+  field: 'userName' | 'password',
   value: string
 ): string | undefined => {
-  if (field === 'email') {
-    if (!value || value.trim() === '' || !/\S+@\S+\.\S+/.test(value)) {
-      return 'email address';
+  if (field === 'userName') {
+    if (!value || value.trim() === '') {
+      return 'user name';
     }
   }
 

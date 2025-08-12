@@ -5,43 +5,62 @@ import { useEffect, useState } from 'react';
 import { validateField } from '../utils/validators';
 // import { login as loginApi } from '@/api/auth';
 import { useNavigate } from 'react-router-dom';
+import { login } from '@/api/auth';
+import { useSpinner } from '@/hooks/use-spinner';
 
 function Login() {
+  // 若有登入直接導向到 dashboard
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string>('');
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
+  // user login
+  const [userName, setUserName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<{ email?: string; password?: string }>({});
+  const [error, setError] = useState<{ userName?: string; password?: string }>(
+    {}
+  );
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const { loading, setLoading, Spinner } = useSpinner();
 
   const validate = () => {
-    const emailError = validateField('email', email);
+    const userNameError = validateField('userName', userName);
     const passwordError = validateField('password', password);
-    setError({ email: emailError, password: passwordError });
-    return !emailError && !passwordError;
+    setError({ userName: userNameError, password: passwordError });
+    return !userNameError && !passwordError;
   };
-
-  useEffect(() => {
-    // fetchUserList()
-    //   .then(setUsers)
-    //   .catch((err) => setError(err.message));
-  }, []);
 
   const handleLogin = () => {
-    if (validate()) {
-      console.log('login', { email, password });
-      navigate('/dashboard');
+    setLoginError(null);
 
-      /**
-      try {
-        const result = await loginApi(email, password);
-        console.log('登入成功', result);
-      } catch (err) {
-        const message = (err as Error).message;
-        alert(`登入失敗：${message}`);
-      }
-      */
+    setLoading(true);
+    if (validate()) {
+      login(userName, password)
+        .then((res) => {
+          if (res.success) {
+            console.log('Login successful:', res);
+            localStorage.setItem('accessToken', res.data.accessToken);
+            navigate('/dashboard');
+          } else {
+            console.log('Login failed:', res.message);
+          }
+        })
+        .catch((err) => {
+          console.log('Login error:', err);
+          // setLoginError(err.message);
+          setLoginError('Login failed. Please check your credentials.');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
   };
-
   return (
     <div className="h-screen flex items-center justify-center">
       {/* Background */}
@@ -66,22 +85,23 @@ function Login() {
               Please enter your credentials to continue.
             </p>
           </div>
-          {/* Email */}
-          <div className="email pt-5">
-            <Label htmlFor="email">Email</Label>
+          {/* User Name */}
+          <div className="userName pt-5">
+            <Label htmlFor="userName">User Name</Label>
             <Input
-              id="email"
-              type="email"
+              id="userName"
+              type="text"
               className={`rounded-sm px-3 py-5 ${
-                error.email ? 'border-rose-600' : ''
+                error.userName ? 'border-rose-600' : ''
               }`}
-              placeholder="enter your email"
-              value={email}
+              placeholder="enter your user name"
+              value={userName}
               onChange={(e) => {
                 const value = e.target.value;
-                setEmail(value);
-                const err = validateField('email', value);
-                if (!err) setError((prev) => ({ ...prev, email: undefined }));
+                setUserName(value);
+                const err = validateField('userName', value);
+                if (!err)
+                  setError((prev) => ({ ...prev, userName: undefined }));
               }}
             />
           </div>
@@ -106,11 +126,12 @@ function Login() {
             />
           </div>
           <p className="text-left text-rose-600 text-sm mt-1 h-[20px]">
-            {error.email || error.password
-              ? `Please enter a valid ${[error.email, error.password]
+            {error.userName || error.password
+              ? `Please enter a valid ${[error.userName, error.password]
                   .filter(Boolean)
                   .join(' and ')}.`
               : ''}
+            {loginError}
           </p>
           {/* Remember me */}
           <div className="remember pt-3">
@@ -123,8 +144,11 @@ function Login() {
             </Label>
           </div>
           {/* Login btn*/}
-          <Button onClick={handleLogin} className="w-full mt-4">
-            Login
+          <Button
+            onClick={handleLogin}
+            className="w-full mt-4 flex items-center justify-center gap-2"
+          >
+            {loading ? Spinner : 'Login'}
           </Button>
         </div>
       </div>

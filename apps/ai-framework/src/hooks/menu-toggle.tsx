@@ -25,7 +25,6 @@ export const MenuProvider = ({ children }: MenuProviderProps) => {
 
   const toggleMenu = () => {
     setMenuToggle((prev) => !prev);
-    // console.log('Menu toooooooggled!!!!', !menuToggle);
   };
 
   return (
