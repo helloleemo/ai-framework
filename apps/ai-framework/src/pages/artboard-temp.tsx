@@ -22,8 +22,8 @@ import {
   edgeType,
 } from '@/components/node-type';
 import RightPanel from '@/components/right-panel';
-import { PreBuildIcon } from '@/components/icon/pre-build-icon';
-import { StopIcon } from '@/components/icon/stop-icon';
+// import { PreBuildIcon } from '@/components/icon/pre-build-icon';
+// import { StopIcon } from '@/components/icon/stop-icon';
 import PrebuildDeploy from '@/components/prebuild-deploy';
 
 const initialNodes: Node[] = [];
@@ -111,7 +111,8 @@ function TempArtboard() {
     [handleNodeFocus]
   );
 
-  // 點擊空白收合 panel
+  // click blank to collapse panel
+
   const handlePaneClick = () => {
     setPanelVisible(false);
     setTimeout(() => setFocusedNode(null), 300);
