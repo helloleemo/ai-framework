@@ -5,7 +5,86 @@ import { PipeLineIcon } from './icon/pipeline-icon';
 import { MenuIcon } from './icon/menu-icon';
 import { useMenu } from '@/hooks/menu-toggle';
 import { useDnD } from '@/hooks/use-dnd-flow';
-import selections from '@/mock-data/selections';
+import { CableIcon } from './icon/cable-icon';
+import { ArtboardIcon } from './icon/artboard-icon';
+
+// mock api data
+interface Selections {
+  name: string;
+  icon: React.ReactNode;
+  ui: string;
+  menu: {
+    name: string;
+    children?: Array<
+      | string
+      | {
+          name: string;
+          nodeType?: string;
+          children?: Array<string | { name: string; children?: string[] }>;
+        }
+    >;
+  };
+}
+
+const selections: Selections[] = [
+  {
+    name: '資料源管理',
+    icon: <CableIcon className="text-slate-800" />,
+    ui: 'left-[5%] w-[40%]',
+    menu: {
+      name: '既有Pipeline',
+    },
+  },
+  {
+    name: '畫布',
+    icon: <ArtboardIcon />,
+    ui: 'left-[60%] w-[35%]',
+    menu: {
+      name: '數據接口',
+      children: [
+        {
+          name: '測試用Input',
+          nodeType: 'input',
+          children: ['Input1', 'Input2', 'Input3'],
+        },
+        {
+          name: '測試用transform',
+          nodeType: 'transform',
+          children: ['transform1', 'transform2', 'transform3'],
+        },
+        {
+          name: '測試用Output',
+          nodeType: 'output',
+          children: ['Output1', 'Output2', 'Output3'],
+        },
+        {
+          name: 'shopfloor',
+          children: ['OPC UA', 'OPC DA', 'Mobus TCP'],
+        },
+        {
+          name: 'IoT',
+          children: [
+            'MQTT (in 訂閱 topic)',
+            {
+              name: 'Https (request) for DAQ',
+              children: ['NIMAX API', 'SKF', 'ADLink'],
+            },
+            'MQTT (Out pub topic)',
+            'Https (response) -> Data API',
+          ],
+        },
+        {
+          name: 'Storge',
+          children: ['ODBC (in)', 'PostgreSQL (Out)', 'MongoDB (Out)'],
+        },
+        {
+          name: 'Transform',
+          children: ['Common', '頻譜 function'],
+        },
+      ],
+    },
+  },
+];
 
 export default function Sidebar() {
   // DnD

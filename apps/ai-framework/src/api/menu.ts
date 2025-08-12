@@ -1,7 +1,4 @@
-import { GET, POST } from './index';
-import { AuthResponse } from './types/auth';
+import { GET } from './index';
+import { MenuResponse } from './types/menu';
 
-export const login = (account: string, password: string) =>
-  POST<AuthResponse>('/api/options/menu-item', { account, password });
-
-export const getMenuItems = () => GET('/api/options/menu-item');
+export const getMenuItems = () => GET<MenuResponse>('/api/options/menu-item');

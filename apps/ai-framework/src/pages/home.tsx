@@ -1,4 +1,4 @@
-import Menu from '@/components/menu';
+import Menu from '@/components/sidebar-menu';
 import { Link } from 'react-router-dom';
 
 function Home() {

@@ -2,7 +2,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Home from '@/pages/home';
 import Login from '@/pages/login';
 import Layout from '@/components/layout';
-import Menu from '@/components/menu';
+import Menu from '@/components/sidebar-menu';
 import ArtboardRoot from '@/pages/artboard-root';
 import Dashboard from '@/pages/dashboard';
 import TempArtboard from '@/pages/artboard-temp';

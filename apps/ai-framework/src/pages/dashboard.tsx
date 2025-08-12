@@ -1,4 +1,5 @@
 import HeaderDashboard from '@/components/header-dashboard';
+// import { useAuthGuard } from '@/hooks/use-auth';
 import { PlatformItem } from '@/types/platformsItems';
 import { Link } from 'react-router-dom';
 
@@ -56,6 +57,7 @@ const platformItems: PlatformItem[] = [
   },
 ];
 export default function Dashboard() {
+  // useAuthGuard();
   return (
     <>
       <HeaderDashboard />
@@ -64,6 +66,7 @@ export default function Dashboard() {
           {platformItems.map((item, index) => (
             <Link
               to={item.linkTo}
+              key={index}
               className="relative overflow-hidden flex justify-between items-center bg-white cursor-pointer rounded-lg hover:shadow-lg shadow-sm pl-5 w-2/3 h-[250px] transition-all duration-400 ease-in-out"
             >
               {/* left - text */}

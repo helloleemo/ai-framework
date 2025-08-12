@@ -1,11 +1,14 @@
 // const url = process.env.API_DOMAIN || 'http://localhost:5280';
 const url = 'http://localhost:5280'; // 完成記得關掉
 
+const accessToken = localStorage.getItem('accessToken') || '';
+
 export async function GET<T>(endpoint: string): Promise<T> {
   const res = await fetch(`${url}${endpoint}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 
@@ -17,6 +20,7 @@ export async function POST<T>(endpoint: string, data: unknown): Promise<T> {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(data),
   });
@@ -30,6 +34,7 @@ export async function PUT<T>(endpoint: string, data: unknown): Promise<T> {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(data),
   });
@@ -43,6 +48,7 @@ export async function DELETE<T>(endpoint: string): Promise<T> {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   console.log('delete', { endpoint, res });

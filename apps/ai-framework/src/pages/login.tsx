@@ -5,17 +5,28 @@ import { useEffect, useState } from 'react';
 import { validateField } from '../utils/validators';
 // import { login as loginApi } from '@/api/auth';
 import { useNavigate } from 'react-router-dom';
-import { login } from '@/api/auth';
+import { decodeTokenAPI, loginAPI } from '@/api/auth';
 import { useSpinner } from '@/hooks/use-spinner';
 
 function Login() {
-  // 若有登入直接導向到 dashboard
+  // login -> dashboard
   const navigate = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
-    if (token) {
-      navigate('/dashboard');
-    }
+    if (!token) return;
+
+    // check token
+    decodeTokenAPI(token)
+      .then((res) => {
+        const expStr = res.data?.tokenInfo?.exp;
+        const expirationTime = Number(expStr) * 1000;
+        const currentTime = Date.now();
+        if (res.success && expStr && expirationTime > currentTime) {
+          navigate('/dashboard');
+        }
+      })
+      .catch(() => console.log('Token validation failed'));
   }, [navigate]);
 
   // user login
@@ -39,12 +50,15 @@ function Login() {
 
     setLoading(true);
     if (validate()) {
-      login(userName, password)
+      loginAPI(userName, password)
         .then((res) => {
           if (res.success) {
             console.log('Login successful:', res);
+            localStorage.setItem('code', res.data.code);
+            localStorage.setItem('refreshToken', res.data.refreshToken);
             localStorage.setItem('accessToken', res.data.accessToken);
-            navigate('/dashboard');
+
+            // navigate('/dashboard');
           } else {
             console.log('Login failed:', res.message);
           }
@@ -144,9 +158,13 @@ function Login() {
             </Label>
           </div>
           {/* Login btn*/}
+
           <Button
             onClick={handleLogin}
-            className="w-full mt-4 flex items-center justify-center gap-2"
+            className={`w-full mt-4 flex items-center justify-center gap-2 ${
+              loading ? 'cursor-default' : ''
+            }`}
+            disabled={loading}
           >
             {loading ? Spinner : 'Login'}
           </Button>

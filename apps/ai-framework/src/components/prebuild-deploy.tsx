@@ -129,7 +129,7 @@ export default function PrebuildDeploy({
           <div className="icon">
             <PreBuildIcon className="w-5 h-5 text-neutral-600" />
           </div>
-          <p className="text-sm text-neutral-600">Pre-build</p>
+          <p className="text-sm text-neutral-600">Pre-run</p>
         </div>
       )}
 

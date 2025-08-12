@@ -9,19 +9,34 @@ import {
 import { useState } from 'react';
 import { MenuToggleIcon } from './icon/menu-toggle-icon';
 import { useMenu } from '@/hooks/menu-toggle';
+import { logoutAPI } from '@/api/auth';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const { toggleMenu } = useMenu();
-  const [isLogin, setLogin] = useState(false);
+  const [isLogin, setLogin] = useState(true);
   const [userName, setUserName] = useState('');
+
+  const navigator = useNavigate();
 
   const handleLogin = () => {
     setLogin(true);
     setUserName('Pom Klementieff');
   };
   const handleLogout = () => {
-    setLogin(false);
-    setUserName('');
+    logoutAPI()
+      .then(() => {
+        setLogin(false);
+        setUserName('');
+        localStorage.removeItem('code');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        navigator('/');
+      })
+      .catch((error) => {
+        console.error('Logout failed:', error);
+      })
+      .finally(() => console.log('Logout process completed'));
   };
 
   return (

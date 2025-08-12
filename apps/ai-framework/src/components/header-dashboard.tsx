@@ -1,3 +1,4 @@
+import { logoutAPI } from '@/api/auth';
 import { LogoutIcon } from '@/components/icon/logout-icon';
 import { UserIcon } from '@/components/icon/user-icon';
 import { Button } from '@/components/ui/button';
@@ -6,19 +7,35 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useAuthGuard } from '@/hooks/use-auth';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function HeaderDashboard() {
-  const [isLogin, setLogin] = useState(false);
+  useAuthGuard();
+
+  const [isLogin, setLogin] = useState(true);
   const [userName, setUserName] = useState('');
+  const navigator = useNavigate();
 
   const handleLogin = () => {
     setLogin(true);
     setUserName('Pom Klementieff');
   };
   const handleLogout = () => {
-    setLogin(false);
-    setUserName('');
+    logoutAPI()
+      .then(() => {
+        setLogin(false);
+        setUserName('');
+        localStorage.removeItem('code');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        navigator('/');
+      })
+      .catch((error) => {
+        console.error('Logout failed:', error);
+      })
+      .finally(() => console.log('Logout process completed'));
   };
 
   return (
