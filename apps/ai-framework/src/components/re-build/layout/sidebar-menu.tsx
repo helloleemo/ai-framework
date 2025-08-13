@@ -31,11 +31,12 @@ export default function SidebarMenu() {
           onClick={() => hasChildren && toggleExpand(item.name)}
           draggable={!hasChildren}
           onDragStart={(e) => {
+            console.log('Drag start:', item.name);
             e.dataTransfer.setData(
               'application/json',
               JSON.stringify({
                 name: item.name,
-                icon: item.icon,
+                type: item.icon,
                 // type: item.type, // 等Gavin改好type
               })
             );

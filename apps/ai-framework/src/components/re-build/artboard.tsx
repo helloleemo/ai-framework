@@ -14,16 +14,18 @@ import TopTab from './artboard/top-tab';
 import { useCallback } from 'react';
 
 export default function Artboard() {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
+      console.log('Drop triggered');
       try {
         const data = JSON.parse(e.dataTransfer.getData('application/json'));
+        console.log('Data:', data);
         // position
-        if (data.type === 'menu-item') {
+        if (data.type === 'default') {
           // 暫時放
 
           // position
@@ -38,7 +40,10 @@ export default function Artboard() {
             position: { x, y },
             data: { label: data.name, icon: data.icon },
           };
-          setNodes((nds) => [...nds, newNode]);
+          console.log('Creating node:', newNode);
+          setNodes((nds: Node[]) => [...nds, newNode]);
+        } else {
+          console.log('Type does not match:', data.type);
         }
       } catch (err) {
         console.error(err);
