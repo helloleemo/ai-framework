@@ -6,6 +6,8 @@ import Menu from '@/components/sidebar-menu';
 import ArtboardRoot from '@/pages/artboard-root';
 import Dashboard from '@/pages/dashboard';
 import TempArtboard from '@/pages/artboard-temp';
+import ReBuildLayout from '@/components/re-build/layout';
+import Artboard from '@/components/re-build/artboard';
 
 function returnToPrevious() {
   return (
@@ -33,6 +35,10 @@ function AppRoutes() {
           <Route index element={<Menu />} />
           <Route path="temp" element={<TempArtboard />} />
         </Route>
+      </Route>
+      {/* re-build */}
+      <Route path="/re-build" element={<ReBuildLayout />}>
+        <Route path="/re-build/ai-framework" element={<Artboard />} />
       </Route>
 
       {/* Others */}

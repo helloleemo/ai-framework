@@ -1,4 +1,4 @@
-import { getMenuItems } from '@/api/menu';
+import { getMenuItemsAPI } from '@/api/menu';
 import { PipeIcon } from '@/components/icon/pipe-icon';
 import { PipeLineIcon2 } from '@/components/icon/pipeline-icon-2';
 import { Link } from 'react-router-dom';

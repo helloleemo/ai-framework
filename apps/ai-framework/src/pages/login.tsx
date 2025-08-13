@@ -19,11 +19,13 @@ function Login() {
     // check token
     decodeTokenAPI(token)
       .then((res) => {
-        const expStr = res.data?.tokenInfo?.exp;
-        const expirationTime = Number(expStr) * 1000;
-        const currentTime = Date.now();
-        if (res.success && expStr && expirationTime > currentTime) {
-          navigate('/dashboard');
+        if (res.success) {
+          const expStr = res.data?.tokenInfo?.exp;
+          const expirationTime = Number(expStr) * 1000;
+          const currentTime = Date.now();
+          if (res.success && expStr && expirationTime > currentTime) {
+            navigate('/dashboard');
+          }
         }
       })
       .catch(() => console.log('Token validation failed'));
@@ -58,7 +60,7 @@ function Login() {
             localStorage.setItem('refreshToken', res.data.refreshToken);
             localStorage.setItem('accessToken', res.data.accessToken);
 
-            // navigate('/dashboard');
+            navigate('/dashboard');
           } else {
             console.log('Login failed:', res.message);
           }
