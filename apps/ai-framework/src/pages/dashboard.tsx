@@ -12,7 +12,7 @@ const platformItems: PlatformItem[] = [
     description:
       'This is the description for AI Framework. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     image: 'login/dashboard-2.jpg',
-    linkTo: '/re-build/ai-framework',
+    linkTo: '/ai-framework/artboard',
   },
   {
     title: 'Item 2',
@@ -57,6 +57,7 @@ const platformItems: PlatformItem[] = [
   },
 ];
 export default function Dashboard() {
+  // useAuthGuard();
   return (
     <>
       <HeaderDashboard />

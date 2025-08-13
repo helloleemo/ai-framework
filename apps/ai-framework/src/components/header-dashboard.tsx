@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function HeaderDashboard() {
-  // useAuthGuard();
+  useAuthGuard();
 
   const [isLogin, setLogin] = useState(true);
   const [userName, setUserName] = useState('');

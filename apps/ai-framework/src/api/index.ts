@@ -1,5 +1,5 @@
 // const url = process.env.API_DOMAIN || 'http://localhost:5280';
-const url = 'http://192.168.50.10:5280'; // 完成記得關掉
+const url = 'http://localhost:5280'; // 完成記得關掉
 
 const accessToken = localStorage.getItem('accessToken') || '';
 
