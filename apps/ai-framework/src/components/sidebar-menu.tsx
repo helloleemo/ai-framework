@@ -33,7 +33,7 @@ export default function Menu() {
           <Link to={menuItem.linkTo} key={index}>
             <div
               key={index}
-              className="cursor-pointer hover:bg-neutral-50 border w-[380px] bg-white rounded-lg border-neutral-200 px-10 py-5 flex items-center gap-3"
+              className="flex w-[380px] cursor-pointer items-center gap-3 rounded-lg border border-neutral-200 bg-white px-10 py-5 hover:bg-neutral-50"
             >
               <div className="icon">{menuItem.icon}</div>
               <div className="word">

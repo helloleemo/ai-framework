@@ -1,11 +1,13 @@
-import { CollapseIcon } from '../../icon/collapse-icon';
+import { Link } from 'react-router-dom';
 
 export default function HeaderTop() {
   return (
-    <div className="top flex justify-between items-center mb-4 border-b pb-5">
-      <div className="logo">
-        <img className="w-[120px]" src="logo.svg" alt="Logo" />
-      </div>
+    <div className="top mb-1 flex items-center justify-between border-b pb-5">
+      <Link to="/">
+        <div className="logo">
+          <img className="w-[120px]" src="logo.svg" alt="Logo" />
+        </div>
+      </Link>
     </div>
   );
 }

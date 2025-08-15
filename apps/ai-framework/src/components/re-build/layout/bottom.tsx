@@ -1,13 +1,66 @@
-const bottomMenu = [{ name: 'User' }, { name: 'Settings' }, { name: 'Logout' }];
+import { logoutAPI } from '@/api/auth';
+import { CogIcon } from '@/components/icon/cog-icon';
+import { LogoutIcon } from '@/components/icon/logout-icon';
+import { UserIcon } from '@/components/icon/user-icon';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function BottomMenu() {
+  const navigator = useNavigate();
+
+  const bottomMenu = [
+    {
+      name: 'User',
+      icon: <UserIcon />,
+      linkTo: '/user',
+      onClick: (navigate: any) => navigate('/user'),
+    },
+    {
+      name: 'Settings',
+      icon: <CogIcon />,
+      linkTo: '/settings',
+      onClick: (navigate: any) => navigate('/settings'),
+    },
+    {
+      name: 'Logout',
+      icon: <LogoutIcon />,
+      linkTo: '/logout',
+      onClick: (navigate: any, handleLogout: any) => handleLogout(),
+    },
+  ];
+
+  const [login, setLogin] = useState(false);
+  const [userName, setUserName] = useState('');
+
+  const handleLogout = () => {
+    logoutAPI()
+      .then(() => {
+        setLogin(false);
+        setUserName('');
+        localStorage.removeItem('code');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        navigator('/');
+      })
+      .catch((error) => {
+        console.error('Logout failed:', error);
+      })
+      .finally(() => console.log('Logout process completed'));
+  };
   return (
-    <div className="border-t p-2">
+    <div className="border-t pt-2">
       {bottomMenu.map((item, index) => {
         return (
-          <p key={index} className="text-sm text-gray-500 p-1">
-            {item.name}
-          </p>
+          <div
+            key={index}
+            className="flex cursor-pointer items-center rounded-sm p-1 hover:bg-gray-100"
+            onClick={() => item.onClick(navigator, handleLogout)}
+          >
+            <div className="ml-2 cursor-pointer rounded-sm p-1 text-sm text-neutral-600">
+              {item.icon}
+            </div>
+            <p className="ml-2 text-sm text-gray-500">{item.name}</p>
+          </div>
         );
       })}
     </div>

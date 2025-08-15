@@ -8,15 +8,15 @@ import { Outlet } from 'react-router-dom';
 import { useAuthGuard } from '@/hooks/use-auth';
 
 export default function ReBuildLayout() {
-  useAuthGuard();
+  // useAuthGuard();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  return (
-    <div className="h-screen flex">
-      {/* sidebar all */}
+  const [activeMenu, setActiveMenu] = useState(0);
 
+  return (
+    <div className="flex h-screen">
       <div
-        className={`border-r relative transition-all duration-100 ${
-          isCollapsed ? 'w-[0px]' : 'min-w-[340px]'
+        className={`relative border-r transition-all duration-100 ${
+          isCollapsed ? 'w-[0px]' : 'min-w-[320px]'
         }`}
       >
         <button
@@ -24,14 +24,14 @@ export default function ReBuildLayout() {
           onClick={() => setIsCollapsed((prev) => !prev)}
         >
           <div
-            className={`p-1 rounded-md cursor-pointer ${
+            className={`cursor-pointer rounded-md p-1 ${
               isCollapsed
                 ? 'absolute top-0 left-5 hover:bg-blue-50'
                 : 'hover:bg-neutral-100'
             }`}
           >
             <CollapseIcon
-              className={`w-7 h-7 relative ${
+              className={`relative h-7 w-7 ${
                 isCollapsed ? 'text-blue-500' : 'text-neutral-500'
               }`}
               fill="currentColor"
@@ -42,14 +42,14 @@ export default function ReBuildLayout() {
           {!isCollapsed && (
             <>
               <HeaderTop />
-              <SwitchMenu />
-              <SidebarMenu />
+              <SwitchMenu onSwitch={setActiveMenu} />
+              <SidebarMenu activeMenu={activeMenu} />
               <BottomMenu />
             </>
           )}
         </div>
       </div>
-      <div className="content m-2 border-red-500 border w-full bg-neutral-100">
+      <div className="content m-2 w-full border border-red-500 bg-neutral-100">
         <Outlet />
       </div>
     </div>

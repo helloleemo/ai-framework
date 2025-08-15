@@ -1,58 +1,68 @@
 // const url = process.env.API_DOMAIN || 'http://localhost:5280';
-const url = 'http://192.168.50.10:5280'; // 完成記得關掉
+export const API_URLS = {
+  AUTH: 'http://192.168.0.101:5290',
+  MENU: 'http://192.168.0.101:5280',
+  PIPELINE: 'http://192.168.0.20:8000',
+  DEFAULT: '',
+};
 
-const accessToken = localStorage.getItem('accessToken') || '';
+export function apiDomain(baseUrl: string, token?: string) {
+  return {
+    async GET<T>(endpoint: string): Promise<T> {
+      const accessToken = localStorage.getItem(token ?? 'accessToken') ?? '';
+      const res = await fetch(`${baseUrl}${endpoint}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-export async function GET<T>(endpoint: string): Promise<T> {
-  const res = await fetch(`${url}${endpoint}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      return handleResponse<T>(res);
     },
-  });
 
-  return handleResponse<T>(res);
-}
+    async POST<T>(endpoint: string, data: unknown): Promise<T> {
+      const accessToken = localStorage.getItem(token ?? 'accessToken') ?? '';
+      const res = await fetch(`${baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+      console.log('post', { endpoint, data, res });
 
-export async function POST<T>(endpoint: string, data: unknown): Promise<T> {
-  const res = await fetch(`${url}${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      return handleResponse<T>(res);
     },
-    body: JSON.stringify(data),
-  });
-  console.log('post', { endpoint, data, res });
+    async PUT<T>(endpoint: string, data: unknown): Promise<T> {
+      const accessToken = localStorage.getItem(token ?? 'accessToken') ?? '';
+      const res = await fetch(`${baseUrl}${endpoint}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
 
-  return handleResponse<T>(res);
-}
-
-export async function PUT<T>(endpoint: string, data: unknown): Promise<T> {
-  const res = await fetch(`${url}${endpoint}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      console.log('put', { endpoint, data, res });
+      return handleResponse<T>(res);
     },
-    body: JSON.stringify(data),
-  });
 
-  console.log('put', { endpoint, data, res });
-  return handleResponse<T>(res);
-}
-
-export async function DELETE<T>(endpoint: string): Promise<T> {
-  const res = await fetch(`${url}${endpoint}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+    async DELETE<T>(endpoint: string): Promise<T> {
+      const accessToken = localStorage.getItem(token ?? 'accessToken') ?? '';
+      const res = await fetch(`${baseUrl}${endpoint}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      console.log('delete', { endpoint, res });
+      return handleResponse<T>(res);
     },
-  });
-  console.log('delete', { endpoint, res });
-  return handleResponse<T>(res);
+  };
 }
 
 async function handleResponse<T>(res: Response): Promise<T> {
@@ -64,3 +74,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
   console.log('Response:', res);
   return res.json();
 }
+
+export const authApi = apiDomain(API_URLS.AUTH, 'accessToken');
+export const menuApi = apiDomain(API_URLS.MENU, 'accessToken');
+export const pipelineApi = apiDomain(API_URLS.PIPELINE, 'pipelineToken');

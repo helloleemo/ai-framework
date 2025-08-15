@@ -7,7 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useAuthGuard } from '@/hooks/use-auth';
+// import { useAuthGuard } from '@/hooks/use-auth';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,21 +39,21 @@ export default function HeaderDashboard() {
   };
 
   return (
-    <header className="fixed w-full border-b bg-white px-4 py-2 flex justify-between items-center z-50">
+    <header className="fixed z-50 flex w-full items-center justify-between border-b bg-white px-4 py-2">
       {/* left */}
-      <div className="flex items-center gap-4 ">
+      <div className="flex items-center gap-4">
         <img className="w-[120px]" src="logo.svg" alt="" />
       </div>
       {/* right */}
       <div className="flex items-center gap-4">
         {isLogin ? (
           <div className="user flex items-center gap-1">
-            <UserIcon className="text-slate-800" />
-            <p className="text-slate-800 text-sm ">{userName}</p>
+            <UserIcon className="text-xl text-slate-800" />
+            <p className="text-sm text-slate-800">{userName || 'User name'}</p>
             <Tooltip>
               <TooltipTrigger asChild>
                 <LogoutIcon
-                  className="ml-2 cursor-pointer text-3xl  rounded-sm p-1 hover:bg-gray-100"
+                  className="ml-2 cursor-pointer rounded-sm p-1 text-3xl hover:bg-gray-100"
                   onClick={handleLogout}
                 />
               </TooltipTrigger>

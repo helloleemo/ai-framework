@@ -58,7 +58,7 @@ function Login() {
             localStorage.setItem('refreshToken', res.data.refreshToken);
             localStorage.setItem('accessToken', res.data.accessToken);
 
-            // navigate('/dashboard');
+            navigate('/dashboard');
           } else {
             console.log('Login failed:', res.message);
           }
@@ -148,7 +148,7 @@ function Login() {
             {loginError}
           </p>
           {/* Remember me */}
-          <div className="remember pt-3">
+          {/* <div className="remember pt-3">
             <Label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -156,12 +156,12 @@ function Login() {
               />
               Remember me
             </Label>
-          </div>
+          </div> */}
           {/* Login btn*/}
 
           <Button
             onClick={handleLogin}
-            className={`w-full mt-4 flex items-center justify-center gap-2 ${
+            className={`w-full mt-8 flex items-center justify-center gap-2 ${
               loading ? 'cursor-default' : ''
             }`}
             disabled={loading}

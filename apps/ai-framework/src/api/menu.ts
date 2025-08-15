@@ -1,5 +1,5 @@
-import { GET } from './index';
+import { menuApi } from './index';
 import { MenuResponse } from './types/menu';
 
 export const getMenuItemsAPI = () =>
-  GET<MenuResponse>('/api/options/menu-item');
+  menuApi.GET<MenuResponse>('/api/options/menu-item');
