@@ -154,6 +154,7 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
           onClick={() => hasChildren && toggleExpand(item.name)}
           draggable={!hasChildren}
           onDragStart={(e) => {
+            e.currentTarget.classList.add('opacity-50', 'shadow-lg');
             console.log('Drag start:', item.name);
             e.dataTransfer.setData(
               'application/json',
@@ -164,6 +165,9 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
               }),
             );
             console.log('Drag started for:', item);
+          }}
+          onDragEnd={(e) => {
+            e.currentTarget.classList.remove('opacity-50', 'shadow-lg');
           }}
         >
           <div className="flex items-center gap-2">
@@ -193,15 +197,15 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
   };
 
   useEffect(() => {
+    setMenu(menuList); // 暫時放置假資料，等Gavin改好再改
+    setLoading(false);
+    /**
     getMenuItemsAPI()
       .then((res) => {
         if (res.success) {
           setMenu(res.data);
         }
         console.log('Menu items:', res);
-        setTimeout(() => {
-          setLoading(false);
-        }, 5000);
       })
       .catch((error) => {
         console.error('Failed to fetch menu items:', error);
@@ -212,6 +216,7 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
         console.log('Menu items fetch completed');
         setLoading(false);
       });
+       */
   }, []);
 
   return (

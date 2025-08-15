@@ -13,7 +13,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import RightPanel from './artboard/right-panel';
 import TopTab from './artboard/top-tab';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   InputNode,
   TransformNode,
@@ -241,7 +241,8 @@ const dag = {
 
 export default function Artboard() {
   useEffect(() => {
-    tokenTaker();
+    // 取pipeline token ，之後拿掉
+    // tokenTaker();
   }, []);
 
   // nodes
@@ -249,6 +250,7 @@ export default function Artboard() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   // 測試用
+  /**
   const showPipeline = (sqc: number) => {
     getDagTemplate().then((res) => {
       const dag = res[sqc];
@@ -267,11 +269,15 @@ export default function Artboard() {
       console.log('Pipeline created:', res);
     });
   };
+    */
 
+  // focus
+  const [activeNode, setActiveNode] = useState<any>(null);
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       console.log('Drop triggered');
+
       try {
         const data = JSON.parse(e.dataTransfer.getData('application/json'));
         console.log('Dataaaaaaaaa:', data);
@@ -315,10 +321,19 @@ export default function Artboard() {
     [setEdges],
   );
 
+  const onNodeDoubleClick = useCallback((event: any, node: any) => {
+    setActiveNode(node);
+    event.stopPropagation();
+  }, []);
+
+  const onCanvasClick = () => {
+    setActiveNode(null);
+  };
+
   return (
     <>
       {/* content */}
-      <div className="h-full w-full">
+      <div className="h-full w-full" onClick={onCanvasClick}>
         <TopTab />
 
         <div
@@ -335,6 +350,7 @@ export default function Artboard() {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onNodeDoubleClick={onNodeDoubleClick}
           >
             <Controls />
             <Background bgColor="#fff" />
@@ -342,7 +358,7 @@ export default function Artboard() {
         </div>
         <div className="absolute top-5 left-5 z-10"></div>
       </div>
-      <RightPanel />
+      <RightPanel activeNode={activeNode} />
     </>
   );
 }
