@@ -12,7 +12,7 @@ const platformItems: PlatformItem[] = [
     description:
       'This is the description for AI Framework. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     image: 'login/dashboard-2.jpg',
-    linkTo: '/re-build/ai-framework',
+    linkTo: '/re-build/ai-framework/menu',
   },
   {
     title: 'Item 2',
@@ -61,13 +61,13 @@ export default function Dashboard() {
   return (
     <>
       <HeaderDashboard />
-      <div className="dashboard bg-neutral-100 h-full pt-[50px]">
-        <div className="grid grid-cols-1 gap-5 p-5 justify-items-center ">
+      <div className="dashboard h-full bg-neutral-100 pt-[50px]">
+        <div className="grid grid-cols-1 justify-items-center gap-5 p-5">
           {platformItems.map((item, index) => (
             <Link
               to={item.linkTo}
               key={index}
-              className="relative overflow-hidden flex justify-between items-center bg-white cursor-pointer rounded-lg hover:shadow-lg shadow-sm pl-5 w-2/3 h-[250px] transition-all duration-400 ease-in-out"
+              className="relative flex h-[250px] w-2/3 cursor-pointer items-center justify-between overflow-hidden rounded-lg bg-white pl-5 shadow-sm transition-all duration-400 ease-in-out hover:shadow-lg"
             >
               {/* left - text */}
               <div className="w-2/5">
@@ -76,24 +76,24 @@ export default function Dashboard() {
                     return (
                       <span
                         key={tag}
-                        className="text-xs bg-neutral-300 text-white px-3 py-1  rounded-full -ml-1 mr-3"
+                        className="mr-3 -ml-1 rounded-full bg-neutral-300 px-3 py-1 text-xs text-white"
                       >
                         {tag}
                       </span>
                     );
                   })}
-                <p className="text-lg font-bold text-neutral-800 py-1">
+                <p className="py-1 text-lg font-bold text-neutral-800">
                   {item.title}
                 </p>
                 <p className="text-sm text-gray-500">{item.content}</p>
-                <div className="border-b border-gray-200 my-2 w-2/3"></div>
+                <div className="my-2 w-2/3 border-b border-gray-200"></div>
                 <p className="text-xs text-gray-400">{item.description}</p>
               </div>
               {/* right - imgs */}
-              <div className="relative w-3/5 h-full flex items-center justify-end">
-                <div className="absolute top-0 right-0 w-full h-full rounded-r-lg bg-gradient-to-r from-white via-white/40 to-transparent z-10" />
+              <div className="relative flex h-full w-3/5 items-center justify-end">
+                <div className="absolute top-0 right-0 z-10 h-full w-full rounded-r-lg bg-gradient-to-r from-white via-white/40 to-transparent" />
                 <img
-                  className="object-fit w-full relative z-0"
+                  className="object-fit relative z-0 w-full"
                   src={item.image}
                   alt=""
                 />
@@ -101,7 +101,7 @@ export default function Dashboard() {
             </Link>
           ))}
         </div>
-        <div className="text-xs text-gray-400 text-center pb-2 pt-10">
+        <div className="pt-10 pb-2 text-center text-xs text-gray-400">
           © {new Date().getFullYear()} Delmind Inc. All rights reserved.
         </div>
       </div>

@@ -4,9 +4,9 @@ import { ArrowDownIcon } from '@/components/icon/arrow-down-icon';
 import { ArrowRightIcon } from '@/components/icon/arrow-right-icon';
 import { FolderIcon } from '@/components/icon/folder';
 import { PipeLineIcon } from '@/components/icon/pipeline-icon';
-import { PipeLineIcon2 } from '@/components/icon/pipeline-icon-2';
+// import { PipeLineIcon2 } from '@/components/icon/pipeline-icon-2';
 import { Skeleton } from '@/components/ui/skeleton';
-import Spinner from '@/components/ui/spinner';
+// import Spinner from '@/components/ui/spinner';
 import { useEffect, useState } from 'react';
 
 const menuList: MenuItem[] = [
@@ -161,7 +161,7 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
               JSON.stringify({
                 name: item.name,
                 type: item.type,
-                // type: item.type, // 等Gavin改好type
+                // type: item.type,
               }),
             );
             console.log('Drag started for:', item);
@@ -197,13 +197,14 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
   };
 
   useEffect(() => {
-    setMenu(menuList); // 暫時放置假資料，等Gavin改好再改
+    setMenu(menuList);
     setLoading(false);
-    /**
+
     getMenuItemsAPI()
       .then((res) => {
         if (res.success) {
-          setMenu(res.data);
+          // setMenu(res.data);
+          setMenu(menuList); //先放假的！
         }
         console.log('Menu items:', res);
       })
@@ -216,7 +217,6 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
         console.log('Menu items fetch completed');
         setLoading(false);
       });
-       */
   }, []);
 
   return (

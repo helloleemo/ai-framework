@@ -1,0 +1,110 @@
+@startuml
+!theme plain
+title DAG 資料結構差異說明
+
+skinparam backgroundColor #FFFFFF
+skinparam class {
+    BackgroundColor #E8F4FD
+    BorderColor #1976D2
+    ArrowColor #1976D2
+}
+
+package "從 API 取得的 DAG 資料結構" as GetDAG {
+    class "getDagTemplate() Response" as GetResponse {
+        + dag_id: string
+        + schedule_interval: string
+        + start_date: string
+        + catchup: boolean
+        + owner: string
+        + tasks: Task[]
+    }
+
+    class "Task (從 API 取得)" as GetTask {
+        + task_id: string
+        + operator: string
+        + processor_stage: "extract" | "transform" | "load"
+        + processor_method: string
+        + op_kwargs: object
+        + dependencies: string[]
+        + position: {x: number, y: number}
+        + state: "success" | "failed" | "upstream_failed"
+    }
+}
+
+package "手動建立 Pipeline 的資料結構" as CreateDAG {
+    class "createDag() Request" as CreateRequest {
+        + dag_id: string
+        + schedule_interval: string
+        + start_date: string
+        + catchup: boolean
+        + owner: string
+        + tasks: ManualTask[]
+    }
+
+    class "ManualTask (手動建立)" as ManualTask {
+        + task_id: string
+        + operator: string
+        + processor_stage: "extract" | "transform" | "load"
+        + processor_method: string
+        + op_kwargs: object
+        + dependencies: string[]
+        - position: {x: number, y: number} ❌
+        - state: string ❌
+    }
+}
+
+package "ReactFlow 內部資料結構" as ReactFlowData {
+    class "Node (ReactFlow)" as FlowNode {
+        + id: string
+        + type: "input" | "transform" | "output"
+        + position: {x: number, y: number}
+        + data: {label: string, stage: string, method: string, state?: string}
+    }
+
+    class "Edge (ReactFlow)" as FlowEdge {
+        + id: string
+        + source: string
+        + target: string
+    }
+}
+
+package "轉換函數" as Converters {
+    class "dagToNodes()" as ToNodes {
+        + 將 Task[] 轉換為 Node[]
+        + 根據 processor_stage 設定 type
+        + 保留 position 資訊
+        + 保留 state 資訊 (用於顯示狀態)
+    }
+
+    class "dagToEdges()" as ToEdges {
+        + 將 dependencies 轉換為 Edge[]
+        + 建立 source -> target 關係
+    }
+
+    class "nodesToDag()" as FromNodes {
+        + 將 Node[] + Edge[] 轉換為 Task[]
+        + 移除 position (後端不需要)
+        + 移除 state (手動建立時無狀態)
+        + 根據 edges 重建 dependencies
+    }
+}
+
+' Relationships
+GetResponse ||--o  GetTask : contains
+CreateRequest ||--o  ManualTask : contains
+
+GetTask --> ToNodes : 轉換
+GetTask --> ToEdges : 轉換
+ToNodes --> FlowNode : 產生
+ToEdges --> FlowEdge : 產生
+
+FlowNode --> FromNodes : 轉換
+FlowEdge --> FromNodes : 轉換
+FromNodes --> ManualTask : 產生
+
+note top of GetTask : 包含 position 和 state\n用於顯示現有 pipeline 狀態
+note top of ManualTask : 不包含 position 和 state\n用於建立新 pipeline
+note right of ToNodes : dagToNodes()\n保留視覺化所需資訊
+note right of FromNodes : 需要實作\n移除前端專用欄位
+
+@enduml

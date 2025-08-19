@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CollapseIcon } from '../../icon/collapse-icon';
 import { PipeIcon } from '@/components/icon/pipe-icon';
 import { ArtboardIcon } from '@/components/icon/artboard-icon';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const switchMenu = [
   {
     name: '既有Pipeline',
     icon: <PipeIcon className="h-5 w-5 text-sky-500" />,
+    path: '/re-build/ai-framework/view-all',
   },
   {
     name: '畫布',
     icon: <ArtboardIcon className="h-5 w-5 text-sky-500" />,
+    path: '/re-build/ai-framework/artboard',
   },
 ];
 export default function SwitchMenu({
@@ -19,10 +22,23 @@ export default function SwitchMenu({
   onSwitch: (index: number) => void;
 }) {
   // switch menu
+  const location = useLocation();
+  const navigate = useNavigate();
   const [switchMenuActive, setSwitchMenuActive] = useState(0);
+
+  useEffect(() => {
+    const foundIndex = switchMenu.findIndex(
+      (item) => location.pathname === item.path,
+    );
+    if (foundIndex !== -1) {
+      setSwitchMenuActive(foundIndex);
+      onSwitch(foundIndex);
+    }
+  }, [location.pathname, onSwitch]);
   const handleSwitchMenu = (index: number) => {
     setSwitchMenuActive(index);
     onSwitch(index); // send to outer
+    navigate(switchMenu[index].path);
   };
   return (
     <>

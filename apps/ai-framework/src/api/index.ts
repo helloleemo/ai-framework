@@ -2,6 +2,8 @@
 export const API_URLS = {
   AUTH: 'http://192.168.0.101:5290',
   MENU: 'http://192.168.0.101:5280',
+  // MENU: 'http://192.168.50.10:5280', // 5G_ASUS
+  // AUTH: 'http://192.168.50.10:5290', // 5G_ASUS
   PIPELINE: 'http://192.168.0.20:8000',
   DEFAULT: '',
 };
@@ -21,7 +23,7 @@ export function apiDomain(baseUrl: string, token?: string) {
       return handleResponse<T>(res);
     },
 
-    async POST<T>(endpoint: string, data: unknown): Promise<T> {
+    async POST<T>(endpoint: string, data: any): Promise<T> {
       const accessToken = localStorage.getItem(token ?? 'accessToken') ?? '';
       const res = await fetch(`${baseUrl}${endpoint}`, {
         method: 'POST',

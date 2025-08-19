@@ -8,17 +8,20 @@ import Dashboard from '@/pages/dashboard';
 import TempArtboard from '@/pages/artboard-temp';
 import ReBuildLayout from '@/components/re-build/layout';
 import Artboard from '@/components/re-build/artboard';
+import ViewAll from '@/components/re-build/view-all/view-all';
+import ArtboardMenu from '@/components/re-build/artboard/artboard-menu';
+import ArtboardTemp from '@/components/re-build/artboard/artboard-temp';
 
 function returnToPrevious() {
   return (
-    <div className="text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-2/3">
-      <div className="w-[200px]  rounded-lg overflow-hidden border">
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-2/3 transform text-center">
+      <div className="w-[200px] overflow-hidden rounded-lg border">
         <img src="https://picsum.photos/600/400" alt="" />
       </div>
-      <p className="text-lg font-semibold text-slate-800 pt-3 pb-2">
+      <p className="pt-3 pb-2 text-lg font-semibold text-slate-800">
         Page not found
       </p>
-      <button className="text-sm text-slate-500 border border-slate-300 px-3 py-1 rounded-lg hover:bg-slate-50 transition-all duration-200">
+      <button className="rounded-lg border border-slate-300 px-3 py-1 text-sm text-slate-500 transition-all duration-200 hover:bg-slate-50">
         <Link to="/">Go back</Link>
       </button>
     </div>
@@ -38,7 +41,13 @@ function AppRoutes() {
       </Route>
       {/* re-build */}
       <Route path="/re-build" element={<ReBuildLayout />}>
-        <Route path="/re-build/ai-framework" element={<Artboard />} />
+        <Route path="/re-build/ai-framework/artboard" element={<Artboard />} />
+        <Route
+          path="/re-build/ai-framework/artboard-temp"
+          element={<ArtboardTemp />}
+        />
+        <Route path="/re-build/ai-framework/menu" element={<ArtboardMenu />} />
+        <Route path="/re-build/ai-framework/view-all" element={<ViewAll />} />
       </Route>
 
       {/* Others */}

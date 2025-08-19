@@ -19,9 +19,7 @@ export const InputNode = ({
 }) => {
   return (
     <div
-      className={`px-5 py-3  rounded-md bg-white
-      ${selected ? 'border-sky-500 border-3' : 'border-neutral-400 border-2'}
-    `}
+      className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
       <div>
         <div className="tag">
@@ -29,18 +27,18 @@ export const InputNode = ({
             {[0, 1].map((_, index) => (
               <p
                 key={index}
-                className="bg-sky-500 text-white px-2 py-1 rounded-sm text-[10px] w-fit -mx-1"
+                className="-mx-1 w-fit rounded-sm bg-sky-500 px-2 py-1 text-[10px] text-white"
               >
                 {`Tag0${index + 1}`}
               </p>
             ))}
           </div>
         </div>
-        <p className="font-bold text-neutral-600 text-[16px] text-start">
+        <p className="text-start text-[16px] font-bold text-neutral-600">
           {data.label}
         </p>
-        <div className="border-b my-2"></div>
-        <p className="text-[12px] text-neutral-500 w-[240px] text-start">
+        <div className="my-2 border-b"></div>
+        <p className="w-[240px] text-start text-[12px] text-neutral-500">
           {data.description ||
             'No Description Available. lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
         </p>
@@ -52,11 +50,15 @@ export const InputNode = ({
                 backgroundColor: '#fff',
                 width: '1rem',
                 height: '1rem',
+                position: 'absolute',
+                right: '10px',
                 border: '2px solid #38bdf8',
                 borderRadius: '9999px',
               }
             : {
                 backgroundColor: '#fff',
+                position: 'absolute',
+                right: '10px',
                 width: '1rem',
                 height: '1rem',
                 border: '2px solid #aaa',
@@ -84,9 +86,7 @@ export const TransformNode = ({
 }) => {
   return (
     <div
-      className={`px-5 py-3  rounded-md bg-white
-      ${selected ? 'border-sky-500 border-3' : 'border-neutral-400 border-2'}
-    `}
+      className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
       <div>
         <div className="tag">
@@ -94,18 +94,18 @@ export const TransformNode = ({
             {[0, 1].map((_, index) => (
               <p
                 key={index}
-                className="bg-sky-500 text-white px-2 py-1 rounded-sm text-[10px] w-fit -mx-1"
+                className="-mx-1 w-fit rounded-sm bg-sky-500 px-2 py-1 text-[10px] text-white"
               >
                 {`Tag0${index + 1}`}
               </p>
             ))}
           </div>
         </div>
-        <p className="font-bold text-neutral-600 text-[16px] text-start">
+        <p className="text-start text-[16px] font-bold text-neutral-600">
           {data.label}
         </p>
-        <div className="border-b my-2"></div>
-        <p className="text-[12px] text-neutral-500 w-[240px] text-start">
+        <div className="my-2 border-b"></div>
+        <p className="w-[240px] text-start text-[12px] text-neutral-500">
           {data.description ||
             'No Description Available. lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
         </p>
@@ -159,9 +159,7 @@ export const OutputNode = ({
 }) => {
   return (
     <div
-      className={`px-5 py-3  rounded-md bg-white
-      ${selected ? 'border-sky-500 border-3' : 'border-neutral-400 border-2'}
-    `}
+      className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
       <div>
         <div className="tag">
@@ -169,18 +167,18 @@ export const OutputNode = ({
             {[0, 1].map((_, index) => (
               <p
                 key={index}
-                className="bg-sky-500 text-white px-2 py-1 rounded-sm text-[10px] w-fit -mx-1"
+                className="-mx-1 w-fit rounded-sm bg-sky-500 px-2 py-1 text-[10px] text-white"
               >
                 {`Tag0${index + 1}`}
               </p>
             ))}
           </div>
         </div>
-        <p className="font-bold text-neutral-600 text-[16px] text-start">
+        <p className="text-start text-[16px] font-bold text-neutral-600">
           {data.label}
         </p>
-        <div className="border-b my-2"></div>
-        <p className="text-[12px] text-neutral-500 w-[240px] text-start">
+        <div className="my-2 border-b"></div>
+        <p className="w-[240px] text-start text-[12px] text-neutral-500">
           {data.description ||
             'No Description Available. lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
         </p>
@@ -193,6 +191,8 @@ export const OutputNode = ({
           borderRadius: '9999px',
           border: selected ? '2px solid #38bdf8' : '2px solid #aaa',
           marginRight: '-12px',
+          position: 'absolute',
+          left: '10px',
         }}
         type="target"
         position={Position.Left}
@@ -204,17 +204,17 @@ export const OutputNode = ({
 // default node
 export const DefaultNode = ({ data }: { data: any }) => {
   return (
-    <div className="px-4 py-2 shadow-md rounded-md bg-gray-100 border-2 border-gray-400">
+    <div className="rounded-md border-2 border-gray-400 bg-gray-100 px-4 py-2 shadow-md">
       <div className="font-bold text-gray-800">{data.label}</div>
       <Handle
         type="target"
         position={Position.Left}
-        className="w-3 h-3 bg-gray-500"
+        className="h-3 w-3 bg-gray-500"
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="w-3 h-3 bg-gray-500"
+        className="h-3 w-3 bg-gray-500"
       />
     </div>
   );

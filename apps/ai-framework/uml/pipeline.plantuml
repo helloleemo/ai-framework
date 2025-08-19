@@ -1,0 +1,142 @@
+@startuml
+!theme plain
+title Pipeline Creation and Management Sequence Diagram
+
+actor User
+participant "Login Page" as Login
+participant "ReBuildLayout" as Layout
+participant "SwitchMenu" as Switch
+participant "ArtboardMenu" as Menu
+participant "ArtboardTemp" as Temp
+participant "Artboard" as Canvas
+participant "SidebarMenu" as Sidebar
+participant "Node Components" as Nodes
+participant "RightPanel" as Panel
+participant "OPCUA Panel" as OPCUA
+participant "Dialog" as Dialog
+participant "Menu API" as MenuAPI
+participant "OPCUA API" as OPCUAAPI
+participant "Pipeline API" as PipelineAPI
+participant "Backend Server" as Backend
+
+== Login Flow ==
+User -> Login: 輸入帳號密碼
+Login -> Backend: 驗證登入
+Backend -> Login: 回傳 tokens
+Login -> Layout: navigate('/re-build/ai-framework/artboard')
+
+== Initial Menu Loading ==
+Layout -> Switch: 載入 SwitchMenu
+Switch -> Menu: 顯示 ArtboardMenu (預設)
+Menu -> User: 顯示「建立新畫布」和「從範本建立」選項
+
+== Create New Pipeline ==
+User -> Menu: 點擊「建立新畫布」
+Menu -> Dialog: 打開建立對話框
+Dialog -> User: 顯示輸入畫布名稱
+User -> Dialog: 輸入名稱並確認
+Dialog -> Canvas: navigate('/re-build/ai-framework/artboard')
+
+Canvas -> Sidebar: 載入 SidebarMenu
+Sidebar -> MenuAPI: getMenuItemsAPI()
+MenuAPI -> Backend: GET /api/menu-items
+Backend -> MenuAPI: 回傳 menu 結構
+MenuAPI -> Sidebar: 顯示可拖曳項目
+
+== Drag and Drop Node Creation ==
+User -> Sidebar: 拖曳 menu item
+Sidebar -> Canvas: onDrop(draggedItem)
+Canvas -> Nodes: 建立對應 Node
+Nodes -> Canvas: 新增到 nodes state
+Canvas -> User: 顯示新節點
+
+== Node Configuration ==
+User -> Nodes: 點兩下節點
+Nodes -> Panel: setActiveNode(node)
+Panel -> Canvas: 顯示 RightPanel
+
+alt 如果是 OPCUA 節點
+    Panel -> OPCUA: 顯示 OPCUA1 component
+
+    == Step 1: Connection ==
+    User -> OPCUA: 輸入連線資訊
+    User -> OPCUA: 點擊 Connect
+    OPCUA -> OPCUAAPI: connectOpcuaAPI(connectionString, account, password)
+    OPCUAAPI -> Backend: POST /api/opc-da/test-connection
+
+    alt 連線成功
+        Backend -> OPCUAAPI: 回傳成功
+        OPCUA -> OPCUAAPI: getTagsAPI('', connectionString, account)
+        OPCUAAPI -> Backend: GET /api/opc-da/tags
+        Backend -> OPCUAAPI: 回傳根節點 tags
+        OPCUA -> User: 顯示 Step 2 - Tag Selection
+
+        == Step 2: Tag Selection ==
+        User -> OPCUA: 展開 hasChildren=true 節點
+        OPCUA -> OPCUAAPI: getTagsAPI(nodeId, connectionString, account)
+        OPCUAAPI -> Backend: GET /api/opc-da/tags?nodeId=xxx
+        Backend -> OPCUAAPI: 回傳子節點
+        OPCUA -> User: 顯示子節點 (遞迴展開)
+
+        User -> OPCUA: 選擇 hasChildren=false 的 tags
+        User -> OPCUA: 設定時間範圍
+        User -> OPCUA: 點擊 Get Data
+        OPCUA -> Canvas: 完成節點設定
+
+    else 連線失敗
+        Backend -> OPCUAAPI: 回傳錯誤
+        OPCUA -> User: 顯示錯誤或使用假資料
+    end
+
+else 其他節點類型
+    Panel -> User: 顯示對應參數設定
+end
+
+== Connect Nodes ==
+User -> Canvas: 拖曳連接線連接節點
+Canvas -> Canvas: onConnect(connection)
+Canvas -> Canvas: 更新 edges state
+
+== Create Pipeline Template ==
+User -> Switch: 切換到「從範本建立」
+Switch -> Menu: 顯示 ArtboardMenu
+User -> Menu: 點擊「從範本建立」
+Menu -> Temp: navigate('/re-build/ai-framework/artboard-temp')
+
+Temp -> PipelineAPI: getDagTemplate()
+PipelineAPI -> Backend: GET /api/dag/templates
+Backend -> PipelineAPI: 回傳範本列表
+PipelineAPI -> Temp: 顯示範本按鈕
+
+User -> Temp: 點擊範本按鈕
+Temp -> PipelineAPI: 載入特定範本
+Temp -> Temp: dagToNodes(template.tasks)
+Temp -> Temp: dagToEdges(template.tasks)
+Temp -> User: 顯示預建的 pipeline
+
+== Execute Pipeline ==
+User -> Canvas: 設定完所有節點
+User -> Canvas: 點擊執行按鈕 (如果有)
+Canvas -> PipelineAPI: 轉換 nodes/edges 為後端格式
+Canvas -> PipelineAPI: createDag(pipelineData)
+PipelineAPI -> Backend: POST /api/dag/create
+Backend -> PipelineAPI: 回傳執行結果
+PipelineAPI -> Canvas: 更新狀態
+Canvas -> User: 顯示執行狀態
+
+== View All Pipelines ==
+User -> Switch: 切換到「既有Pipeline」
+Switch -> Canvas: navigate('/re-build/ai-framework/view-all')
+Canvas -> PipelineAPI: getExistingPipelines()
+PipelineAPI -> Backend: GET /api/dag/list
+Backend -> PipelineAPI: 回傳 pipeline 清單
+PipelineAPI -> User: 顯示所有既有 pipelines
+
+== Error Handling ==
+note over Canvas, Backend: 各階段都有錯誤處理
+alt API 失敗
+    Backend -> Canvas: 回傳錯誤
+    Canvas -> User: 顯示錯誤訊息或使用假資料
+end
+
+@enduml

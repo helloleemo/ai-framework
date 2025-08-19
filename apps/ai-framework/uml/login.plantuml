@@ -1,0 +1,70 @@
+@startuml
+!theme plain
+title Login Sequence Diagram
+
+actor User
+participant "Login Page" as Login
+participant "Auth API" as AuthAPI
+participant "Backend Server" as Backend
+participant "LocalStorage" as Storage
+participant "useAuthGuard" as AuthGuard
+participant "App Router" as Router
+
+== Login Flow ==
+User -> Login: 輸入帳號密碼
+User -> Login: 點擊登入按鈕
+
+Login -> AuthAPI: loginAPI(account, password)
+AuthAPI -> Backend: POST /api/auth/login
+Backend -> AuthAPI: 回傳 { code, accessToken, refreshToken }
+AuthAPI -> Login: 回傳登入結果
+
+alt 登入成功
+    Login -> Storage: 儲存 code, accessToken, refreshToken
+    Login -> Router: navigate('/re-build/ai-framework/artboard')
+else 登入失敗
+    Login -> User: 顯示錯誤訊息
+end
+
+== Auth Guard Flow ==
+Router -> AuthGuard: useAuthGuard() 檢查授權
+AuthGuard -> Storage: 取得 accessToken
+AuthGuard -> AuthAPI: decodeTokenAPI(accessToken)
+AuthAPI -> Backend: POST /api/auth/decode-token
+Backend -> AuthAPI: 回傳 token 資訊 (exp)
+
+alt Token 已過期
+    AuthGuard -> Storage: 取得 code, refreshToken
+    AuthGuard -> AuthAPI: refreshTokenAPI(code, accessToken, refreshToken)
+    AuthAPI -> Backend: POST /api/auth/refresh-token
+
+    alt 刷新成功
+        Backend -> AuthAPI: 回傳新的 tokens
+        AuthAPI -> AuthGuard: 回傳刷新結果
+        AuthGuard -> Storage: 更新新的 tokens
+        AuthGuard -> Router: 保持當前頁面
+    else 刷新失敗
+        AuthGuard -> Storage: 清除所有 tokens
+        AuthGuard -> Router: navigate('/') 回到登入頁
+    end
+
+else Token 快過期 (< 5分鐘)
+    AuthGuard -> AuthAPI: refreshTokenAPI() 預先刷新
+    AuthAPI -> Backend: POST /api/auth/refresh-token
+    Backend -> AuthAPI: 回傳新的 tokens
+    AuthGuard -> Storage: 更新新的 tokens
+
+else Token 有效
+    AuthGuard -> Router: 允許存取頁面
+end
+
+== Auto Logout Flow ==
+note over AuthGuard: 每次路由變更都會檢查
+AuthGuard -> AuthGuard: 定時檢查 token 狀態
+alt Token 無效或過期且無法刷新
+    AuthGuard -> Storage: 清除所有 tokens
+    AuthGuard -> Router: navigate('/') 強制登出
+    Router -> User: 顯示登入頁面
+end
+
+@enduml

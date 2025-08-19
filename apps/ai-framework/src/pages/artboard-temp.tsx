@@ -45,7 +45,7 @@ function TempArtboard() {
 
   const onConnect: OnConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    [setEdges],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -82,7 +82,7 @@ function TempArtboard() {
       setNodes((nds) => nds.concat(newNode));
       // setFocusedNode(newNode);
     },
-    [screenToFlowPosition, setNodes]
+    [screenToFlowPosition, setNodes],
   );
 
   // call panel
@@ -101,14 +101,14 @@ function TempArtboard() {
         setPanelVisible(true);
       }
     },
-    [focusedNode]
+    [focusedNode],
   );
   const onNodeClick = useCallback(
     (event: React.MouseEvent<Element, MouseEvent>, node: Node) => {
       console.log('Node clicked:', node);
       handleNodeFocus(node);
     },
-    [handleNodeFocus]
+    [handleNodeFocus],
   );
 
   // click blank to collapse panel
@@ -120,15 +120,15 @@ function TempArtboard() {
   return (
     <>
       <div className="h-full w-full">
-        <div className="w-full h-[calc(100%-50px)]">
-          <div className="h-[40px - 1px] ">
-            <div className="bg-white  rounded-t-md py-2 pl-5 pr-4 w-fit">
+        <div className="h-[calc(100%-50px)] w-full">
+          <div className="h-[40px - 1px]">
+            <div className="w-fit rounded-t-md bg-white py-2 pr-4 pl-5">
               <div className="activeFile flex items-center gap-x-2">
-                <div className="unSaved bg-sky-500 rounded-full w-2.5 h-2.5"></div>
+                <div className="unSaved h-2.5 w-2.5 rounded-full bg-sky-500"></div>
                 <div className="text">
                   <p className="text-sm text-neutral-600">2025-08-06 - Draft</p>
                 </div>
-                <div className="icon hover:bg-neutral-100 rounded-full p-1 cursor-pointer">
+                <div className="icon cursor-pointer rounded-full p-1 hover:bg-neutral-100">
                   <CloseIcon className="fill-neutral-800" size="1.3em" />
                 </div>
               </div>
@@ -163,10 +163,10 @@ function TempArtboard() {
         </div>
       </div>
       <div
-        className={`absolute top-0 right-0 w-[340px] h-full bg-white p-4 border transition-all duration-100 ${
+        className={`absolute top-0 right-0 h-full w-[340px] border bg-white p-4 transition-all duration-100 ${
           panelVisible && focusedNode
-            ? 'opacity-100 translate-x-0 pointer-events-auto'
-            : 'opacity-0 translate-x-full pointer-events-none'
+            ? 'pointer-events-auto translate-x-0 opacity-100'
+            : 'pointer-events-none translate-x-full opacity-0'
         }`}
       >
         {focusedNode && <RightPanel node={focusedNode} />}

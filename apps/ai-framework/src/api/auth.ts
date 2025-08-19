@@ -13,9 +13,9 @@ export const logoutAPI = () =>
   authApi.POST<LogoutResponse>('/api/auth/logout', '');
 
 export const refreshTokenAPI = (
-  code: string,
-  accessToken: string,
-  refreshToken: string,
+  code?: string,
+  accessToken?: string,
+  refreshToken?: string,
 ) =>
   authApi.POST<RefreshTokenResponse>('/api/auth/refresh-token', {
     code,

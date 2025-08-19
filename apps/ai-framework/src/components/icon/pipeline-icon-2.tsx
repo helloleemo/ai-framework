@@ -7,7 +7,8 @@ export function PipeLineIcon2(props: SVGProps<SVGSVGElement>) {
       width="2.5em"
       height="2.5em"
       viewBox="0 0 32 32"
-      fill="#1982D8"
+      className={props.className}
+      fill="currentColor"
       {...props}
     >
       {/* Icon from Carbon by IBM - undefined */}

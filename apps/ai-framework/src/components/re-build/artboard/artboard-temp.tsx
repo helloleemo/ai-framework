@@ -11,17 +11,17 @@ import {
   Controls,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import RightPanel from './artboard/right-panel';
-import TopTab from './artboard/top-tab';
+import RightPanel from '../artboard/right-panel';
+import TopTab from '../artboard/top-tab';
 import { useCallback, useEffect, useState } from 'react';
 import {
   InputNode,
   TransformNode,
   OutputNode,
   edgeType,
-} from './artboard/node-type';
+} from '../artboard/node-type';
 import tokenTaker from '@/utils/token-taker';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { createDag, getDagTemplate } from '@/api/pipeline';
 
 const initialNodes: Node[] = [];
@@ -73,6 +73,7 @@ export function dagToEdges(tasks: any[]) {
   });
   return edges;
 }
+
 // 完美比例ㄉDAG
 const dag = {
   dag_id: 'test_dag1',
@@ -239,18 +240,27 @@ const dag = {
   ],
 };
 
-export default function Artboard() {
+export default function ArtboardTemp() {
   useEffect(() => {
     // 取pipeline token ，之後拿掉
-    // tokenTaker();
+    tokenTaker();
+
+    // 檢查模板
+    const selectedTemplate = sessionStorage.getItem('selectedTemplate');
+    if (selectedTemplate) {
+      try {
+        const templateData = JSON.parse(selectedTemplate);
+        setNodes(dagToNodes(templateData.tasks));
+        setEdges(dagToEdges(templateData.tasks));
+        // 清除 sessionStorage
+        sessionStorage.removeItem('selectedTemplate');
+      } catch (error) {
+        console.error('載入模板失敗:', error);
+      }
+    }
   }, []);
 
-  // nodes
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
   // 測試用
-  /**
   const showPipeline = (sqc: number) => {
     getDagTemplate().then((res) => {
       const dag = res[sqc];
@@ -269,10 +279,13 @@ export default function Artboard() {
       console.log('Pipeline created:', res);
     });
   };
-    */
 
   // focus
   const [activeNode, setActiveNode] = useState<any>(null);
+  // nodes
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
@@ -359,29 +372,27 @@ export default function Artboard() {
         <div className="absolute top-5 left-5 z-10"></div>
       </div>
       <RightPanel activeNode={activeNode} />
+      {/* 測試用 */}
+      {/* <div className="absolute z-10 flex gap-2 p-2">
+        {[0, 1, 2].map((item, index) => {
+          return (
+            <Button variant={'outline'} onClick={() => showPipeline(item)}>
+              get template{item + 1}
+            </Button>
+          );
+        })}
+        <Button variant={'outline'} onClick={perfectRatioPipeline}>
+          perfect ratio
+        </Button>{' '}
+        <Button variant={'outline'} onClick={createAPipeline}>
+          Create
+        </Button>
+      </div>
+      <div className="absolute top-50 z-10">
+        <Button variant={'outline'} onClick={createAPipeline}>
+          get pipeline
+        </Button>
+      </div> */}
     </>
   );
 }
-
-/**
- *         <div className="absolute z-10 flex gap-2 p-2">
-          {[0, 1, 2].map((item, index) => {
-            return (
-              <Button variant={'outline'} onClick={() => showPipeline(item)}>
-                get template{item + 1}
-              </Button>
-            );
-          })}
-          <Button variant={'outline'} onClick={perfectRatioPipeline}>
-            perfect ratio
-          </Button>{' '}
-          <Button variant={'outline'} onClick={createAPipeline}>
-            Create
-          </Button>
-        </div>
-        <div className="absolute top-50 z-10">
-          <Button variant={'outline'} onClick={createAPipeline}>
-            get pipeline
-          </Button>
-        </div>
- */
