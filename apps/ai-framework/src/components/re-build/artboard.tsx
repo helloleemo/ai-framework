@@ -24,6 +24,9 @@ import tokenTaker from '@/utils/token-taker';
 import { Button } from '../ui/button';
 import { createDag, getDagTemplate } from '@/api/pipeline';
 import { useArtboardNodes } from '@/hooks/use-artboard-state';
+import { addStep } from '@/store/pipeline';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 // 轉換
 export function dagToNodes(tasks: any[]) {
@@ -274,6 +277,49 @@ export default function Artboard() {
   };
     */
 
+  // 測試用
+  const dispatch = useDispatch();
+  const pipeline = useSelector((state: RootState) =>
+    state.pipeline.pipelines.find((p) => p.id === pipelineId),
+  );
+  const node = pipeline?.nodes.find((n) => n.id === nodeId);
+
+  // 取得步驟
+  const steps = node?.steps ?? [];
+
+  // 新增步驟
+  const handleAddStep = () => {
+    dispatch(
+      addStep({
+        pipelineId: pipelineId,
+        nodeId: nodeId,
+        step: { id: 'step3', config: {} },
+      }),
+    );
+  };
+
+  // 更新步驟
+  const handleUpdateStep = (step) => {
+    dispatch(
+      updateStep({
+        pipelineId,
+        nodeId,
+        step: { ...step, config: { updated: true } },
+      }),
+    );
+  };
+
+  // 刪除步驟
+  const handleRemoveStep = (stepId) => {
+    dispatch(
+      removeStep({
+        pipelineId,
+        nodeId,
+        stepId,
+      }),
+    );
+  };
+
   return (
     <>
       {/* content */}
@@ -303,6 +349,17 @@ export default function Artboard() {
         <div className="absolute top-5 left-5 z-10"></div>
       </div>
       <RightPanel activeNode={activeNode} />
+      {/*  */}
+      <div>
+        {steps.map((step) => (
+          <div key={step.id}>
+            {JSON.stringify(step)}
+            <button onClick={() => handleUpdateStep(step)}>更新</button>
+            <button onClick={() => handleRemoveStep(step.id)}>刪除</button>
+          </div>
+        ))}
+        <button onClick={handleAddStep}>新增步驟</button>
+      </div>
     </>
   );
 }

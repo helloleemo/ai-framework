@@ -19,11 +19,11 @@ export const connectOpcuaAPI = (
 };
 
 export const getTagsAPI = (
+  dataSourceId: string | null,
+  nodeId: string | '',
   connectionString: string,
   account: string,
   password: string,
-  nodeId?: string,
-  dataSourceId?: string,
 ) => {
   return menuApi.POST<any>('/api/opc-ua/browse', {
     dataSourceId,

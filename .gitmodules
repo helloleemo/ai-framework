@@ -1,0 +1,3 @@
+[submodule "tools/serena"]
+	path = tools/serena
+	url = https://github.com/oraios/serena

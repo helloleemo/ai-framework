@@ -98,6 +98,12 @@ const menuList: MenuItem[] = [
         children: null,
         type: 'output',
       },
+      {
+        name: '存入DataMartket',
+        icon: 'output',
+        children: null,
+        type: 'output',
+      },
     ],
   },
   {
@@ -105,13 +111,55 @@ const menuList: MenuItem[] = [
     icon: null,
     children: [
       {
-        name: 'Common',
+        name: '訊號疊加處理',
         icon: 'default',
         children: null,
         type: 'transform',
       },
       {
-        name: '頻譜 function',
+        name: '窗函數',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '濾波',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '傅立葉頻譜圖',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '小波時頻圖',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '速度轉換',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '包絡',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '特定頻域特徵',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '統計特徵',
         icon: 'default',
         children: null,
         type: 'transform',

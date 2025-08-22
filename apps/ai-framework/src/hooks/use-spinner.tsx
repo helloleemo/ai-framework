@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
-  color?: 'white' | 'black' | 'blue' | 'green' | 'red';
+  color?: 'white' | 'black' | 'blue' | 'gray';
   className?: string;
 }
 
@@ -38,8 +38,7 @@ export function useSpinner(options: UseSpinnerOptions = {}) {
       white: 'border-white border-t-transparent',
       black: 'border-black border-t-transparent',
       blue: 'border-blue-500 border-t-transparent',
-      green: 'border-green-500 border-t-transparent',
-      red: 'border-red-500 border-t-transparent',
+      gray: 'border-gray-400 border-t-transparent',
     };
 
     return (

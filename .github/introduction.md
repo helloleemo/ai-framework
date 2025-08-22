@@ -1,0 +1,2 @@
+我現在artboard當中要建立pipeline，每個pipeline會有很多個node，每個node會有至少三個步驟做設定。將pipeline每個node設定完後，會回傳給dag api。除此之外，也有可能會從DAG拿取整條pipeline的資料，render到畫面上。
+根據以上，我可以怎麼用redux做狀態管理。

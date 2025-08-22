@@ -53,5 +53,15 @@
   },
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "targets": {
+    "serena": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uvx --from git+https://github.com/oraios/serena serena start-mcp-server",
+        "cwd": "."
+      }
+    }
+  }
+
 }

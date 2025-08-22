@@ -19,14 +19,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import Spinner from '@/components/ui/spinner';
-import { set } from 'date-fns';
-import {
-  ToastGroup,
-  useToastGroup,
-} from '@/components/toast-group/toast-group';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { useToaster } from '@/hooks/use-toaster';
+import { CloseIcon } from '@/components/icon/close-icon';
 
 const opcuaBrowser = {
   success: true,
@@ -235,7 +230,7 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
   });
 
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { loading, setLoading, Spinner } = useSpinner();
+  const { loading, setLoading, Spinner, createSpinner } = useSpinner();
 
   // Step2
   const [startDateOpen, setStartDateOpen] = useState(false);
@@ -248,72 +243,43 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
   const [childrenMap, setChildrenMap] = useState<{ [key: string]: any[] }>({});
   const [tagsData, setTagsData] = useState<any[]>([]);
 
-  // useEffect(() => {
-  //   // console.log
-  //   getTagsAPI(
-  //     // activeNode.data.id,
-  //     form.connectionString,
-  //     form.account,
-  //     form.password,
-  //   ).then((res) => {
-  //     console.log('Initial tags response:', res);
-  //   });
-  // });
-
   const handleExpand = async (nodeId: string) => {
     setExpanded((prev) => ({
       ...prev,
       [nodeId]: !prev[nodeId],
     }));
 
-    // 如果還沒載入過子節點，才設定
+    //
     if (!childrenMap[nodeId]) {
+      setLoading(true);
       try {
-        // 嘗試呼叫 API 取得子節點
-        //         dataSourceId,
-        // nodeId,
-        // connectionString,
-        // account,
-        // password,
         const res = await getTagsAPI(
-          'opc.tcp://opc.delmind.ap1.agenview.com:24336/AgenOPCUAServer', // form.connectionString,
-          'opcadmin', // form.account,
-          'Hbbe8010',
+          null,
           nodeId,
+          form.connectionString,
+          form.account,
+          form.password,
         );
         if (res.success && res.data) {
           setChildrenMap((prev) => ({
             ...prev,
             [nodeId]: res.data,
           }));
-        } else {
-          // API 失敗，用假資料
-          if (nodeId === 'i=2253') {
-            setChildrenMap((prev) => ({
-              ...prev,
-              [nodeId]: opcuaChildren.data,
-            }));
-          } else {
-            setChildrenMap((prev) => ({
-              ...prev,
-              [nodeId]: [],
-            }));
-          }
-        }
-      } catch (error) {
-        console.error('Get children error:', error);
-        // API 失敗，用假資料
-        if (nodeId === 'i=2253') {
-          setChildrenMap((prev) => ({
-            ...prev,
-            [nodeId]: opcuaChildren.data,
-          }));
+          setLoading(false);
         } else {
           setChildrenMap((prev) => ({
             ...prev,
             [nodeId]: [],
           }));
+          setLoading(false);
         }
+      } catch (error) {
+        console.error('Get children error:', error);
+        setChildrenMap((prev) => ({
+          ...prev,
+          [nodeId]: [],
+        }));
+        setLoading(false);
       }
     }
   };
@@ -331,40 +297,49 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
   };
 
   function renderNode(node: any) {
+    const isSelected =
+      !node.hasChildren && form2.tags.includes(node.displayName);
+    const isExpanded = expanded[node.nodeId];
+    const isLoadingChildren =
+      loading && isExpanded && !childrenMap[node.nodeId];
+
     return (
       <div key={node.nodeId}>
-        <div className="-gap-2 flex items-center">
+        <div
+          className="-gap-2 flex items-center"
+          onClick={() => node.hasChildren && handleExpand(node.nodeId)}
+        >
           {node.hasChildren ? (
-            <button
-              className="mr-1 cursor-pointer"
-              onClick={() => handleExpand(node.nodeId)}
-            >
-              {expanded[node.nodeId] ? (
-                <>
+            <button className="mr-1 cursor-pointer">
+              {isExpanded ? (
+                <div className="flex">
                   <ChevronDown className="h-4 w-4 text-blue-500" />
-                  {Spinner}
-                </>
+                </div>
               ) : (
                 <ChevronRight className="h-4 w-4 text-blue-500" />
               )}
             </button>
           ) : (
-            <span className="h-4 w-4" />
+            <span className="h-1 w-1" />
           )}
           <div
-            className={`rounded p-2 text-sm ${!node.hasChildren && form2.tags.includes(node.displayName) ? 'cursor-pointer bg-blue-100 font-bold text-blue-700' : ''} ${node.hasChildren ? 'cursor-default text-neutral-700' : 'cursor-pointer hover:bg-neutral-100'} `}
+            style={{ cursor: node.hasChildren ? 'pointer' : 'default' }}
+            className={`mt-1 rounded px-2 py-1 text-sm transition-all ${isSelected ? 'bg-blue-50 font-bold text-sky-500' : ''} ${node.hasChildren ? 'cursor-default text-neutral-700' : 'cursor-pointer hover:bg-neutral-100'} `}
             onClick={() => !node.hasChildren && handleTagSelect(node)}
           >
-            {node.displayName}
+            <p className="cursor-pointer break-all">{node.displayName}</p>
           </div>
-        </div>
-        {node.hasChildren &&
-          expanded[node.nodeId] &&
-          childrenMap[node.nodeId] && (
-            <div className="mt-2 ml-4 border-l pl-1">
-              {childrenMap[node.nodeId].map(renderNode)}
-            </div>
+          {isLoadingChildren && (
+            <span className="ml-2 pt-1">
+              {createSpinner({ color: 'gray', size: 'sm' })}
+            </span>
           )}
+        </div>
+        {node.hasChildren && isExpanded && childrenMap[node.nodeId] && (
+          <div className="mt-2 ml-4 border-l pl-1">
+            {childrenMap[node.nodeId].map(renderNode)}
+          </div>
+        )}
       </div>
     );
   }
@@ -382,9 +357,10 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
       setLoading(false);
       console.log('Connection response:', res);
       if (res.success) {
-        showSuccess('連線成功！');
         try {
           const res = await getTagsAPI(
+            null,
+            '',
             form.connectionString,
             form.account,
             form.password,
@@ -392,7 +368,6 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
           console.log('Get tags response:', res);
           setTagsData(res.data);
           showSuccess('取得標籤成功！');
-
           setStep(2);
         } catch (error) {
           console.error('Get tags error:', error);
@@ -409,71 +384,55 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
     // setStep(2);
   };
 
-  const handleGetTags = () => {
-    getTagsAPI(activeNode.data.id, form.connectionString, form.account)
-      .then((res) => {
-        console.log('Get tags response:', res);
-        setStep(3);
-      })
-      .catch((err) => {
-        console.error('Get tags error:', err);
-      });
+  const handleSetProperties = () => {
+    setStep(3);
+  };
+  const handleTryToConnect = () => {
+    setStep(2);
   };
 
   return (
     <div>
       {step === 1 && (
         <>
-          <div className="title mb-2 flex items-center justify-start gap-3">
-            <div className="icon w-fit rounded-md border-2 border-sky-500 p-[3px]">
-              <DashboardIcon className="h-5 w-5 text-sky-500" />
-            </div>
-            <p className="text-lg font-bold">{activeNode.data.label}</p>
-          </div>
-          <p className="mb-4 text-sm text-gray-600">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum,
-            illum.
+          <p className="text-sm font-bold text-neutral-800">
+            Basic information
           </p>
-          <div className="mb-4 border-b border-gray-200"></div>
-          <div className="info h-[calc(100vh-250px)] flex-col overflow-y-auto border border-yellow-500">
-            <p className="text-sm font-bold text-neutral-800">
-              Basic information
-            </p>
-            <div className="grid w-full max-w-sm items-center gap-1 pt-2">
-              <Label className="text-sm" htmlFor="connection">
-                Connection
-              </Label>
-              <Input
-                onInput={(e) =>
-                  handleInput('connectionString', e.currentTarget.value)
-                }
-                type="text"
-                id="connection"
-                placeholder="Connection"
-                value="opc.tcp://opc.delmind.ap1.agenview.com:24336/AgenOPCUAServer"
-              />
-              <Label className="pt-2 text-sm" htmlFor="account">
-                Account
-              </Label>
-              <Input
-                onInput={(e) => handleInput('account', e.currentTarget.value)}
-                type="text"
-                id="account"
-                placeholder="account"
-                value="opcadmin"
-              />
-              <Label className="pt-2 text-sm" htmlFor="password">
-                Password
-              </Label>
-              <Input
-                onInput={(e) => handleInput('password', e.currentTarget.value)}
-                type="text"
-                id="password"
-                placeholder="password"
-                value="Hbbe8010"
-              />
-            </div>
+          <div className="grid w-full max-w-sm items-center gap-1 pt-2">
+            <Label className="text-sm" htmlFor="connection">
+              Connection
+            </Label>
+            <Input
+              onInput={(e) =>
+                handleInput('connectionString', e.currentTarget.value)
+              }
+              type="text"
+              id="connection"
+              placeholder="Connection"
+              value="opc.tcp://opc.delmind.ap1.agenview.com:24336/AgenOPCUAServer"
+            />
+            <Label className="pt-2 text-sm" htmlFor="account">
+              Account
+            </Label>
+            <Input
+              onInput={(e) => handleInput('account', e.currentTarget.value)}
+              type="text"
+              id="account"
+              placeholder="account"
+              value="opcadmin"
+            />
+            <Label className="pt-2 text-sm" htmlFor="password">
+              Password
+            </Label>
+            <Input
+              onInput={(e) => handleInput('password', e.currentTarget.value)}
+              type="text"
+              id="password"
+              placeholder="password"
+              value="Hbbe8010"
+            />
           </div>
+
           <Button
             onClick={handleConnect}
             variant={'default'}
@@ -503,100 +462,6 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
           <div className="info h-[calc(100vh-250px)] flex-col overflow-y-auto border border-yellow-500">
             <p className="text-sm font-bold text-neutral-800">Tag settings</p>
             <div className="grid w-full max-w-sm items-center gap-1 pt-2">
-              {/* Date and time */}
-              <div className="flex gap-4">
-                <div className="flex flex-col">
-                  <Label htmlFor="date-picker" className="pt-2 text-sm">
-                    Start date
-                  </Label>
-                  <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        id="date-picker"
-                        className="w-32 justify-between font-normal"
-                      >
-                        {startDate
-                          ? startDate.toLocaleDateString()
-                          : 'Select date'}
-                        <ChevronDownIcon />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto overflow-hidden p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        captionLayout="dropdown"
-                        onSelect={(date) => {
-                          setStartDate(date);
-                          setStartDateOpen(false);
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="flex flex-col">
-                  <Label htmlFor="time-picker" className="pt-2 text-sm">
-                    Time
-                  </Label>
-                  <Input
-                    type="time"
-                    id="time-picker"
-                    step="1"
-                    defaultValue="10:30:00"
-                    className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                  />
-                </div>
-              </div>
-              {/* End date and time */}
-              <div className="mt-2 flex gap-4">
-                <div className="flex flex-col">
-                  <Label htmlFor="end-date-picker" className="pt-2 text-sm">
-                    End date
-                  </Label>
-                  <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        id="end-date-picker"
-                        className="w-32 justify-between font-normal"
-                      >
-                        {endDate ? endDate.toLocaleDateString() : 'Select date'}
-                        <ChevronDownIcon />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto overflow-hidden p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={endDate}
-                        captionLayout="dropdown"
-                        onSelect={(date) => {
-                          setEndDate(date);
-                          setEndDateOpen(false);
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="flex flex-col">
-                  <Label htmlFor="end-time-picker" className="pt-2 text-sm">
-                    Time
-                  </Label>
-                  <Input
-                    type="time"
-                    id="end-time-picker"
-                    step="1"
-                    defaultValue="10:30:00"
-                    className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                  />
-                </div>
-              </div>
               <div className="flex items-center gap-2 pt-2">
                 <Label className="text-sm" htmlFor="tags">
                   Selected Tags{' '}
@@ -614,22 +479,162 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
               </div>
 
               {/*  */}
-              <div className="h-full">
-                <p className="text-xs text-neutral-500">
+              <div className="flex h-full flex-wrap">
+                {form2.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-text-neutral-500 mr-1 mb-1 flex w-fit items-center rounded bg-neutral-100 px-2 py-1 text-xs break-all"
+                  >
+                    {tag}
+                    <button
+                      className="ml-1 cursor-pointer text-neutral-500 hover:text-neutral-900"
+                      onClick={() =>
+                        setForm2((prev) => ({
+                          ...prev,
+                          tags: prev.tags.filter((t) => t !== tag),
+                        }))
+                      }
+                      type="button"
+                      tabIndex={-1}
+                    >
+                      <CloseIcon className="h-4 w-4 hover:h-5 hover:w-5" />
+                    </button>
+                  </span>
+                ))}
+                {/* <p className="text-xs text-neutral-500">
                   {form2.tags.join(', ')}
-                </p>
+                </p> */}
               </div>
-              <div className="scroller-fade h-[calc(100vh-520px)] overflow-y-auto">
+              <div className="scroller-fade h-[calc(100vh-350px)] overflow-y-auto">
                 {opcuaBrowser.data.map(renderNode)}
               </div>
             </div>
           </div>
           <Button
-            onClick={handleConnect}
+            onClick={handleSetProperties}
             variant={'default'}
             className="mt-4 w-full"
           >
-            <p className="text-sm">Get Data</p>
+            <p className="text-sm">Set properties</p>
+          </Button>
+        </>
+      )}
+      {step === 3 && (
+        <>
+          <div className="title mb-2 flex items-center justify-start gap-3">
+            <div className="icon w-fit rounded-md border-2 border-sky-500 p-[3px]">
+              <DashboardIcon className="h-5 w-5 text-sky-500" />
+            </div>
+            <p className="text-lg font-bold">{activeNode.data.label}</p>
+          </div>
+          <p className="mb-4 text-sm text-gray-600">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum,
+            illum.
+          </p>
+          <div className="mb-4 border-b border-gray-200"></div>
+
+          <div className="info h-[calc(100vh-250px)] flex-col overflow-y-auto border border-yellow-500">
+            <p className="text-sm font-bold text-neutral-800">Data settings</p>
+            <div className="flex gap-4">
+              <div className="flex flex-col">
+                <Label htmlFor="date-picker" className="pt-2 text-sm">
+                  Start date
+                </Label>
+                <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      id="date-picker"
+                      className="w-32 justify-between font-normal"
+                    >
+                      {startDate
+                        ? startDate.toLocaleDateString()
+                        : 'Select date'}
+                      <ChevronDownIcon />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto overflow-hidden p-0"
+                    align="start"
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      captionLayout="dropdown"
+                      onSelect={(date) => {
+                        setStartDate(date);
+                        setStartDateOpen(false);
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex flex-col">
+                <Label htmlFor="time-picker" className="pt-2 text-sm">
+                  Time
+                </Label>
+                <Input
+                  type="time"
+                  id="time-picker"
+                  step="1"
+                  defaultValue="10:30:00"
+                  className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                />
+              </div>
+            </div>
+            {/* End date and time */}
+            <div className="mt-2 flex gap-4">
+              <div className="flex flex-col">
+                <Label htmlFor="end-date-picker" className="pt-2 text-sm">
+                  End date
+                </Label>
+                <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      id="end-date-picker"
+                      className="w-32 justify-between font-normal"
+                    >
+                      {endDate ? endDate.toLocaleDateString() : 'Select date'}
+                      <ChevronDownIcon />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto overflow-hidden p-0"
+                    align="start"
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      captionLayout="dropdown"
+                      onSelect={(date) => {
+                        setEndDate(date);
+                        setEndDateOpen(false);
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex flex-col">
+                <Label htmlFor="end-time-picker" className="pt-2 text-sm">
+                  Time
+                </Label>
+                <Input
+                  type="time"
+                  id="end-time-picker"
+                  step="1"
+                  defaultValue="10:30:00"
+                  className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                />
+              </div>
+            </div>
+          </div>
+          <Button
+            onClick={handleTryToConnect}
+            variant={'default'}
+            className="mt-4 w-full"
+          >
+            <p className="text-sm">Set properties</p>
           </Button>
           <Toaster />
         </>
