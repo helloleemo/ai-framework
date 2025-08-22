@@ -6,6 +6,7 @@ export interface LoginResponse {
     code: string;
     accessToken: string;
     refreshToken: string;
+    userName: string;
   };
 }
 export interface LogoutResponse {

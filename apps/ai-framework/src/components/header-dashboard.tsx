@@ -7,21 +7,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-// import { useAuthGuard } from '@/hooks/use-auth';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function HeaderDashboard() {
-  // useAuthGuard();
-
   const [isLogin, setLogin] = useState(true);
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState(
+    localStorage.getItem('userName') || '',
+  );
   const navigator = useNavigate();
 
-  const handleLogin = () => {
-    setLogin(true);
-    setUserName('Pom Klementieff');
-  };
   const handleLogout = () => {
     logoutAPI()
       .then(() => {
@@ -30,12 +25,16 @@ export default function HeaderDashboard() {
         localStorage.removeItem('code');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('userName');
         navigator('/');
       })
       .catch((error) => {
         console.error('Logout failed:', error);
       })
-      .finally(() => console.log('Logout process completed'));
+      .finally(() => {
+        navigator('/');
+        console.log('Logout process completed');
+      });
   };
 
   return (
@@ -46,29 +45,21 @@ export default function HeaderDashboard() {
       </div>
       {/* right */}
       <div className="flex items-center gap-4">
-        {isLogin ? (
-          <div className="user flex items-center gap-1">
-            <UserIcon className="text-xl text-slate-800" />
-            <p className="text-sm text-slate-800">{userName || 'User name'}</p>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <LogoutIcon
-                  className="ml-2 cursor-pointer rounded-sm p-1 text-3xl hover:bg-gray-100"
-                  onClick={handleLogout}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Logout</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        ) : (
-          <div className="login">
-            <Button size="sm" variant="outline" onClick={handleLogin}>
-              Login
-            </Button>
-          </div>
-        )}
+        <div className="user flex items-center gap-1">
+          <UserIcon className="text-xl text-slate-800" />
+          <p className="text-sm text-slate-800">{userName || 'User name'}</p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <LogoutIcon
+                className="ml-2 cursor-pointer rounded-sm p-1 text-3xl hover:bg-gray-100"
+                onClick={handleLogout}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Logout</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </div>
     </header>
   );

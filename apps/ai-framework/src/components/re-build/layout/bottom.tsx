@@ -7,10 +7,13 @@ import { useNavigate } from 'react-router-dom';
 
 export default function BottomMenu() {
   const navigator = useNavigate();
+  const [userName, setUserName] = useState(
+    localStorage.getItem('userName') || '',
+  );
 
   const bottomMenu = [
     {
-      name: 'User',
+      name: userName,
       icon: <UserIcon />,
       linkTo: '/user',
       onClick: (navigate: any) => navigate('/user'),
@@ -30,7 +33,6 @@ export default function BottomMenu() {
   ];
 
   const [login, setLogin] = useState(false);
-  const [userName, setUserName] = useState('');
 
   const handleLogout = () => {
     logoutAPI()

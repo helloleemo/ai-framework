@@ -1,5 +1,5 @@
 import OPCDA1 from './right-panel/opc-da-1';
-import OPCUA1 from './right-panel/OPC-UA-1';
+import OPCUA1 from './right-panel/opc-ua-1';
 
 export default function RightPanel({ activeNode }: { activeNode: any }) {
   if (!activeNode) return null;

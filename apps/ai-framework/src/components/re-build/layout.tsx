@@ -8,7 +8,8 @@ import { Outlet } from 'react-router-dom';
 import { useAuthGuard } from '@/hooks/use-auth';
 
 export default function ReBuildLayout() {
-  // useAuthGuard();
+  useAuthGuard();
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeMenu, setActiveMenu] = useState(0);
 

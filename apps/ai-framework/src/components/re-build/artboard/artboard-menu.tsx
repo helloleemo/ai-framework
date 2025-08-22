@@ -16,7 +16,171 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getDagTemplate } from '@/api/pipeline';
-
+// 完美比例ㄉDAG
+const dag = {
+  dag_id: 'test_dag1',
+  schedule_interval: '@once',
+  start_date: '2025-06-25',
+  catchup: false,
+  owner: 'test',
+  tasks: [
+    {
+      task_id: 'extract_data_task',
+      operator: 'PythonOperator',
+      processor_stage: 'extract',
+      processor_method: 'np_reader.standard',
+      op_kwargs: { input_filename: 'test.npy' },
+      position: { x: 50, y: 400 },
+      state: 'success',
+    },
+    {
+      task_id: 'transform_data_task1',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['extract_data_task'],
+      position: { x: 450, y: 400 },
+      state: 'success',
+    },
+    {
+      task_id: 'transform_data_task2',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task1'],
+      position: { x: 850, y: 400 },
+      state: 'success',
+    },
+    {
+      task_id: 'transform_data_task3',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task2'],
+      position: { x: 1250, y: 400 },
+      state: 'success',
+    },
+    {
+      task_id: 'transform_data_task4',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task3'],
+      position: { x: 1650, y: 240 },
+      state: 'success',
+    },
+    {
+      task_id: 'transform_data_task5',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task3'],
+      position: { x: 1650, y: 400 },
+      state: 'failed',
+    },
+    {
+      task_id: 'transform_data_task6',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task3'],
+      position: { x: 1650, y: 560 },
+      state: 'failed',
+    },
+    {
+      task_id: 'transform_data_task7',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task3'],
+      position: { x: 1650, y: 720 },
+      state: 'failed',
+    },
+    {
+      task_id: 'transform_data_task8',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task6'],
+      position: { x: 2050, y: 560 },
+      state: 'upstream_failed',
+    },
+    {
+      task_id: 'transform_data_task9',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task6'],
+      position: { x: 2050, y: 720 },
+      state: 'upstream_failed',
+    },
+    {
+      task_id: 'transform_data_task10',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task7'],
+      position: { x: 2050, y: 880 },
+      state: 'upstream_failed',
+    },
+    {
+      task_id: 'transform_data_task11',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: [
+        'transform_data_task4',
+        'transform_data_task5',
+        'transform_data_task6',
+        'transform_data_task8',
+        'transform_data_task10',
+      ],
+      position: { x: 2450, y: 560 },
+      state: 'upstream_failed',
+    },
+    {
+      task_id: 'transform_data_task12',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: { number: 2 },
+      dependencies: ['transform_data_task9'],
+      position: { x: 2450, y: 720 },
+      state: 'upstream_failed',
+    },
+    {
+      task_id: 'load_data_task1',
+      operator: 'PythonOperator',
+      processor_stage: 'load',
+      processor_method: 'np_writer.standard',
+      op_kwargs: { output_filename: 'test_output.csv' },
+      dependencies: ['transform_data_task12'],
+      position: { x: 2850, y: 720 },
+      state: 'upstream_failed',
+    },
+    {
+      task_id: 'load_data_task2',
+      operator: 'PythonOperator',
+      processor_stage: 'load',
+      processor_method: 'np_writer.standard',
+      op_kwargs: { output_filename: 'test_output.csv' },
+      dependencies: ['transform_data_task11'],
+      position: { x: 2850, y: 560 },
+      state: 'upstream_failed',
+    },
+  ],
+};
 export default function ArtboardMenu() {
   const navigate = useNavigate();
   //
@@ -39,17 +203,13 @@ export default function ArtboardMenu() {
     },
   ];
 
-  // 讚入資料
   const handleSelectTemplate = async (templateIndex: number) => {
     try {
-      // 載入模板資料
       const res = await getDagTemplate();
       const templateData = res[templateIndex];
 
-      // 將模板資料存到 sessionStorage 或傳遞到下一頁
       sessionStorage.setItem('selectedTemplate', JSON.stringify(templateData));
 
-      // 關閉 dialog 並導向到 artboard-temp
       setOpenDialog(false);
       navigate('/re-build/ai-framework/artboard-temp');
     } catch (error) {
@@ -62,7 +222,6 @@ export default function ArtboardMenu() {
       <div className="absolute top-1/3 left-3/5 -translate-x-1/2 -translate-y-1/2">
         {menus.map((menuItem, index) => {
           if (menuItem.linkTo) {
-            // 有 linkTo 的用 Link
             return (
               <Link to={menuItem.linkTo} key={index} className="mb-5 block">
                 <div className="flex w-[380px] cursor-pointer items-center gap-3 rounded-lg border border-neutral-200 bg-white px-10 py-5 hover:bg-neutral-50">
@@ -77,7 +236,6 @@ export default function ArtboardMenu() {
               </Link>
             );
           } else {
-            // 沒有 linkTo 的用 onClick
             return (
               <div
                 key={index}
@@ -124,6 +282,13 @@ export default function ArtboardMenu() {
                 >
                   模板2
                 </Button>
+                <Button
+                  onClick={() => handleSelectTemplate(3)}
+                  variant="outline"
+                  className="w-fit"
+                >
+                  模板3
+                </Button>
               </div>
             </div>
           </div>
@@ -135,7 +300,7 @@ export default function ArtboardMenu() {
             {/* <Button
               type="submit"
               onClick={() => {
-                // 這裡可以處理建立邏輯
+                //
                 setOpenDialog(false);
                 // 導向到 artboard
                 window.location.href = '/re-build/ai-framework/artboard';

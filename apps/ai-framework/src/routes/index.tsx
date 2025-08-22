@@ -48,6 +48,10 @@ function AppRoutes() {
         />
         <Route path="/re-build/ai-framework/menu" element={<ArtboardMenu />} />
         <Route path="/re-build/ai-framework/view-all" element={<ViewAll />} />
+        <Route
+          path="/re-build/ai-framework/artboard-temp"
+          element={<ArtboardTemp />}
+        />
       </Route>
 
       {/* Others */}

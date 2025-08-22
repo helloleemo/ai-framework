@@ -241,8 +241,8 @@ const dag = {
 
 export default function Artboard() {
   useEffect(() => {
-    // 取pipeline token ，之後拿掉
-    // tokenTaker();
+    // 取pipeline token ，之後記得拿掉
+    tokenTaker();
   }, []);
 
   // nodes

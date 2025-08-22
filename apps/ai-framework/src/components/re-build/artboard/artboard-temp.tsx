@@ -23,6 +23,7 @@ import {
 import tokenTaker from '@/utils/token-taker';
 import { Button } from '../../ui/button';
 import { createDag, getDagTemplate } from '@/api/pipeline';
+import { access } from 'fs';
 
 const initialNodes: Node[] = [];
 const initialEdges: Edge[] = [];
@@ -87,7 +88,7 @@ const dag = {
       operator: 'PythonOperator',
       processor_stage: 'extract',
       processor_method: 'np_reader.standard',
-      op_kwargs: { input_filename: 'test.npy' },
+      op_kwargs: {},
       position: { x: 50, y: 400 },
       state: 'success',
     },
@@ -242,17 +243,15 @@ const dag = {
 
 export default function ArtboardTemp() {
   useEffect(() => {
-    // 取pipeline token ，之後拿掉
+    // 取pipeline token ，之後記得拿掉
     tokenTaker();
 
-    // 檢查模板
     const selectedTemplate = sessionStorage.getItem('selectedTemplate');
     if (selectedTemplate) {
       try {
         const templateData = JSON.parse(selectedTemplate);
         setNodes(dagToNodes(templateData.tasks));
         setEdges(dagToEdges(templateData.tasks));
-        // 清除 sessionStorage
         sessionStorage.removeItem('selectedTemplate');
       } catch (error) {
         console.error('載入模板失敗:', error);
@@ -373,7 +372,8 @@ export default function ArtboardTemp() {
       </div>
       <RightPanel activeNode={activeNode} />
       {/* 測試用 */}
-      {/* <div className="absolute z-10 flex gap-2 p-2">
+
+      <div className="absolute z-10 flex gap-2 p-2">
         {[0, 1, 2].map((item, index) => {
           return (
             <Button variant={'outline'} onClick={() => showPipeline(item)}>
@@ -392,7 +392,7 @@ export default function ArtboardTemp() {
         <Button variant={'outline'} onClick={createAPipeline}>
           get pipeline
         </Button>
-      </div> */}
+      </div>
     </>
   );
 }

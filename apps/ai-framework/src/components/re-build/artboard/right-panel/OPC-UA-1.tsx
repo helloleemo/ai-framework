@@ -21,6 +21,12 @@ import {
 } from '@/components/ui/tooltip';
 import Spinner from '@/components/ui/spinner';
 import { set } from 'date-fns';
+import {
+  ToastGroup,
+  useToastGroup,
+} from '@/components/toast-group/toast-group';
+import toast, { Toaster } from 'react-hot-toast';
+import { useToaster } from '@/hooks/use-toaster';
 
 const opcuaBrowser = {
   success: true,
@@ -206,7 +212,11 @@ const opcuaChildren = {
 };
 
 export default function OPCUA1({ activeNode }: { activeNode: any }) {
+  // toaster
+  const { showSuccess, showError } = useToaster();
+
   // Step1
+  const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     connectionString: '',
     account: '',
@@ -330,7 +340,10 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
               onClick={() => handleExpand(node.nodeId)}
             >
               {expanded[node.nodeId] ? (
-                <ChevronDown className="h-4 w-4 text-blue-500" />
+                <>
+                  <ChevronDown className="h-4 w-4 text-blue-500" />
+                  {Spinner}
+                </>
               ) : (
                 <ChevronRight className="h-4 w-4 text-blue-500" />
               )}
@@ -358,7 +371,6 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
 
   console.log('Active node in RightPanel:', activeNode);
 
-  const [step, setStep] = useState(1);
   const handleConnect = async () => {
     setLoading(true);
     try {
@@ -370,21 +382,31 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
       setLoading(false);
       console.log('Connection response:', res);
       if (res.success) {
-        setStep(2);
-        //
-        getTagsAPI(form.connectionString, form.account, form.password).then(
-          (res) => {
-            console.log('Get tags response:', res);
-            setTagsData(res.data);
-            // popup
-          },
-        );
+        showSuccess('連線成功！');
+        try {
+          const res = await getTagsAPI(
+            form.connectionString,
+            form.account,
+            form.password,
+          );
+          console.log('Get tags response:', res);
+          setTagsData(res.data);
+          showSuccess('取得標籤成功！');
+
+          setStep(2);
+        } catch (error) {
+          console.error('Get tags error:', error);
+          showError('標籤取得失敗，請稍後再試');
+        }
       }
     } catch (err) {
       console.error('Connection error:', err);
+      showError('連線失敗，請稍後再試');
       setLoading(false);
       // setStep(2);
     }
+    setLoading(false);
+    // setStep(2);
   };
 
   const handleGetTags = () => {
@@ -575,15 +597,6 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
                   />
                 </div>
               </div>
-              {/* <Label className="text-sm" htmlFor="duration">
-                Duration
-              </Label>
-              <Input
-                onInput={(e) => handleInput2('duration', e.currentTarget.value)}
-                type="time"
-                id="duration"
-                placeholder="Duration"
-              /> */}
               <div className="flex items-center gap-2 pt-2">
                 <Label className="text-sm" htmlFor="tags">
                   Selected Tags{' '}
@@ -600,6 +613,7 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
                 </TooltipProvider>
               </div>
 
+              {/*  */}
               <div className="h-full">
                 <p className="text-xs text-neutral-500">
                   {form2.tags.join(', ')}
@@ -617,6 +631,7 @@ export default function OPCUA1({ activeNode }: { activeNode: any }) {
           >
             <p className="text-sm">Get Data</p>
           </Button>
+          <Toaster />
         </>
       )}
     </div>

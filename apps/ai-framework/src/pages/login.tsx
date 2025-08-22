@@ -33,7 +33,7 @@ function Login() {
   const [userName, setUserName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<{ userName?: string; password?: string }>(
-    {}
+    {},
   );
   const [loginError, setLoginError] = useState<string | null>(null);
   const { loading, setLoading, Spinner } = useSpinner();
@@ -57,6 +57,7 @@ function Login() {
             localStorage.setItem('code', res.data.code);
             localStorage.setItem('refreshToken', res.data.refreshToken);
             localStorage.setItem('accessToken', res.data.accessToken);
+            localStorage.setItem('userName', res.data.userName);
 
             navigate('/dashboard');
           } else {
@@ -76,18 +77,18 @@ function Login() {
     }
   };
   return (
-    <div className="h-screen flex items-center justify-center">
+    <div className="flex h-screen items-center justify-center">
       {/* Background */}
       <div className="bg">
-        <div className="alpha bg-neutral-800 opacity-60 absolute inset-0 object-cover w-full h-full -z-10"></div>
+        <div className="alpha absolute inset-0 -z-10 h-full w-full bg-neutral-800 object-cover opacity-60"></div>
         <img
-          className="absolute inset-0 object-cover w-full h-full -z-20"
+          className="absolute inset-0 -z-20 h-full w-full object-cover"
           src="/login/dashboard-1.png"
           alt=""
         />
       </div>
-      <div className="bg-white w-[520px] px-20 pt-20 pb-30 m-5 rounded-lg shadow-lg">
-        <div className="w-full h-full align-middle text-center animate__animated animate__fadeIn">
+      <div className="m-5 w-[520px] rounded-lg bg-white px-20 pt-20 pb-30 shadow-lg">
+        <div className="animate__animated animate__fadeIn h-full w-full text-center align-middle">
           {/* Logo */}
           <div className="logo mb-3">
             <img className="mx-auto w-[110px]" src="logo.svg" alt="Logo" />
@@ -95,7 +96,7 @@ function Login() {
           {/* Greeting */}
           <div className="greeting mb-3">
             <p className="text-2xl font-bold text-slate-800">Welcome back</p>
-            <p className="text-slate-400 text-sm">
+            <p className="text-sm text-slate-400">
               Please enter your credentials to continue.
             </p>
           </div>
@@ -139,7 +140,7 @@ function Login() {
               }}
             />
           </div>
-          <p className="text-left text-rose-600 text-sm mt-1 h-[20px]">
+          <p className="mt-1 h-[20px] text-left text-sm text-rose-600">
             {error.userName || error.password
               ? `Please enter a valid ${[error.userName, error.password]
                   .filter(Boolean)
@@ -161,7 +162,7 @@ function Login() {
 
           <Button
             onClick={handleLogin}
-            className={`w-full mt-8 flex items-center justify-center gap-2 ${
+            className={`mt-8 flex w-full items-center justify-center gap-2 ${
               loading ? 'cursor-default' : ''
             }`}
             disabled={loading}

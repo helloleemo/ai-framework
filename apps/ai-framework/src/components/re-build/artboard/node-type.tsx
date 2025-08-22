@@ -21,6 +21,7 @@ export const InputNode = ({
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
+      <div className="absolute top-5 right-5 h-3 w-3 rounded-full bg-neutral-200"></div>
       <div>
         <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -88,6 +89,7 @@ export const TransformNode = ({
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
+      <div className="absolute top-3 right-3 h-3 w-3 rounded-full bg-neutral-200"></div>
       <div>
         <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -161,6 +163,8 @@ export const OutputNode = ({
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
+      <div className="absolute top-5 right-5 h-3 w-3 rounded-full bg-neutral-200"></div>
+
       <div>
         <div className="tag">
           <div className="flex items-center gap-4 pb-1">
