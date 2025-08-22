@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getDagTemplate } from '@/api/pipeline';
 // 完美比例ㄉDAG
-const dag = {
+const perfect_dag = {
   dag_id: 'test_dag1',
   schedule_interval: '@once',
   start_date: '2025-06-25',
@@ -181,6 +181,332 @@ const dag = {
     },
   ],
 };
+
+const temp1 = {
+  dag_id: 'template_dag_bbbb',
+  schedule_interval: '@once',
+  start_date: '2025-06-25',
+  catchup: false,
+  owner: 'test',
+  tasks: [
+    {
+      task_id: 'extract_data_task',
+      operator: 'PythonOperator',
+      processor_stage: 'input',
+      processor_method: 'np_reader.standard',
+      op_kwargs: {
+        input_filename: 'test.npy',
+      },
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['extract_data_task'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'load_data_task',
+      operator: 'PythonOperator',
+      processor_stage: 'output',
+      processor_method: 'np_writer.standard',
+      op_kwargs: {
+        output_filename: 'test_output.csv',
+      },
+      dependencies: ['transform_data_task'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+  ],
+};
+
+const temp2 = {
+  dag_id: 'template_dag_a',
+  schedule_interval: '@once',
+  start_date: '2025-06-25',
+  catchup: false,
+  owner: 'test',
+  tasks: [
+    {
+      task_id: 'extract_data_task',
+      operator: 'PythonOperator',
+      processor_stage: 'input',
+      processor_method: 'csv_reader.standard',
+      op_kwargs: {
+        input_filename: 'test.csv',
+      },
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'product_analysis.aggregation',
+      op_kwargs: {
+        multiplier: 1.23,
+      },
+      dependencies: ['extract_data_task'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'load_data_task',
+      operator: 'PythonOperator',
+      processor_stage: 'output',
+      processor_method: 'csv_writer.standard',
+      op_kwargs: {
+        output_filename: 'test_output.csv',
+      },
+      dependencies: ['transform_data_task'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+  ],
+};
+const temp3 = {
+  dag_id: 'template_dag_pdm',
+  schedule_interval: '@once',
+  start_date: '2025-06-25',
+  catchup: false,
+  owner: 'test',
+  tasks: [
+    {
+      task_id: 'extract_data_task',
+      operator: 'PythonOperator',
+      processor_stage: 'input',
+      processor_method: 'np_reader.standard',
+      op_kwargs: {
+        input_filename: 'test.npy',
+      },
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task1',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['extract_data_task'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task2',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task1'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task3',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task2'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task4',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task3'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task5',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task3'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task6',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task3'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task7',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task3'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task8',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task6'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task9',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task6'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task10',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task7'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task11',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: [
+        'transform_data_task4',
+        'transform_data_task5',
+        'transform_data_task6',
+        'transform_data_task8',
+        'transform_data_task10',
+      ],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'transform_data_task12',
+      operator: 'PythonOperator',
+      processor_stage: 'transform',
+      processor_method: 'array_processing.add_test',
+      op_kwargs: {
+        number: 2,
+      },
+      dependencies: ['transform_data_task9'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'load_data_task1',
+      operator: 'PythonOperator',
+      processor_stage: 'output',
+      processor_method: 'np_writer.standard',
+      op_kwargs: {
+        output_filename: 'test_output.csv',
+      },
+      dependencies: ['transform_data_task12'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+    {
+      task_id: 'load_data_task2',
+      operator: 'PythonOperator',
+      processor_stage: 'output',
+      processor_method: 'np_writer.standard',
+      op_kwargs: {
+        output_filename: 'test_output.csv',
+      },
+      dependencies: ['transform_data_task11'],
+      position: {
+        x: 123,
+        y: 456,
+      },
+    },
+  ],
+};
 export default function ArtboardMenu() {
   const navigate = useNavigate();
   //
@@ -214,6 +540,10 @@ export default function ArtboardMenu() {
       navigate('/re-build/ai-framework/artboard-temp');
     } catch (error) {
       console.error('載入模板失敗:', error);
+      const templateData = `temp${templateIndex}`;
+      sessionStorage.setItem('selectedTemplate', JSON.stringify(templateData));
+      setOpenDialog(false);
+      navigate('/re-build/ai-framework/artboard-temp');
     }
   };
 

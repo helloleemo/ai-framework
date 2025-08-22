@@ -47,7 +47,6 @@ function Login() {
 
   const handleLogin = () => {
     setLoginError(null);
-
     setLoading(true);
     if (validate()) {
       loginAPI(userName, password)
@@ -71,6 +70,7 @@ function Login() {
         })
         .finally(() => {
           setLoading(false);
+          navigate('/dashboard'); // 之後記得刪掉
         });
     } else {
       setLoading(false);
