@@ -13,20 +13,11 @@ import {
 import '@xyflow/react/dist/style.css';
 import RightPanel from './artboard/right-panel';
 import TopTab from './artboard/top-tab';
-import { useCallback, useEffect, useState } from 'react';
-import {
-  InputNode,
-  TransformNode,
-  OutputNode,
-  edgeType,
-} from './artboard/node-type';
-import tokenTaker from '@/utils/token-taker';
-import { Button } from '../ui/button';
-import { createDag, getDagTemplate } from '@/api/pipeline';
+import { useEffect } from 'react';
+
 import { useArtboardNodes } from '@/hooks/use-artboard-state';
-import { addStep } from '@/store/pipeline';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { PipelineProvider, usePipeline } from '@/hooks/use-context-pipeline';
+import { generateUUID } from '@/utils/uuid';
 
 // 轉換
 export function dagToNodes(tasks: any[]) {
@@ -231,7 +222,7 @@ const dag = {
   ],
 };
 
-export default function Artboard() {
+function ArtboardRoot() {
   useEffect(() => {
     // 取pipeline token ，之後記得拿掉
     // tokenTaker();
@@ -247,13 +238,14 @@ export default function Artboard() {
     nodeTypes,
     edgeTypes,
     activeNode,
-    setActiveNode,
     handleDrop,
     handleDragOver,
     onConnect,
     onNodeDoubleClick,
     onCanvasClick,
   } = useArtboardNodes();
+
+  const { addNode } = usePipeline();
 
   // 測試用
   /**
@@ -278,47 +270,6 @@ export default function Artboard() {
     */
 
   // 測試用
-  const dispatch = useDispatch();
-  const pipeline = useSelector((state: RootState) =>
-    state.pipeline.pipelines.find((p) => p.id === pipelineId),
-  );
-  const node = pipeline?.nodes.find((n) => n.id === nodeId);
-
-  // 取得步驟
-  const steps = node?.steps ?? [];
-
-  // 新增步驟
-  const handleAddStep = () => {
-    dispatch(
-      addStep({
-        pipelineId: pipelineId,
-        nodeId: nodeId,
-        step: { id: 'step3', config: {} },
-      }),
-    );
-  };
-
-  // 更新步驟
-  const handleUpdateStep = (step) => {
-    dispatch(
-      updateStep({
-        pipelineId,
-        nodeId,
-        step: { ...step, config: { updated: true } },
-      }),
-    );
-  };
-
-  // 刪除步驟
-  const handleRemoveStep = (stepId) => {
-    dispatch(
-      removeStep({
-        pipelineId,
-        nodeId,
-        stepId,
-      }),
-    );
-  };
 
   return (
     <>
@@ -350,17 +301,15 @@ export default function Artboard() {
       </div>
       <RightPanel activeNode={activeNode} />
       {/*  */}
-      <div>
-        {steps.map((step) => (
-          <div key={step.id}>
-            {JSON.stringify(step)}
-            <button onClick={() => handleUpdateStep(step)}>更新</button>
-            <button onClick={() => handleRemoveStep(step.id)}>刪除</button>
-          </div>
-        ))}
-        <button onClick={handleAddStep}>新增步驟</button>
-      </div>
     </>
+  );
+}
+
+export default function Artboard() {
+  return (
+    <PipelineProvider>
+      <ArtboardRoot />
+    </PipelineProvider>
   );
 }
 

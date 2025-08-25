@@ -13,8 +13,12 @@ import {
   OutputNode,
   TransformNode,
 } from '@/components/re-build/artboard/node-type';
+import { generateUUID } from '@/utils/uuid';
+import { usePipeline } from './use-context-pipeline';
 
 export function useArtboardNodes() {
+  const { addNode, getNode } = usePipeline();
+
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
 
@@ -46,12 +50,13 @@ export function useArtboardNodes() {
           const x = e.clientX - position.left;
           const y = e.clientY - position.top;
           const newNode: Node = {
-            id: `${data.name}-${Date.now()}`,
+            id: generateUUID(),
             type: data.type,
             position: { x, y },
-            data: { label: data.name, icon: data.icon },
+            data: { label: data.name },
           };
           setNodes((nodes: Node[]) => [...nodes, newNode]);
+          addNode(newNode);
         }
       } catch (err) {
         console.error(err);
@@ -71,7 +76,14 @@ export function useArtboardNodes() {
   );
 
   const onNodeDoubleClick = useCallback((event: any, node: any) => {
-    setActiveNode(node);
+    console.log('Node double clicked:', node);
+    const pipelineNode = getNode(node.id);
+    if (!pipelineNode) {
+      console.log('Pipeline node not found, creating one...');
+      addNode(node);
+      setActiveNode(node);
+      console.log('Active node set to:', node);
+    }
     event.stopPropagation();
   }, []);
 

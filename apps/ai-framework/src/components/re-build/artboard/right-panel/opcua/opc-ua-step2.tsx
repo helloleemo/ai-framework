@@ -19,7 +19,7 @@ type Step2Props = {
   onSetProperties: () => void;
 };
 
-export default function Step2({
+export default function OpcUaStep2({
   activeNode,
   form2,
   setForm2,

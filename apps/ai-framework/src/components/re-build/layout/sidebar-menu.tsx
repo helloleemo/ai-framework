@@ -11,6 +11,80 @@ import { useEffect, useState } from 'react';
 
 const menuList: MenuItem[] = [
   {
+    name: 'Input',
+    icon: 'default',
+    children: null,
+    type: 'input',
+  },
+  {
+    name: 'Output',
+    icon: 'default',
+    children: null,
+    type: 'output',
+  },
+  {
+    name: 'Transform',
+    icon: null,
+    children: [
+      {
+        name: '訊號疊加處理',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '窗函數',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '濾波',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '傅立葉頻譜圖',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '小波時頻圖',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '速度轉換',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '包絡',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '特定頻域特徵',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+      {
+        name: '統計特徵',
+        icon: 'default',
+        children: null,
+        type: 'transform',
+      },
+    ],
+  },
+];
+const menuList_bak: MenuItem[] = [
+  {
     name: '數據接口',
     icon: 'default',
     children: [

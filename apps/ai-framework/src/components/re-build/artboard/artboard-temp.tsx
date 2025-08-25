@@ -23,7 +23,6 @@ import {
 import tokenTaker from '@/utils/token-taker';
 import { Button } from '../../ui/button';
 import { createDag, getDagTemplate } from '@/api/pipeline';
-import { access } from 'fs';
 
 const initialNodes: Node[] = [];
 const initialEdges: Edge[] = [];

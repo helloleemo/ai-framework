@@ -33,3 +33,19 @@ export const getTagsAPI = (
     password,
   });
 };
+
+export const readNodesAPI = (
+  dataSourceId: string | null,
+  connectionString: string,
+  account: string,
+  password: string,
+  nodeId: [],
+) => {
+  return menuApi.POST<any>('/api/opc-ua/read-node', {
+    dataSourceId,
+    connectionString,
+    account,
+    password,
+    nodeId,
+  });
+};
