@@ -12,6 +12,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
+import { useArtboardNodes } from '@/hooks/use-artboard-state';
 
 type InputProps = {
   activeNode: any;
@@ -20,12 +21,12 @@ type InputProps = {
 };
 
 export default function InputStep({ activeNode, form, setForm }: InputProps) {
-  const { getNode, updateNodeConfig, getNodeStatus } = usePipeline();
-
-  // spinner
+  const { getNode, updateNodeConfig, setActiveNode, setNodeCompleted } =
+    usePipeline();
+  // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
-  // toaster
   const { showSuccess, showError } = useToaster();
+
   // step
   const [step, setStep] = useState(1);
 
@@ -38,20 +39,36 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
   const handleConnect = () => {
     setLoading(true);
     createSpinner();
-    setStep(2);
-    // Simulate a network request
+    //
     setTimeout(() => {
       setLoading(false);
       showSuccess('Connected successfully!');
-    }, 2000);
+      setStep(2);
+    }, 1000);
   };
 
   const handleSetNode = () => {
-    updateNodeConfig(activeNode.id, { ...form });
-    console.log('Updated node config:', getNode(activeNode.id));
+    setLoading(true);
+    createSpinner();
+    updateNodeConfig(activeNode.id, {
+      ...form.config,
+      ip: form.ip,
+      port: form.port,
+      tags: form.tags,
+      buffer: form.buffer,
+      date: form.date,
+    });
+    setTimeout(() => {
+      setLoading(false);
+      showSuccess('Node updated successfully!');
+      //
+      setActiveNode(null);
+      setNodeCompleted(activeNode.id, true);
+    }, 2000);
   };
-
+  console.log('Updated node config:', getNode(activeNode.id));
   const [open, setOpen] = useState(false);
+
   return (
     <div className="flex h-full flex-col justify-between">
       {step === 1 && (
@@ -204,9 +221,10 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
             <Button
               onClick={handleSetNode}
               variant={'default'}
-              className={`mt-4 flex w-full items-center justify-center gap-2`}
+              className={`mt-4 flex w-full items-center justify-center gap-2 ${loading ? 'cursor-default' : ''}`}
+              disabled={loading}
             >
-              Connect
+              {loading ? Spinner : 'Connect'}
             </Button>
             <Button
               onClick={() => setStep(2)}

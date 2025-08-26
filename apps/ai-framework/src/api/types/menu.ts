@@ -1,8 +1,9 @@
 export interface MenuItem {
   name: string;
-  icon: string | null;
   children: MenuItem[] | null;
+  label?: string | null;
   type?: 'input' | 'output' | 'transform';
+  description?: string | null;
 }
 
 export interface MenuResponse {

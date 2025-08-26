@@ -4,20 +4,20 @@ export function useToaster() {
   const showSuccess = (message: string) => {
     toast.success(message, {
       style: {
-        border: '1px solid #713200',
+        // border: '1px solid #166534',
         padding: '16px',
-        color: '#713200',
+        color: '#166534',
       },
       iconTheme: {
-        primary: '#713200',
-        secondary: '#FFFAEE',
+        primary: '#166534',
+        secondary: '#dcfce7',
       },
     });
   };
   const showError = (message: string) => {
     toast.error(message, {
       style: {
-        border: '1px solid #dc2626',
+        // border: '1px solid #dc2626',
         padding: '16px',
         color: '#dc2626',
       },

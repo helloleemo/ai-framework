@@ -1,3 +1,5 @@
+import { CheckIcon } from '@/components/icon/check-icon';
+import { usePipeline } from '@/hooks/use-context-pipeline';
 import {
   Handle,
   Position,
@@ -11,17 +13,27 @@ import {
  * @returns
  */
 export const InputNode = ({
+  id,
   data,
   selected,
 }: {
+  id: string;
   data: any;
   selected: boolean;
 }) => {
+  const { getNodeCompleted, getNodeStatus } = usePipeline();
+  const completed = getNodeCompleted(data.id);
+  const status = getNodeStatus(data.id);
+
   return (
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div className="absolute top-5 right-5 h-3 w-3 rounded-full bg-neutral-200"></div>
+      <div
+        className={`absolute top-5 right-5 h-3 w-3 rounded-full ${
+          status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
+        }`}
+      ></div>
       <div>
         <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -35,9 +47,14 @@ export const InputNode = ({
             ))}
           </div>
         </div>
-        <p className="text-start text-[16px] font-bold text-neutral-600">
-          {data.label}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-start text-[16px] font-bold text-neutral-600">
+            {data.name}
+          </p>
+          <CheckIcon
+            className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
+          />
+        </div>
         <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
           {data.description ||
@@ -85,11 +102,18 @@ export const TransformNode = ({
   data: any;
   selected: boolean;
 }) => {
+  const { getNodeCompleted, getNodeStatus } = usePipeline();
+  const completed = getNodeCompleted(data.id);
+  const status = getNodeStatus(data.id);
   return (
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div className="absolute top-3 right-3 h-3 w-3 rounded-full bg-neutral-200"></div>
+      <div
+        className={`absolute top-5 right-5 h-3 w-3 rounded-full ${
+          status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
+        }`}
+      ></div>
       <div>
         <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -103,9 +127,14 @@ export const TransformNode = ({
             ))}
           </div>
         </div>
-        <p className="text-start text-[16px] font-bold text-neutral-600">
-          {data.label}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-start text-[16px] font-bold text-neutral-600">
+            {data.name}
+          </p>
+          <CheckIcon
+            className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
+          />
+        </div>
         <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
           {data.description ||
@@ -159,11 +188,18 @@ export const OutputNode = ({
   data: any;
   selected: boolean;
 }) => {
+  const { getNodeStatus, getNodeCompleted } = usePipeline();
+  const status = getNodeStatus(data.id);
+  const completed = getNodeCompleted(data.id);
   return (
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div className="absolute top-5 right-5 h-3 w-3 rounded-full bg-neutral-200"></div>
+      <div
+        className={`absolute top-5 right-5 h-3 w-3 rounded-full ${
+          status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
+        }`}
+      ></div>
 
       <div>
         <div className="tag">
@@ -178,9 +214,14 @@ export const OutputNode = ({
             ))}
           </div>
         </div>
-        <p className="text-start text-[16px] font-bold text-neutral-600">
-          {data.label}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-start text-[16px] font-bold text-neutral-600">
+            {data.name}
+          </p>
+          <CheckIcon
+            className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
+          />
+        </div>
         <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
           {data.description ||
@@ -209,7 +250,7 @@ export const OutputNode = ({
 export const DefaultNode = ({ data }: { data: any }) => {
   return (
     <div className="rounded-md border-2 border-gray-400 bg-gray-100 px-4 py-2 shadow-md">
-      <div className="font-bold text-gray-800">{data.label}</div>
+      <div className="font-bold text-gray-800">{data.name}</div>
       <Handle
         type="target"
         position={Position.Left}

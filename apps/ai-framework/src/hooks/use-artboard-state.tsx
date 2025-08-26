@@ -15,9 +15,10 @@ import {
 } from '@/components/re-build/artboard/node-type';
 import { generateUUID } from '@/utils/uuid';
 import { usePipeline } from './use-context-pipeline';
+import { describe } from 'node:test';
 
 export function useArtboardNodes() {
-  const { addNode, getNode } = usePipeline();
+  const { addNode, getNode, setActiveNode: setActiveNode2 } = usePipeline();
 
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
@@ -49,12 +50,21 @@ export function useArtboardNodes() {
           const position = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - position.left;
           const y = e.clientY - position.top;
+          const id = generateUUID();
           const newNode: Node = {
-            id: generateUUID(),
-            type: data.type,
+            id,
             position: { x, y },
-            data: { label: data.name },
+            type: data.type,
+            data: {
+              id,
+              name: data.name,
+              label: data.label,
+              position: { x, y },
+              type: data.type,
+              description: data.description,
+            },
           };
+          // console.log('Dropped node:', newNode);
           setNodes((nodes: Node[]) => [...nodes, newNode]);
           addNode(newNode);
         }
@@ -81,7 +91,7 @@ export function useArtboardNodes() {
     if (!pipelineNode) {
       console.log('Pipeline node not found, creating one...');
       addNode(node);
-      setActiveNode(node);
+      setActiveNode2(node);
       console.log('Active node set to:', node);
     }
     event.stopPropagation();
@@ -89,6 +99,7 @@ export function useArtboardNodes() {
 
   const onCanvasClick = () => {
     setActiveNode(null);
+    setActiveNode2(null);
   };
 
   return {

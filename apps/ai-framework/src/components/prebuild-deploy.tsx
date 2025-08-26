@@ -85,11 +85,6 @@ const template = {
   ],
 };
 
-function applyTemplate(setNodes, setEdges) {
-  setNodes([...template.nodes]);
-  setEdges([...template.edges]);
-}
-
 export default function PrebuildDeploy({
   nodes,
   edges,
@@ -115,56 +110,40 @@ export default function PrebuildDeploy({
   return (
     <div className="flex items-center gap-2">
       {isBuilding ? (
-        <div className="pre-build hover:bg-neutral-100 rounded-md flex items-center gap-2 p-2 bg-white border cursor-pointer">
+        <div className="pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100">
           <div className="icon">
-            <StopIcon className="w-5 h-5 text-neutral-600" />
+            <StopIcon className="h-5 w-5 text-neutral-600" />
           </div>
           <p className="text-sm text-neutral-600">Stop</p>
         </div>
       ) : (
         <div
           onClick={handleClickPreBuild}
-          className="pre-build hover:bg-neutral-100 rounded-md flex items-center gap-2 p-2 bg-white border cursor-pointer"
+          className="pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100"
         >
           <div className="icon">
-            <PreBuildIcon className="w-5 h-5 text-neutral-600" />
+            <PreBuildIcon className="h-5 w-5 text-neutral-600" />
           </div>
           <p className="text-sm text-neutral-600">Pre-run</p>
         </div>
       )}
 
       <div
-        className={`
-          ${afterBuild ? 'cursor-pointer hover:bg-neutral-100' : ''}
-          pre-build  rounded-md flex items-center gap-2 p-2 bg-white border `}
+        className={` ${afterBuild ? 'cursor-pointer hover:bg-neutral-100' : ''} pre-build flex items-center gap-2 rounded-md border bg-white p-2`}
       >
         <div className="icon">
           <DeployIcon
-            className={`
-            ${afterBuild ? 'text-neutral-600' : 'text-neutral-300'}
-            w-5 h-5 `}
+            className={` ${afterBuild ? 'text-neutral-600' : 'text-neutral-300'} h-5 w-5`}
           />
         </div>
         <p
-          className={`
-            ${afterBuild ? 'text-neutral-600' : 'text-neutral-300'}
-             text-sm`}
+          className={` ${afterBuild ? 'text-neutral-600' : 'text-neutral-300'} text-sm`}
         >
           Deploy
         </p>
       </div>
 
-      <div
-        className="cursor-pointer hover:bg-neutral-100
-          pre-build  rounded-md flex items-center gap-2 p-2 bg-white border"
-      >
-        <p
-          className="text-neutral-600 text-sm"
-          onClick={() => applyTemplate(setNodes, setEdges)}
-        >
-          template-mock01
-        </p>
-      </div>
+      <div className="pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100"></div>
     </div>
   );
 }

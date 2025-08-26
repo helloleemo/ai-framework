@@ -18,6 +18,7 @@ import { useEffect } from 'react';
 import { useArtboardNodes } from '@/hooks/use-artboard-state';
 import { PipelineProvider, usePipeline } from '@/hooks/use-context-pipeline';
 import { generateUUID } from '@/utils/uuid';
+import { useToaster } from '@/hooks/use-toaster';
 
 // 轉換
 export function dagToNodes(tasks: any[]) {
@@ -237,7 +238,6 @@ function ArtboardRoot() {
     onEdgesChange,
     nodeTypes,
     edgeTypes,
-    activeNode,
     handleDrop,
     handleDragOver,
     onConnect,
@@ -245,7 +245,7 @@ function ArtboardRoot() {
     onCanvasClick,
   } = useArtboardNodes();
 
-  const { addNode } = usePipeline();
+  const { activeNode } = usePipeline();
 
   // 測試用
   /**
