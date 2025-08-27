@@ -2,6 +2,7 @@ import { fi } from 'date-fns/locale';
 import { POST } from '.';
 import { API_URLS } from './api/api-baseurl';
 import { API_ENDPOINTS } from './api/api-endpoint';
+import { API_TOKEN } from './api/api-token';
 
 export const getAuthPipelineAPI = (
   grant_type: string,
@@ -21,10 +22,20 @@ export const getAuthPipelineAPI = (
   });
 
 export const getDagTemplateAPI = () =>
-  POST<any>(API_URLS.PIPELINE, API_ENDPOINTS.DAG_TEMPLATE, {}, 'pipelineToken');
+  POST<any>(
+    API_URLS.PIPELINE,
+    API_ENDPOINTS.DAG_TEMPLATE,
+    {},
+    API_TOKEN.pipelineToken,
+  );
 
 export const createDagAPI = (data: any) =>
-  POST<any>(API_URLS.PIPELINE, API_ENDPOINTS.DAG_CREATE, data, 'pipelineToken');
+  POST<any>(
+    API_URLS.PIPELINE,
+    API_ENDPOINTS.DAG_CREATE,
+    data,
+    API_TOKEN.pipelineToken,
+  );
 
 export const pipelineTokenTaker = () => {
   //

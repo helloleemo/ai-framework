@@ -1,12 +1,7 @@
 import { POST } from '.';
 import { API_URLS } from './api/api-baseurl';
 import { API_ENDPOINTS } from './api/api-endpoint';
-// import {
-//   OpcuaBrowse,
-//   OpcuaBrowseResponse,
-//   OpcuaConnection,
-//   OpcuaConnectionResponse,
-// } from './types/opcua';
+import { API_TOKEN } from './api/api-token';
 
 export const connectOpcuaAPI = (
   connectionString: string,
@@ -21,7 +16,7 @@ export const connectOpcuaAPI = (
       account,
       password,
     },
-    'accessToken',
+    API_TOKEN.accessToken,
   );
 
 export const getTagsAPI = (
@@ -53,19 +48,3 @@ export const readNodesAPI = (
     password,
     nodeId,
   });
-
-// export const readNodesAPI = (
-//   dataSourceId: string | null,
-//   connectionString: string,
-//   account: string,
-//   password: string,
-//   nodeId: [],
-// ) => {
-//   return menuApi.POST<any>('/api/opc-ua/read-node', {
-//     dataSourceId,
-//     connectionString,
-//     account,
-//     password,
-//     nodeId,
-//   });
-// };

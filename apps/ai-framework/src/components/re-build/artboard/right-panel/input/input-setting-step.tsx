@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
-import { useArtboardNodes } from '@/hooks/use-artboard-state';
+import { getInputAPI } from '@/api/input';
 
 type InputProps = {
   activeNode: any;
@@ -24,7 +24,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
   const { getNode, updateNodeConfig, setActiveNode, setNodeCompleted } =
     usePipeline();
   // ui
-  const { loading, setLoading, Spinner, createSpinner } = useSpinner();
+  const { loading, setLoading, Spinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
 
   // step
@@ -35,38 +35,83 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
     setForm((prev: any) => ({ ...prev, [field]: value }));
   };
 
+  // api
+  const fetchData = async () => {
+    setLoading(true);
+    // const base_url = `http://${form.ip}:${form.port}`;
+    try {
+      const res = await getInputAPI(
+        'api-client',
+        'api-client',
+        'password',
+        'sa',
+        '0x90133115',
+        // form.client_id,
+        // form.client_secret,
+        // form.grant_type,
+        // form.username,
+        // form.password,
+      );
+      console.log('res', res);
+    } catch (error) {
+      console.error(error);
+      return;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // handle connect
   const handleConnect = () => {
+    fetchData();
+    showError('連線失敗！');
+
+    // updateNodeConfig
+    updateNodeConfig(activeNode.id, {
+      ...form.config,
+      ip: form.ip,
+      port: form.port,
+      client_id: form.client_id,
+      client_secret: form.client_secret,
+      grant_type: form.grant_type,
+      account: form.account,
+      password: form.password,
+      // tags: form.tags,
+      // buffer: form.buffer,
+      // date: form.date,
+    });
+    setStep(2);
+  };
+
+  const handleTagChange = () => {
     setLoading(true);
-    createSpinner();
-    //
-    setTimeout(() => {
-      setLoading(false);
-      showSuccess('Connected successfully!');
-      setStep(2);
-    }, 1000);
+    updateNodeConfig(activeNode.id, {
+      tags: form.tags,
+    });
+    setLoading(false);
+    setStep(3);
   };
 
   const handleSetNode = () => {
     setLoading(true);
-    createSpinner();
     updateNodeConfig(activeNode.id, {
       ...form.config,
-      account: form.account,
-      password: form.password,
-      ip: form.ip,
-      port: form.port,
-      tags: form.tags,
+      // ip: form.ip,
+      // port: form.port,
+      // client_id: form.client_id,
+      // client_secret: form.client_secret,
+      // grant_type: form.grant_type,
+      // account: form.account,
+      // password: form.password,
+      // tags: form.tags,
       buffer: form.buffer,
       date: form.date,
     });
-    setTimeout(() => {
-      setLoading(false);
-      showSuccess('Node updated successfully!');
-      //
-      setActiveNode(null);
-      setNodeCompleted(activeNode.id, true);
-    }, 2000);
+    setLoading(false);
+    showSuccess('設定成功！');
+    //
+    setActiveNode(null);
+    setNodeCompleted(activeNode.id, true);
   };
   console.log('Updated node config:', getNode(activeNode.id));
   const [open, setOpen] = useState(false);
@@ -80,29 +125,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
               Basic information
             </p>
             <div className="grid w-full max-w-sm items-center gap-1 pt-2">
-              {/*  */}
-              <Label className="pt-2 text-sm" htmlFor="port">
-                Account
-              </Label>
-              <Input
-                type="text"
-                id="account"
-                placeholder="account"
-                value={form.account ?? ''}
-                onChange={(e) => handleFormChange('account', e.target.value)}
-              />
-              {/*  */}
-              <Label className="pt-2 text-sm" htmlFor="port">
-                Password
-              </Label>
-              <Input
-                type="text"
-                id="password"
-                placeholder="password"
-                value={form.password ?? ''}
-                onChange={(e) => handleFormChange('password', e.target.value)}
-              />
-              {/*  */}
+              {/* ip */}
               <Label className="pt-2 text-sm" htmlFor="ip">
                 IP
               </Label>
@@ -113,6 +136,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
                 value={form.ip ?? ''}
                 onChange={(e) => handleFormChange('ip', e.target.value)}
               />
+              {/* port */}
               <Label className="pt-2 text-sm" htmlFor="port">
                 Port
               </Label>
@@ -122,6 +146,64 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
                 placeholder="port"
                 value={form.port ?? ''}
                 onChange={(e) => handleFormChange('port', e.target.value)}
+              />
+              {/* client id */}
+              <Label className="pt-2 text-sm" htmlFor="client_id">
+                Client ID
+              </Label>
+              <Input
+                type="text"
+                id="client_id"
+                placeholder="client_id"
+                value={form.client_id ?? ''}
+                onChange={(e) => handleFormChange('client_id', e.target.value)}
+              />
+              {/* client secret */}
+              <Label className="pt-2 text-sm" htmlFor="client_secret">
+                Client Secret
+              </Label>
+              <Input
+                type="text"
+                id="client_secret"
+                placeholder="client_secret"
+                value={form.client_secret ?? ''}
+                onChange={(e) =>
+                  handleFormChange('client_secret', e.target.value)
+                }
+              />
+              {/* grant type */}
+              <Label className="pt-2 text-sm" htmlFor="grant_type">
+                Grant Type
+              </Label>
+              <Input
+                type="text"
+                id="grant_type"
+                placeholder="grant_type"
+                value={form.grant_type ?? ''}
+                onChange={(e) => handleFormChange('grant_type', e.target.value)}
+              />
+
+              {/* account */}
+              <Label className="pt-2 text-sm" htmlFor="account">
+                Account
+              </Label>
+              <Input
+                type="text"
+                id="account"
+                placeholder="account"
+                value={form.account ?? ''}
+                onChange={(e) => handleFormChange('account', e.target.value)}
+              />
+              {/* password */}
+              <Label className="pt-2 text-sm" htmlFor="password">
+                Password
+              </Label>
+              <Input
+                type="text"
+                id="password"
+                placeholder="password"
+                value={form.password ?? ''}
+                onChange={(e) => handleFormChange('password', e.target.value)}
               />
             </div>
           </div>
@@ -157,7 +239,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
           </div>
           <div>
             <Button
-              onClick={() => setStep(3)}
+              onClick={handleTagChange}
               variant={'default'}
               className={`mt-4 flex w-full items-center justify-center gap-2`}
             >

@@ -17,6 +17,12 @@ export const API_ENDPOINTS = {
   // OPC DA
   OPCDA_TEST: '/api/opc-da/test-connection',
 
+  // INPUT - AUTH
+  INPUT_AUTH: '/connect/token',
+
+  // INPUT (indata)
+  INPUT: '/api/input',
+
   // PIPELINE
   PIPELINE_TOKEN: '/auth/token',
   DAG_TEMPLATE: '/api/dags/template_dags',

@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getDagTemplate } from '@/api/pipeline';
+// import { getDagTemplate } from '@/api/pipeline';
 // 完美比例ㄉDAG
 const perfect_dag = {
   dag_id: 'test_dag1',
@@ -531,10 +531,10 @@ export default function ArtboardMenu() {
 
   const handleSelectTemplate = async (templateIndex: number) => {
     try {
-      const res = await getDagTemplate();
-      const templateData = res[templateIndex];
+      // const res = await getDagTemplate();
+      // const templateData = res[templateIndex];
 
-      sessionStorage.setItem('selectedTemplate', JSON.stringify(templateData));
+      // sessionStorage.setItem('selectedTemplate', JSON.stringify(templateData));
 
       setOpenDialog(false);
       navigate('/re-build/ai-framework/artboard-temp');
