@@ -1,30 +1,36 @@
-import { authApi } from './index';
+import { API_URLS } from './api/api-baseurl';
+import { API_ENDPOINTS } from './api/api-endpoint';
+import { POST } from './index';
 import {
+  DecodeTokenResponse,
   LoginResponse,
   LogoutResponse,
   RefreshTokenResponse,
-  DecodeTokenResponse,
 } from './types/auth';
 
 export const loginAPI = (account: string, password: string) =>
-  authApi.POST<LoginResponse>('/api/auth/login', { account, password });
+  POST<LoginResponse>(API_URLS.AUTH, API_ENDPOINTS.LOGIN, {
+    account,
+    password,
+  });
 
 export const logoutAPI = () =>
-  authApi.POST<LogoutResponse>('/api/auth/logout', '');
+  POST<LogoutResponse>(API_URLS.AUTH, API_ENDPOINTS.LOGOUT, {});
 
 export const refreshTokenAPI = (
   code?: string,
   accessToken?: string,
   refreshToken?: string,
 ) =>
-  authApi.POST<RefreshTokenResponse>('/api/auth/refresh-token', {
+  POST<RefreshTokenResponse>(API_URLS.AUTH, API_ENDPOINTS.REFRESH_TOKEN, {
     code,
     accessToken,
     refreshToken,
   });
 
 export const decodeTokenAPI = (token: string) =>
-  authApi.POST<DecodeTokenResponse>(
-    `/api/auth/decode-token?token=${token}`,
+  POST<DecodeTokenResponse>(
+    API_URLS.AUTH,
+    `${API_ENDPOINTS.DECODE_TOKEN}?token=${token}`,
     {},
   );

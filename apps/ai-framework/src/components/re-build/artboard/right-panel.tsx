@@ -9,11 +9,15 @@ import Hilbert from './right-panel/transform/hilbert';
 import FeatSpec from './right-panel/transform/feat_spec';
 import FeatSta from './right-panel/transform/feat_sta';
 import OPCUA from './right-panel/opcua/opcua';
+import { excludedLabels } from './right-panel/no-setting-excluded-label';
 
 export default function RightPanel({ activeNode }: { activeNode: any }) {
+  // console.log('RightPanel activeNode', activeNode);
   if (!activeNode) return null;
+  // No setting
+  if (excludedLabels.some((label) => activeNode.data.label === label))
+    return null;
 
-  // console.log('Active node in RightPanel:', activeNode);
   const isOpen = !!activeNode;
 
   return (
@@ -23,49 +27,45 @@ export default function RightPanel({ activeNode }: { activeNode: any }) {
           className={`absolute top-0 right-0 bottom-0 z-50 w-[380px] border border-blue-400 bg-white p-5 transition-transform duration-500 ${isOpen ? 'translate-x-0' : 'translate-x-full'} `}
         >
           {/* Input */}
-          {activeNode.data.label.includes('input') && (
+          {activeNode.data.label === 'input' && (
             <InputSetting activeNode={activeNode} />
           )}
           {/* OPC UA(demo) */}
-          {activeNode.data.label.includes('opcua_demo') && (
+          {activeNode.data.label === 'opcua_demo' && (
             <OPCUA activeNode={activeNode} />
           )}
           {/* 訊號前處理 */}
-          {activeNode.data.label.includes('signal_preprocess') && (
+          {activeNode.data.label === 'signal_preprocess' && (
             <SignalPreprocess activeNode={activeNode} />
           )}
           {/* 窗函數 */}
-          {activeNode.data.label.includes('window') && (
+          {activeNode.data.label === 'window' && (
             <Window activeNode={activeNode} />
           )}
           {/* 濾波器 */}
-          {activeNode.data.label.includes('filter') && (
+          {activeNode.data.label === 'filter' && (
             <Filter activeNode={activeNode} />
           )}
           {/* 傅立葉轉換頻譜圖 */}
-          {activeNode.data.label.includes('fft') && (
-            <Fft activeNode={activeNode} />
-          )}
+          {activeNode.data.label === 'fft' && <Fft activeNode={activeNode} />}
           {/* 小波轉換時頻圖 */}
-          {activeNode.data.label.includes('dwt') && (
-            <Dwt activeNode={activeNode} />
-          )}
+          {/* {activeNode.data.label === 'dwt' && <Dwt activeNode={activeNode} />} */}
           {/* 速度轉換 */}
-          {activeNode.data.label.includes('integ') && (
+          {activeNode.data.label === 'integ' && (
             <Integ activeNode={activeNode} />
           )}
           {/* 包絡變換 */}
-          {activeNode.data.label.includes('hilbert') && (
+          {activeNode.data.label === 'hilbert' && (
             <Hilbert activeNode={activeNode} />
           )}
           {/* 特定頻域特徵提取 */}
-          {activeNode.data.label.includes('feat_spec') && (
+          {activeNode.data.label === 'feat_spec' && (
             <FeatSpec activeNode={activeNode} />
           )}
           {/* 統計特徵提取 */}
-          {activeNode.data.label.includes('feat_sta') && (
+          {/* {activeNode.data.label === 'feat_sta' && (
             <FeatSta activeNode={activeNode} />
-          )}
+          )} */}
         </div>
       </div>
 

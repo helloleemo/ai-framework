@@ -1,4 +1,6 @@
-import { authApi, menuApi } from '.';
+import { POST } from '.';
+import { API_URLS } from './api/api-baseurl';
+import { API_ENDPOINTS } from './api/api-endpoint';
 // import {
 //   OpcuaBrowse,
 //   OpcuaBrowseResponse,
@@ -10,13 +12,17 @@ export const connectOpcuaAPI = (
   connectionString: string,
   account: string,
   password: string,
-) => {
-  return menuApi.POST<any>('/api/opc-ua/test-connection', {
-    connectionString,
-    account,
-    password,
-  });
-};
+) =>
+  POST<any>(
+    API_URLS.UI_MOXA,
+    API_ENDPOINTS.OPCUA_TEST,
+    {
+      connectionString,
+      account,
+      password,
+    },
+    'accessToken',
+  );
 
 export const getTagsAPI = (
   dataSourceId: string | null,
@@ -24,28 +30,42 @@ export const getTagsAPI = (
   connectionString: string,
   account: string,
   password: string,
-) => {
-  return menuApi.POST<any>('/api/opc-ua/browse', {
+) =>
+  POST<any>(API_URLS.UI_MOXA, API_ENDPOINTS.OPCUA_BROWSE, {
     dataSourceId,
     nodeId,
     connectionString,
     account,
     password,
   });
-};
 
 export const readNodesAPI = (
   dataSourceId: string | null,
   connectionString: string,
   account: string,
   password: string,
-  nodeId: [],
-) => {
-  return menuApi.POST<any>('/api/opc-ua/read-node', {
+  nodeId: string[],
+) =>
+  POST<any>(API_URLS.UI_MOXA, API_ENDPOINTS.OPCUA_READ_NODE, {
     dataSourceId,
     connectionString,
     account,
     password,
     nodeId,
   });
-};
+
+// export const readNodesAPI = (
+//   dataSourceId: string | null,
+//   connectionString: string,
+//   account: string,
+//   password: string,
+//   nodeId: [],
+// ) => {
+//   return menuApi.POST<any>('/api/opc-ua/read-node', {
+//     dataSourceId,
+//     connectionString,
+//     account,
+//     password,
+//     nodeId,
+//   });
+// };

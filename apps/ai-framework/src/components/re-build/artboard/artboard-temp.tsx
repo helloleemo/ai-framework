@@ -20,9 +20,13 @@ import {
   OutputNode,
   edgeType,
 } from '../artboard/node-type';
-import tokenTaker from '@/utils/token-taker';
+import tokenTaker from '@/api/api/token-taker';
 import { Button } from '../../ui/button';
-import { createDag, getDagTemplate } from '@/api/pipeline';
+import {
+  createDagAPI,
+  getDagTemplateAPI,
+  pipelineTokenTaker,
+} from '@/api/pipeline';
 
 const initialNodes: Node[] = [];
 const initialEdges: Edge[] = [];
@@ -243,7 +247,7 @@ const dag = {
 export default function ArtboardTemp() {
   useEffect(() => {
     // 取pipeline token ，之後記得拿掉
-    tokenTaker();
+    pipelineTokenTaker();
 
     const selectedTemplate = sessionStorage.getItem('selectedTemplate');
     if (selectedTemplate) {

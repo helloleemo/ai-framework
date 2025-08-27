@@ -1,24 +1,11 @@
-import {
-  ReactFlow,
-  Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  type Node,
-  type Edge,
-  type Connection,
-  OnConnect,
-  Controls,
-} from '@xyflow/react';
+import { ReactFlow, Background, Controls } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import RightPanel from './artboard/right-panel';
-import TopTab from './artboard/top-tab';
+import RightPanel from './right-panel';
+import TopTab from './top-tab';
 import { useEffect } from 'react';
 
 import { useArtboardNodes } from '@/hooks/use-artboard-state';
 import { PipelineProvider, usePipeline } from '@/hooks/use-context-pipeline';
-import { generateUUID } from '@/utils/uuid';
-import { useToaster } from '@/hooks/use-toaster';
 
 // 轉換
 export function dagToNodes(tasks: any[]) {

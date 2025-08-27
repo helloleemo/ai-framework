@@ -7,6 +7,7 @@ import {
   EdgeProps,
   getBezierPath,
 } from '@xyflow/react';
+import { excludedLabels } from './right-panel/no-setting-excluded-label';
 
 /** * Input node
  * @param param0
@@ -21,9 +22,13 @@ export const InputNode = ({
   data: any;
   selected: boolean;
 }) => {
-  const { getNodeCompleted, getNodeStatus } = usePipeline();
+  const { getNodeCompleted, getNodeStatus, getNode } = usePipeline();
   const completed = getNodeCompleted(data.id);
   const status = getNodeStatus(data.id);
+
+  const isExcluded = excludedLabels.some(
+    (label) => getNode(data.id)?.label === label,
+  );
 
   return (
     <div
@@ -51,9 +56,11 @@ export const InputNode = ({
           <p className="text-start text-[16px] font-bold text-neutral-600">
             {data.name}
           </p>
-          <CheckIcon
-            className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
-          />
+          {isExcluded ? null : (
+            <CheckIcon
+              className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
+            />
+          )}
         </div>
         <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
@@ -102,15 +109,18 @@ export const TransformNode = ({
   data: any;
   selected: boolean;
 }) => {
-  const { getNodeCompleted, getNodeStatus } = usePipeline();
+  const { getNodeCompleted, getNodeStatus, getNode } = usePipeline();
   const completed = getNodeCompleted(data.id);
   const status = getNodeStatus(data.id);
+  const isExcluded = excludedLabels.some(
+    (label) => getNode(data.id)?.label === label,
+  );
   return (
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
       <div
-        className={`absolute top-5 right-5 h-3 w-3 rounded-full ${
+        className={`absolute top-3 right-3 h-3 w-3 rounded-full ${
           status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
         }`}
       ></div>
@@ -131,9 +141,11 @@ export const TransformNode = ({
           <p className="text-start text-[16px] font-bold text-neutral-600">
             {data.name}
           </p>
-          <CheckIcon
-            className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
-          />
+          {isExcluded ? null : (
+            <CheckIcon
+              className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
+            />
+          )}
         </div>
         <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">

@@ -96,8 +96,10 @@ export default function OpcUaStep({
     setLoading(false);
     setStep(2);
   };
-  const handleConnectToNode = async () => {
-    //
+
+  // api -
+
+  const fetchReadNodes = async (nodeId: string[]) => {
     try {
       const res = await readNodesAPI(
         '3fa85f64-5717-4562-b3fc-2c963f66afa6',
@@ -116,19 +118,22 @@ export default function OpcUaStep({
       showError('取得標籤的資訊失敗！');
       console.error('Connect to node error:', error);
     }
+  };
+
+  const handleConnectToNode = async () => {
     // 暫時用
     setForm((prevForm: any) => ({
       ...prevForm,
       connectStatus: true,
     }));
     //
-    console.log('Connect to node with form data:', {
-      connectionString: form.connectionString,
-      account: form.account,
-      password: form.password,
-      selectedTags: form.selectedTags,
-      connectStatus: form.connectStatus,
-    });
+    // console.log('Connect to node with form data:', {
+    //   connectionString: form.connectionString,
+    //   account: form.account,
+    //   password: form.password,
+    //   selectedTags: form.selectedTags,
+    //   connectStatus: form.connectStatus,
+    // });
   };
   // input: connnection
   const handleInput = (

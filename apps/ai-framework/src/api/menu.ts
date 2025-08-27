@@ -1,5 +1,12 @@
-import { menuApi } from './index';
+import { API_URLS } from './api/api-baseurl';
+import { API_ENDPOINTS } from './api/api-endpoint';
+import { GET } from './index';
 import { MenuResponse } from './types/menu';
 
-export const getMenuItemsAPI = () =>
-  menuApi.GET<MenuResponse>('/api/options/menu-item');
+export const getMenuItemsAPI = async (): Promise<MenuResponse> => {
+  return GET<MenuResponse>(
+    API_URLS.UI_MOXA,
+    API_ENDPOINTS.MENU_ITEM,
+    'accessToken',
+  );
+};

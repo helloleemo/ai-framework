@@ -6,7 +6,6 @@ import { FolderIcon } from '@/components/icon/folder';
 import { PipeLineIcon } from '@/components/icon/pipeline-icon';
 // import { PipeLineIcon2 } from '@/components/icon/pipeline-icon-2';
 import { Skeleton } from '@/components/ui/skeleton';
-import { describe } from 'node:test';
 // import Spinner from '@/components/ui/spinner';
 import { useEffect, useState } from 'react';
 
@@ -193,6 +192,7 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
           draggable={!hasChildren}
           onDragStart={(e) => {
             e.currentTarget.classList.add('opacity-50', 'shadow-lg');
+            e.currentTarget.style.cursor = 'grabbing';
             console.log('Drag start:', item);
             e.dataTransfer.setData(
               'application/json',
@@ -207,6 +207,7 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
           }}
           onDragEnd={(e) => {
             e.currentTarget.classList.remove('opacity-50', 'shadow-lg');
+            e.currentTarget.style.cursor = 'grab';
           }}
         >
           <div className="flex items-center gap-2">
@@ -237,26 +238,27 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
 
   useEffect(() => {
     setMenu(menuList);
-    setLoading(false);
-
-    getMenuItemsAPI()
-      .then((res) => {
-        if (res.success) {
-          // setMenu(res.data);
-          setMenu(menuList); //先放假的！
-        }
-        console.log('Menu items:', res);
-      })
-      .catch((error) => {
-        console.error('Failed to fetch menu items:', error);
-        setMenu(menuList);
-      })
-
-      .finally(() => {
-        console.log('Menu items fetch completed');
-        setLoading(false);
-      });
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    // fetchMenuItems();
   }, []);
+
+  const fetchMenuItems = async () => {
+    try {
+      setLoading(true);
+      const res = await getMenuItemsAPI();
+      if (res.success) {
+        setMenu(res.data);
+      } else {
+        console.error('Failed to fetch menu items:', res.message);
+      }
+    } catch (error) {
+      console.error('Failed to fetch menu items:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="h-[calc(100vh-250px)] flex-col overflow-y-auto">

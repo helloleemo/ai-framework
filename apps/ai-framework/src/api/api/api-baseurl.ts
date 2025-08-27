@@ -1,0 +1,11 @@
+export const API_URLS = {
+  INDATA_7014: 'http://192.168.0.103:7014',
+  INDATA_7000: 'http://192.168.0.103:7000',
+  INDATA_17000: 'http://192.168.0.103:17000',
+  AUTH: 'http://192.168.0.101:5290',
+  UI_MOXA: 'http://192.168.0.101:5280',
+  UI_5G_ASUS: 'http://192.168.50.10:5280', // 5G_ASUS
+  AUTH_5G_ASUS: 'http://192.168.50.10:5290', // 5G_ASUS
+  PIPELINE: 'http://192.168.0.20:8000',
+  DEFAULT: '',
+};

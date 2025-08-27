@@ -7,7 +7,7 @@ import ArtboardRoot from '@/pages/artboard-root';
 import Dashboard from '@/pages/dashboard';
 import TempArtboard from '@/pages/artboard-temp';
 import ReBuildLayout from '@/components/re-build/layout';
-import Artboard from '@/components/re-build/artboard';
+import Artboard from '@/components/re-build/artboard/artboard';
 import ViewAll from '@/components/re-build/view-all/view-all';
 import ArtboardMenu from '@/components/re-build/artboard/artboard-menu';
 import ArtboardTemp from '@/components/re-build/artboard/artboard-temp';

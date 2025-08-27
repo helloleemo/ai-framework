@@ -52,6 +52,8 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
     createSpinner();
     updateNodeConfig(activeNode.id, {
       ...form.config,
+      account: form.account,
+      password: form.password,
       ip: form.ip,
       port: form.port,
       tags: form.tags,
@@ -78,7 +80,30 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
               Basic information
             </p>
             <div className="grid w-full max-w-sm items-center gap-1 pt-2">
-              <Label className="text-sm" htmlFor="ip">
+              {/*  */}
+              <Label className="pt-2 text-sm" htmlFor="port">
+                Account
+              </Label>
+              <Input
+                type="text"
+                id="account"
+                placeholder="account"
+                value={form.account ?? ''}
+                onChange={(e) => handleFormChange('account', e.target.value)}
+              />
+              {/*  */}
+              <Label className="pt-2 text-sm" htmlFor="port">
+                Password
+              </Label>
+              <Input
+                type="text"
+                id="password"
+                placeholder="password"
+                value={form.password ?? ''}
+                onChange={(e) => handleFormChange('password', e.target.value)}
+              />
+              {/*  */}
+              <Label className="pt-2 text-sm" htmlFor="ip">
                 IP
               </Label>
               <Input
