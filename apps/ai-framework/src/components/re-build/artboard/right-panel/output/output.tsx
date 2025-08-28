@@ -7,7 +7,7 @@ import { useSpinner } from '@/hooks/use-spinner';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 
-export default function Dwt({ activeNode }: { activeNode: any }) {
+export default function Output({ activeNode }: { activeNode: any }) {
   const { getNode, updateNodeConfig, setActiveNode, setNodeCompleted } =
     usePipeline();
   // ui
@@ -39,7 +39,7 @@ export default function Dwt({ activeNode }: { activeNode: any }) {
     setLoading(true);
     try {
       await updateNodeConfig(activeNode.id, form);
-      showSuccess(`${getNode(activeNode.id)?.label}設定成功！`);
+      showSuccess('Connected successfully');
     } catch (error) {
       showError('Failed to connect');
     } finally {
@@ -66,7 +66,7 @@ export default function Dwt({ activeNode }: { activeNode: any }) {
                 </p>
                 <div className="grid w-full max-w-sm items-center gap-1 pt-2">
                   <Label className="text-sm" htmlFor="fs">
-                    沒有東西
+                    output設定
                   </Label>
                   {/* <Input
                     type="number"

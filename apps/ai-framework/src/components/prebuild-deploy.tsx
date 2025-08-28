@@ -1,7 +1,11 @@
 import { StopIcon } from '@/components/icon/stop-icon';
 import { PreBuildIcon } from '@/components/icon/pre-build-icon';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DeployIcon } from './deploy-icon';
+import { usePipeline } from '@/hooks/use-context-pipeline';
+import { useToaster } from '@/hooks/use-toaster';
+import { Button } from './ui/button';
+import { createDagAPI, pipelineTokenTaker } from '@/api/pipeline';
 
 function checkPipeline(nodes: any[], edges: any[]) {
   // 1. Check all nodes are connected
@@ -85,6 +89,8 @@ const template = {
   ],
 };
 
+/**
+ *
 export default function PrebuildDeploy({
   nodes,
   edges,
@@ -144,6 +150,63 @@ export default function PrebuildDeploy({
       </div>
 
       <div className="pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100"></div>
+    </div>
+  );
+}
+ */
+// import React, { useState } from 'react';
+// import { usePipeline } from '@/hooks/use-context-pipeline';
+// import { deployPipelineAPI } from '@/api/pipeline';
+// import { Button } from '@/components/ui/button';
+// import { showSuccess, showError } from '@/hooks/use-toaster';
+
+export default function PipelineDeploy() {
+  useEffect(() => {
+    pipelineTokenTaker();
+  }, []);
+  const { buildPipelineConfig } = usePipeline();
+  const [isDeploying, setIsDeploying] = useState(false);
+  const { showSuccess, showError } = useToaster();
+
+  const handleDeploy = async () => {
+    const pipelineConfig = buildPipelineConfig();
+    try {
+      const res = await createDagAPI(pipelineConfig);
+      console.log('Pipeline created successfully:', res);
+      showSuccess('Pipeline created successfully');
+    } catch (error) {
+      console.error('Error creating pipeline:', error);
+      showError('Error creating pipeline: ' + error);
+    }
+  };
+
+  const handlePreview = () => {
+    const pipelineConfig = buildPipelineConfig();
+
+    // console.log('Pipeline Config:', JSON.stringify(pipelineConfig, null, 2));
+    // 可以顯示在 dialog 中
+    // alert('Pipeline config logged to console');
+  };
+
+  const handlePreRun = () => {
+    const pipelineConfig = buildPipelineConfig();
+  };
+
+  return (
+    <div className="flex gap-2">
+      <Button variant="outline" onClick={handlePreview} disabled={isDeploying}>
+        Preview Pipeline
+      </Button>
+      <Button variant="outline" onClick={handleDeploy} disabled={isDeploying}>
+        Deploy Pipeline
+      </Button>
+      {/* <Button
+        onClick={handleDeploy}
+        disabled={isDeploying}
+        className="bg-blue-500 hover:bg-blue-600"
+      >
+        {isDeploying ? 'Deploying...' : 'Deploy Pipeline'}
+      </Button> */}
     </div>
   );
 }

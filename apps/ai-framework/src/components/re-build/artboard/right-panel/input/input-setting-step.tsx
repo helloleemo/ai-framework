@@ -108,7 +108,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
       date: form.date,
     });
     setLoading(false);
-    showSuccess('設定成功！');
+    showSuccess(`設定成功！`);
     //
     setActiveNode(null);
     setNodeCompleted(activeNode.id, true);

@@ -51,7 +51,7 @@ export default function SignalPreprocess({ activeNode }: { activeNode: any }) {
     setLoading(true);
     try {
       await updateNodeConfig(activeNode.id, form);
-      showSuccess('Connected successfully');
+      showSuccess(`設定成功！`);
     } catch (error) {
       showError('Failed to connect');
     } finally {

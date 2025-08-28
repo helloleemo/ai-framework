@@ -10,6 +10,7 @@ import FeatSpec from './right-panel/transform/feat_spec';
 import FeatSta from './right-panel/transform/feat_sta';
 import OPCUA from './right-panel/opcua/opcua';
 import { excludedLabels } from './right-panel/no-setting-excluded-label';
+import Output from './right-panel/output/output';
 
 export default function RightPanel({ activeNode }: { activeNode: any }) {
   // console.log('RightPanel activeNode', activeNode);
@@ -66,6 +67,10 @@ export default function RightPanel({ activeNode }: { activeNode: any }) {
           {/* {activeNode.data.label === 'feat_sta' && (
             <FeatSta activeNode={activeNode} />
           )} */}
+          {/* Output */}
+          {activeNode.data.label === 'output' && (
+            <Output activeNode={activeNode} />
+          )}
         </div>
       </div>
 

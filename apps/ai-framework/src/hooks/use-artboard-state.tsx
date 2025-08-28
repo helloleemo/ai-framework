@@ -18,7 +18,12 @@ import { usePipeline } from './use-context-pipeline';
 import { describe } from 'node:test';
 
 export function useArtboardNodes() {
-  const { addNode, getNode, setActiveNode: setActiveNode2 } = usePipeline();
+  const {
+    addNode,
+    getNode,
+    setActiveNode: setActiveNode2,
+    setEdge: setEdges2,
+  } = usePipeline();
 
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
@@ -81,19 +86,19 @@ export function useArtboardNodes() {
   }, []);
 
   const onConnect: OnConnect = useCallback(
-    (params: any) => setEdges((eds: any) => addEdge(params, eds)),
-    [setEdges],
+    (params: any) => {
+      params.type = 'custom';
+      setEdges((eds: any) => addEdge(params, eds));
+      setEdges2(params);
+    },
+    [setEdges, setEdges2],
   );
 
   const onNodeDoubleClick = useCallback((event: any, node: any) => {
     console.log('Node double clicked:', node);
-    const pipelineNode = getNode(node.id);
-    if (!pipelineNode) {
-      console.log('Pipeline node not found, creating one...');
-      addNode(node);
-      setActiveNode2(node);
-      console.log('Active node set to:', node);
-    }
+    // addNode(node);
+    setActiveNode2(node);
+    console.log('Active node set to:', node);
     event.stopPropagation();
   }, []);
 

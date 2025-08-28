@@ -1,4 +1,4 @@
-import { ReactFlow, Background, Controls } from '@xyflow/react';
+import { ReactFlow, Background, Controls, Handle } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import RightPanel from './right-panel';
 import TopTab from './top-tab';
@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 import { useArtboardNodes } from '@/hooks/use-artboard-state';
 import { PipelineProvider, usePipeline } from '@/hooks/use-context-pipeline';
+import PipelineDeploy from '@/components/prebuild-deploy';
 
 // 轉換
 export function dagToNodes(tasks: any[]) {
@@ -260,6 +261,11 @@ function ArtboardRoot() {
 
   return (
     <>
+      {/* TEST */}
+      <div className="absolute top-16 left-[360px] z-10">
+        <PipelineDeploy />
+      </div>
+
       {/* content */}
       <div className="h-full w-full" onClick={onCanvasClick}>
         <TopTab />

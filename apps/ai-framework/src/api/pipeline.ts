@@ -1,5 +1,5 @@
 import { fi } from 'date-fns/locale';
-import { POST } from '.';
+import { POST, POST_urlencoded } from '.';
 import { API_URLS } from './api/api-baseurl';
 import { API_ENDPOINTS } from './api/api-endpoint';
 import { API_TOKEN } from './api/api-token';
@@ -12,7 +12,7 @@ export const getAuthPipelineAPI = (
   client_id: string,
   client_secret: string,
 ) =>
-  POST<any>(API_URLS.PIPELINE, API_ENDPOINTS.PIPELINE_TOKEN, {
+  POST_urlencoded<any>(API_URLS.PIPELINE, API_ENDPOINTS.PIPELINE_TOKEN, {
     grant_type,
     username,
     password,

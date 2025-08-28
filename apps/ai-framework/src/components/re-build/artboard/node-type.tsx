@@ -8,6 +8,7 @@ import {
   getBezierPath,
 } from '@xyflow/react';
 import { excludedLabels } from './right-panel/no-setting-excluded-label';
+import { CloseIcon } from '@/components/icon/close-icon';
 
 /** * Input node
  * @param param0
@@ -34,11 +35,9 @@ export const InputNode = ({
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div
-        className={`absolute top-5 right-5 h-3 w-3 rounded-full ${
-          status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
-        }`}
-      ></div>
+      <div className="absolute top-5 right-5 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
+        <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
+      </div>
       <div>
         <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -61,6 +60,11 @@ export const InputNode = ({
               className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
             />
           )}
+          <div
+            className={`top-5 right-5 h-4 w-4 rounded-full ${
+              status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
+            }`}
+          ></div>
         </div>
         <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
@@ -119,11 +123,10 @@ export const TransformNode = ({
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div
-        className={`absolute top-3 right-3 h-3 w-3 rounded-full ${
-          status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
-        }`}
-      ></div>
+      <div className="absolute top-3 right-3 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
+        <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
+      </div>
+
       <div>
         <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -146,6 +149,11 @@ export const TransformNode = ({
               className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
             />
           )}
+          <div
+            className={`top-3 right-3 h-4 w-4 rounded-full ${
+              status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
+            }`}
+          ></div>
         </div>
         <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
@@ -207,11 +215,9 @@ export const OutputNode = ({
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div
-        className={`absolute top-5 right-5 h-3 w-3 rounded-full ${
-          status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
-        }`}
-      ></div>
+      <div className="absolute top-5 right-5 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
+        <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
+      </div>
 
       <div>
         <div className="tag">
@@ -233,6 +239,11 @@ export const OutputNode = ({
           <CheckIcon
             className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
           />
+          <div
+            className={`top-5 right-5 h-4 w-4 rounded-full ${
+              status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
+            }`}
+          ></div>
         </div>
         <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">

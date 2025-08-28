@@ -35,13 +35,3 @@ export async function POST<T>(
 
   return handleResponse<T>(res);
 }
-
-// res
-async function handleResponse<T>(res: Response): Promise<T> {
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Error ${res.status}: ${errorText}`);
-  }
-
-  return res.json();
-}

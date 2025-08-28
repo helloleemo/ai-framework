@@ -46,6 +46,26 @@ export async function POST<T>(
   return handleResponse<T>(res);
 }
 
+// POST - urlencoded
+export async function POST_urlencoded<T>(
+  baseUrl: string,
+  endpoint: string,
+  data: any,
+  token?: string,
+): Promise<T> {
+  const accessToken = localStorage.getItem(token ?? '');
+  const res = await fetch(`${baseUrl}${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: new URLSearchParams(data).toString(),
+  });
+
+  return handleResponse<T>(res);
+}
+
 // PUT
 export async function PUT<T>(
   baseUrl: string,
