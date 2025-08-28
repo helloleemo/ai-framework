@@ -4,7 +4,7 @@ import RightPanel from './right-panel';
 import TopTab from './top-tab';
 import { useEffect } from 'react';
 
-import { useArtboardNodes } from '@/hooks/use-artboard-state';
+import { useArtboardNodes } from '@/hooks/use-context-pipeline';
 import { PipelineProvider, usePipeline } from '@/hooks/use-context-pipeline';
 import PipelineDeploy from '@/components/prebuild-deploy';
 

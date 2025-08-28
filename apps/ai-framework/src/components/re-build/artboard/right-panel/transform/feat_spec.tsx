@@ -65,10 +65,7 @@ export default function FeatSpec({ activeNode }: { activeNode: any }) {
 
   return (
     <>
-      <TopTitle
-        title={activeNode.data.name}
-        description={activeNode.data.description}
-      />
+      <TopTitle title={activeNode.name} description={activeNode.description} />
       <div className="mb-4 h-[calc(100vh-280px)] border border-b border-amber-500">
         {/*  */}
         <div className="flex h-full flex-col justify-between">

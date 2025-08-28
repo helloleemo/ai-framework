@@ -1,4 +1,5 @@
 // import { POST } from '.';
+import { POST_urlencoded } from '.';
 import { API_URLS } from './api/api-baseurl';
 import { API_ENDPOINTS } from './api/api-endpoint';
 
@@ -9,29 +10,10 @@ export const getInputAPI = (
   username: string,
   password: string,
 ) =>
-  POST<any>(API_URLS.INDATA_7014, API_ENDPOINTS.INPUT_AUTH, {
+  POST_urlencoded<any>(API_URLS.INDATA_7014, API_ENDPOINTS.INPUT_AUTH, {
     client_id,
     client_secret,
     grant_type,
     username,
     password,
   });
-
-export async function POST<T>(
-  baseUrl: string,
-  endpoint: string,
-  data: any,
-  token?: string,
-): Promise<T> {
-  const accessToken = localStorage.getItem(token ?? '');
-  const res = await fetch(`${baseUrl}${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: new URLSearchParams(data).toString(),
-  });
-
-  return handleResponse<T>(res);
-}

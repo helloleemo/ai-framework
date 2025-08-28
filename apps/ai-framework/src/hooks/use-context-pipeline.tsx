@@ -1,6 +1,30 @@
 import { PipelineEdgeConfig } from '@/types/pipeline';
 import { generateUUID } from '@/utils/uuid';
-import { createContext, useContext, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from 'react';
+import {
+  addEdge,
+  Edge,
+  Node,
+  OnConnect,
+  useEdgesState,
+  useNodesState,
+  NodeTypes,
+  EdgeTypes,
+  OnNodesChange,
+  OnEdgesChange,
+} from '@xyflow/react';
+import {
+  edgeType,
+  InputNode,
+  OutputNode,
+  TransformNode,
+} from '@/components/re-build/artboard/node-type';
 
 export interface PipelineNode {
   id: string;
@@ -47,9 +71,17 @@ interface ReactFlowNode {
 }
 
 interface PipelineContextType {
+  // Pipeline 狀態
   nodes: PipelineNode[];
   activeNode: PipelineNode | null;
 
+  // React Flow 狀態
+  reactFlowNodes: Node[];
+  reactFlowEdges: Edge[];
+  nodeTypes: NodeTypes;
+  edgeTypes: EdgeTypes;
+
+  // Pipeline 操作
   setEdge: (edge: PipelineEdgeConfig) => void;
   addNode: (reactFlowNode: ReactFlowNode) => void;
   updateNodeConfig: (nodeId: string, config: Record<string, unknown>) => void;
@@ -64,6 +96,17 @@ interface PipelineContextType {
   getNodeCompleted: (nodeId: string) => boolean;
   buildPipelineConfig: () => PipelineConfigResult;
   validatePipeline: () => { isValid: boolean; errors: string[] };
+
+  // React Flow 操作
+  setReactFlowNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  onNodesChange: OnNodesChange;
+  setReactFlowEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+  onEdgesChange: OnEdgesChange;
+  handleDrop: (e: React.DragEvent) => void;
+  handleDragOver: (e: React.DragEvent) => void;
+  onConnect: OnConnect;
+  onNodeDoubleClick: (event: React.MouseEvent, node: Node) => void;
+  onCanvasClick: () => void;
 }
 
 const PipelineContext = createContext<PipelineContextType | null>(null);
@@ -73,57 +116,79 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
   const [edges, setEdges] = useState<PipelineEdgeConfig[]>([]);
   const [activeNode, setActiveNodeState] = useState<PipelineNode | null>(null);
 
-  // set edge
-  const setEdge = (edge: PipelineEdgeConfig) => {
-    setEdges((prev) => [...prev, edge]);
+  // React Flow 狀態管理
+  const initialNodes: Node[] = [];
+  const initialEdges: Edge[] = [];
+
+  const nodeTypes = {
+    input: InputNode,
+    transform: TransformNode,
+    output: OutputNode,
   };
+  const edgeTypes = {
+    custom: edgeType,
+  };
+
+  const [reactFlowNodes, setReactFlowNodes, onNodesChange] =
+    useNodesState(initialNodes);
+  const [reactFlowEdges, setReactFlowEdges, onEdgesChange] =
+    useEdgesState(initialEdges);
+
+  // set edge
+  const setEdge = useCallback((edge: PipelineEdgeConfig) => {
+    setEdges((prev) => [...prev, edge]);
+  }, []);
 
   // 新增 node
-  const addNode = (reactFlowNode: ReactFlowNode) => {
-    const existingNode = nodes.find((n) => n.id === reactFlowNode.id);
-    // console.log('React Flow Node:', reactFlowNode.id);
-    // console.log('Existing Node:', existingNode?.id);
-    if (existingNode) return;
-    console.log('Adding node:', reactFlowNode);
-    const newNode: PipelineNode = {
-      id: reactFlowNode.id,
-      type: reactFlowNode.data?.type || 'default',
-      label: reactFlowNode.data?.label || 'Unknown',
-      position: reactFlowNode.position || { x: 0, y: 0 },
-      description: reactFlowNode.data?.description || '',
-      config: {},
-    };
+  const addNode = useCallback((reactFlowNode: ReactFlowNode) => {
+    setNodes((prevNodes) => {
+      const existingNode = prevNodes.find((n) => n.id === reactFlowNode.id);
+      if (existingNode) return prevNodes;
 
-    setNodes((prev) => [...prev, newNode]);
-  };
+      console.log('Adding node:', reactFlowNode);
+      const newNode: PipelineNode = {
+        id: reactFlowNode.id,
+        type: reactFlowNode.data?.type || 'default',
+        label: reactFlowNode.data?.label || 'Unknown',
+        position: reactFlowNode.position || { x: 0, y: 0 },
+        description: reactFlowNode.data?.description || '',
+        config: {},
+      };
+
+      return [...prevNodes, newNode];
+    });
+  }, []);
 
   // active node
-  const setActiveNode = (node: PipelineNode | null) => {
+  const setActiveNode = useCallback((node: PipelineNode | null) => {
     setActiveNodeState(node);
-  };
+  }, []);
 
   // 更新 node 設定
-  const updateNodeConfig = (
-    nodeId: string,
-    config: Record<string, unknown>,
-  ) => {
-    const newConfig =
-      'config' in config
-        ? { ...(config.config as Record<string, unknown>) }
-        : { ...config };
-    setNodes((prev) =>
-      prev.map((node) =>
-        node.id === nodeId
-          ? { ...node, config: { ...node.config, ...newConfig } }
-          : node,
-      ),
-    );
-  };
+  const updateNodeConfig = useCallback(
+    (nodeId: string, config: Record<string, unknown>) => {
+      const newConfig =
+        'config' in config
+          ? { ...(config.config as Record<string, unknown>) }
+          : { ...config };
+      setNodes((prev) =>
+        prev.map((node) =>
+          node.id === nodeId
+            ? { ...node, config: { ...node.config, ...newConfig } }
+            : node,
+        ),
+      );
+    },
+    [],
+  );
 
   // 取得 node
-  const getNode = (nodeId: string): PipelineNode | undefined => {
-    return nodes.find((n) => n.id === nodeId);
-  };
+  const getNode = useCallback(
+    (nodeId: string): PipelineNode | undefined => {
+      return nodes.find((n) => n.id === nodeId);
+    },
+    [nodes],
+  );
 
   // 取得node狀態
   const getNodeStatus = (nodeId: string): 'success' | 'failed' | 'pending' => {
@@ -201,7 +266,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       task_id: node.id, // node id
       operator: 'PythonOperator',
       processor_stage: node.type, // node type
-      processor_method: node.label, // node label
+      processor_method: getProcessorMethod(node.type, node.label), // 使用智能對應
       op_kwargs: {
         ...node.config,
       },
@@ -209,6 +274,82 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       position: node.position,
     };
   };
+
+  // React Flow 事件處理
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      try {
+        const data = JSON.parse(e.dataTransfer.getData('application/json'));
+        if (
+          data.type === 'input' ||
+          data.type === 'output' ||
+          data.type === 'transform'
+        ) {
+          const position = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - position.left;
+          const y = e.clientY - position.top;
+          const id = generateUUID();
+          const newNode: Node = {
+            id,
+            position: { x, y },
+            type: data.type,
+            data: {
+              id,
+              name: data.name,
+              label: data.label,
+              position: { x, y },
+              type: data.type,
+              description: data.description,
+            },
+          };
+          setReactFlowNodes((nodes: Node[]) => [...nodes, newNode]);
+          addNode(newNode);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [setReactFlowNodes, addNode],
+  );
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onConnect: OnConnect = useCallback(
+    (params) => {
+      const customParams = { ...params, type: 'custom' };
+      setReactFlowEdges((eds) => addEdge(customParams, eds));
+
+      // 轉換為 PipelineEdgeConfig 格式
+      const pipelineEdge: PipelineEdgeConfig = {
+        id: `${params.source}-${params.target}`,
+        source: params.source,
+        target: params.target,
+        sourceHandle: params.sourceHandle || undefined,
+        targetHandle: params.targetHandle || undefined,
+      };
+      setEdge(pipelineEdge);
+    },
+    [setEdge, setReactFlowEdges],
+  );
+
+  const onNodeDoubleClick = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      console.log('Node double clicked:', node);
+      const pipelineNode = getNode(node.id);
+      setActiveNode(pipelineNode || null);
+      console.log('Active node set to:', node);
+      event.stopPropagation();
+    },
+    [getNode, setActiveNode],
+  );
+
+  const onCanvasClick = useCallback(() => {
+    setActiveNode(null);
+  }, [setActiveNode]);
 
   // Pipeline 格式
   const buildPipelineConfig = (): PipelineConfigResult => {
@@ -305,8 +446,17 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
   return (
     <PipelineContext.Provider
       value={{
+        // Pipeline 狀態
         nodes,
         activeNode,
+
+        // React Flow 狀態
+        reactFlowNodes,
+        reactFlowEdges,
+        nodeTypes,
+        edgeTypes,
+
+        // Pipeline 操作
         setEdge,
         addNode,
         setActiveNode,
@@ -318,6 +468,17 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
         getNodeCompleted,
         buildPipelineConfig,
         validatePipeline,
+
+        // React Flow 操作
+        setReactFlowNodes,
+        onNodesChange,
+        setReactFlowEdges,
+        onEdgesChange,
+        handleDrop,
+        handleDragOver,
+        onConnect,
+        onNodeDoubleClick,
+        onCanvasClick,
       }}
     >
       {children}
@@ -331,4 +492,43 @@ export function usePipeline() {
     throw new Error('usePipeline must be used within a PipelineProvider');
   }
   return context;
+}
+
+//
+export function useArtboardNodes() {
+  const {
+    reactFlowNodes,
+    reactFlowEdges,
+    nodeTypes,
+    edgeTypes,
+    setReactFlowNodes,
+    onNodesChange,
+    setReactFlowEdges,
+    onEdgesChange,
+    handleDrop,
+    handleDragOver,
+    onConnect,
+    onNodeDoubleClick,
+    onCanvasClick,
+    activeNode,
+    setActiveNode,
+  } = usePipeline();
+
+  return {
+    nodes: reactFlowNodes,
+    setNodes: setReactFlowNodes,
+    onNodesChange,
+    edges: reactFlowEdges,
+    setEdges: setReactFlowEdges,
+    onEdgesChange,
+    nodeTypes,
+    edgeTypes,
+    activeNode,
+    setActiveNode,
+    handleDrop,
+    handleDragOver,
+    onConnect,
+    onNodeDoubleClick,
+    onCanvasClick,
+  };
 }

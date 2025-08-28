@@ -29,10 +29,7 @@ export default function InputSetting({ activeNode }: { activeNode: any }) {
 
   return (
     <>
-      <TopTitle
-        title={activeNode.data.label}
-        description={activeNode.data.description}
-      />
+      <TopTitle title={activeNode.label} description={activeNode.description} />
       <div className="mb-4 h-[calc(100vh-175px)] border border-b border-amber-500">
         <InputStep activeNode={node} form={form} setForm={setForm} />
       </div>
