@@ -3,9 +3,9 @@ import Home from '@/pages/home';
 import Login from '@/pages/login';
 import Layout from '@/components/layout';
 import Menu from '@/components/sidebar-menu';
-import ArtboardRoot from '@/pages/artboard-root';
+// import ArtboardRoot from '@/pages/artboard-root';
 import Dashboard from '@/pages/dashboard';
-import TempArtboard from '@/pages/artboard-temp';
+// import TempArtboard from '@/pages/artboard-temp';
 import ReBuildLayout from '@/components/re-build/layout';
 import Artboard from '@/components/re-build/artboard/artboard';
 import ViewAll from '@/components/re-build/view-all/view-all';
@@ -32,13 +32,13 @@ function AppRoutes() {
   return (
     <Routes>
       {/* AI framework */}
-      <Route element={<Layout />}>
+      {/* <Route element={<Layout />}>
         <Route path="/ai-framework" element={<Home />} />
         <Route path="/ai-framework/artboard" element={<ArtboardRoot />}>
           <Route index element={<Menu />} />
           <Route path="temp" element={<TempArtboard />} />
         </Route>
-      </Route>
+      </Route> */}
       {/* re-build */}
       <Route path="/re-build" element={<ReBuildLayout />}>
         <Route path="/re-build/ai-framework/artboard" element={<Artboard />} />
