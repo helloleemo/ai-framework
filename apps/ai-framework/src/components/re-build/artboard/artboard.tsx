@@ -4,9 +4,12 @@ import RightPanel from './right-panel';
 import TopTab from './top-tab';
 import { useEffect } from 'react';
 
-import { useArtboardNodes } from '@/hooks/use-context-pipeline';
-import { PipelineProvider, usePipeline } from '@/hooks/use-context-pipeline';
-import PipelineDeploy from '@/components/prebuild-deploy';
+import { useArtboardNodes } from '@/hooks/use-pipeline/use-context-pipeline';
+import {
+  PipelineProvider,
+  usePipeline,
+} from '@/hooks/use-pipeline/use-context-pipeline';
+import PipelineDeploy from './prebuild-deploy';
 
 // 轉換
 export function dagToNodes(tasks: any[]) {

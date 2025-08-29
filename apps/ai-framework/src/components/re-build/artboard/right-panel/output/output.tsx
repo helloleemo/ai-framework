@@ -1,4 +1,4 @@
-import { usePipeline } from '@/hooks/use-context-pipeline';
+import { usePipeline } from '@/hooks/use-pipeline/use-context-pipeline';
 import { useEffect, useState } from 'react';
 import TopTitle from '../top-title';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,16 @@ import { useToaster } from '@/hooks/use-toaster';
 import { useSpinner } from '@/hooks/use-spinner';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Value } from '@radix-ui/react-select';
 
 export default function Output({ activeNode }: { activeNode: any }) {
   const { getNode, updateNodeConfig, setActiveNode, setNodeCompleted } =
@@ -13,6 +23,13 @@ export default function Output({ activeNode }: { activeNode: any }) {
   // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const intervalItem = [
+    { value: '@once', label: '只執行一次' },
+    { value: '*/10 * * * *', label: '每十分鐘執行一次' },
+    { value: '59 * * * *', label: '每小時尾端執行一次' },
+    { value: '0 6 * * *', label: '每天早上6點執行一次' },
+    { value: '0 0 * * *', label: '每天半夜12點執行一次' },
+  ];
 
   // setForm
   const handleFormChange = (field: string, value: any) => {
@@ -25,13 +42,14 @@ export default function Output({ activeNode }: { activeNode: any }) {
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
   const [form, setForm] = useState(() => ({
-    fs: node?.config?.fs ?? '',
+    scheduleInterval: node?.config?.scheduleInterval ?? '',
   }));
 
   useEffect(() => {
-    setForm({
-      fs: node?.config?.fs ?? '',
-    });
+    setForm((prev: any) => ({
+      ...prev,
+      scheduleInterval: node?.config?.scheduleInterval ?? '',
+    }));
   }, [activeNode, node]);
 
   // handler
@@ -51,10 +69,7 @@ export default function Output({ activeNode }: { activeNode: any }) {
   };
   return (
     <>
-      <TopTitle
-        title={activeNode.data.name}
-        description={activeNode.data.description}
-      />
+      <TopTitle title={activeNode.name} description={activeNode.description} />
       <div className="mb-4 h-[calc(100vh-220px)] border border-b border-amber-500">
         {/*  */}
         <div className="flex h-full flex-col justify-between">
@@ -64,17 +79,30 @@ export default function Output({ activeNode }: { activeNode: any }) {
                 <p className="text-sm font-bold text-neutral-800">
                   Basic information
                 </p>
-                <div className="grid w-full max-w-sm items-center gap-1 pt-2">
+                <div className="form pt-2">
                   <Label className="text-sm" htmlFor="fs">
-                    output設定
+                    執行頻率
                   </Label>
-                  {/* <Input
-                    type="number"
-                    id="fs"
-                    placeholder="fs"
-                    value={form.fs ? form.fs : ''}
-                    onChange={(e) => handleFormChange('fs', e.target.value)}
-                  /> */}
+                  <Select
+                    value={form.scheduleInterval}
+                    onValueChange={(value) =>
+                      handleFormChange('scheduleInterval', value)
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="執行頻率" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>執行頻率</SelectLabel>
+                        {intervalItem.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 

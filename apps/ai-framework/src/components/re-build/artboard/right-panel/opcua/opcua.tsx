@@ -1,7 +1,7 @@
 import { DashboardIcon } from '@/components/icon/dashboard-icon';
 import { useEffect, useState } from 'react';
 import OpcUaStep from './opc-ua-step';
-import { usePipeline } from '@/hooks/use-context-pipeline';
+import { usePipeline } from '@/hooks/use-pipeline/use-context-pipeline';
 
 export default function OPCUA({ activeNode }: { activeNode: any }) {
   const { getNode } = usePipeline();

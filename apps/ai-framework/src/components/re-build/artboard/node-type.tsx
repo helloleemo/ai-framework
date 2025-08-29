@@ -1,5 +1,5 @@
 import { CheckIcon } from '@/components/icon/check-icon';
-import { usePipeline } from '@/hooks/use-context-pipeline';
+import { usePipeline } from '@/hooks/use-pipeline/use-context-pipeline';
 import {
   Handle,
   Position,

@@ -1,4 +1,4 @@
-import { usePipeline } from '@/hooks/use-context-pipeline';
+import { usePipeline } from '@/hooks/use-pipeline/use-context-pipeline';
 import { useEffect, useState } from 'react';
 import TopTitle from '../top-title';
 import InputStep from '../input/input-setting-step';

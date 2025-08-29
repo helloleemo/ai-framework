@@ -1,5 +1,5 @@
 import { DashboardIcon } from '@/components/icon/dashboard-icon';
-import { usePipeline } from '@/hooks/use-context-pipeline';
+import { usePipeline } from '@/hooks/use-pipeline/use-context-pipeline';
 import { useEffect, useState } from 'react';
 import InputStep from './input-setting-step';
 import TopTitle from '../top-title';

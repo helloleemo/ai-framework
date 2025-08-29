@@ -4,7 +4,7 @@ import { Label } from '@radix-ui/react-label';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { usePipeline } from '@/hooks/use-context-pipeline';
+import { usePipeline } from '@/hooks/use-pipeline/use-context-pipeline';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
 import { getInputAPI } from '@/api/input';
+import turnToMs from '@/utils/turn-to-ms';
 
 type InputProps = {
   activeNode: any;
@@ -35,6 +36,17 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
     setForm((prev: any) => ({ ...prev, [field]: value }));
   };
 
+  // buffer
+  const handleBufferChange = (valueInSeconds: number) => {
+    const valueInMs = turnToMs(valueInSeconds);
+    handleFormChange('buffer', valueInMs);
+  };
+
+  const getDisplayBufferValue = () => {
+    const bufferInMs = form.buffer ?? 0;
+    return bufferInMs / 1000; // 毫秒轉秒用於顯示
+  };
+
   // api
   const fetchData = async () => {
     setLoading(true);
@@ -53,9 +65,10 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
         // form.password,
       );
       console.log('res', res);
+      showSuccess('連線成功！');
     } catch (error) {
       console.error(error);
-      return;
+      showError('連線失敗！');
     } finally {
       setLoading(false);
     }
@@ -63,8 +76,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
 
   // handle connect
   const handleConnect = () => {
-    fetchData();
-    showError('連線失敗！');
+    // fetchData();
 
     // updateNodeConfig
     updateNodeConfig(activeNode.id, {
@@ -96,14 +108,6 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
     setLoading(true);
     updateNodeConfig(activeNode.id, {
       ...form.config,
-      // ip: form.ip,
-      // port: form.port,
-      // client_id: form.client_id,
-      // client_secret: form.client_secret,
-      // grant_type: form.grant_type,
-      // account: form.account,
-      // password: form.password,
-      // tags: form.tags,
       buffer: form.buffer,
       date: form.date,
     });
@@ -258,11 +262,14 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
       {step === 3 && (
         <>
           <div className="form">
-            <p className="text-sm font-bold text-neutral-800">Setting</p>
+            <p className="text-sm font-bold text-neutral-800">執行起始日</p>
             <div className="grid w-full max-w-sm items-center gap-1 pt-2">
               <div className="flex w-full gap-2">
                 <div className="flex w-full flex-col">
-                  <Label htmlFor="date-picker" className="px-1">
+                  <Label
+                    htmlFor="date-picker"
+                    className="px-1 text-sm font-semibold"
+                  >
                     Date
                   </Label>
                   <Popover open={open} onOpenChange={setOpen}>
@@ -295,7 +302,10 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
                   </Popover>
                 </div>
                 <div className="flex w-full flex-col">
-                  <Label htmlFor="time-picker" className="px-1">
+                  <Label
+                    htmlFor="time-picker"
+                    className="px-1 text-sm font-semibold"
+                  >
                     Time
                   </Label>
                   <Input
@@ -309,17 +319,20 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
               </div>
             </div>
             <div className="pt-4">
-              <Label htmlFor="buffer" className="mt- mx-1">
-                Buffer(毫秒)
+              <Label
+                htmlFor="buffer"
+                className="mx-1 px-1 text-sm font-semibold"
+              >
+                Buffer(秒)
               </Label>
               <Input
                 type="number"
                 id="buffer"
                 placeholder="Buffer time (秒)"
                 className="mt-1"
-                value={form.buffer ?? ''}
+                value={getDisplayBufferValue() || ''}
                 onChange={(e) =>
-                  handleFormChange('buffer', Number(e.target.value) || 0)
+                  handleBufferChange(Number(e.target.value) || 0)
                 }
               />
             </div>

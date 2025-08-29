@@ -1,8 +1,8 @@
 import { StopIcon } from '@/components/icon/stop-icon';
 import { PreBuildIcon } from '@/components/icon/pre-build-icon';
 import { useEffect, useState } from 'react';
-import { DeployIcon } from './deploy-icon';
-import { usePipeline } from '@/hooks/use-context-pipeline';
+import { DeployIcon } from './icon/deploy-icon';
+import { usePipeline } from '@/hooks/use-pipeline/use-context-pipeline';
 import { useToaster } from '@/hooks/use-toaster';
 import { Button } from './ui/button';
 import { createDagAPI, pipelineTokenTaker } from '@/api/pipeline';

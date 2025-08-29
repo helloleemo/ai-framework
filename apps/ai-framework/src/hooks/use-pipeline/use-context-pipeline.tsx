@@ -139,7 +139,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     setEdges((prev) => [...prev, edge]);
   }, []);
 
-  // 新增 node
+  // add node
   const addNode = useCallback((reactFlowNode: ReactFlowNode) => {
     setNodes((prevNodes) => {
       const existingNode = prevNodes.find((n) => n.id === reactFlowNode.id);
@@ -154,6 +154,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
         description: reactFlowNode.data?.description || '',
         config: {},
       };
+      console.log('New Pipeline Node:', newNode);
 
       return [...prevNodes, newNode];
     });
@@ -164,7 +165,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     setActiveNodeState(node);
   }, []);
 
-  // 更新 node 設定
+  //
   const updateNodeConfig = useCallback(
     (nodeId: string, config: Record<string, unknown>) => {
       const newConfig =
@@ -358,15 +359,18 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
 
     const pipelineConfig = {
       dag_id: `pipeline_${generateUUID()}`,
-      schedule_interval: '@once',
+      schedule_interval: findScheduleInterval(nodes),
       start_date: new Date().toISOString().split('T')[0],
       catchup: false,
       owner: localStorage.getItem('code') || 'unknown',
       tasks: tasks,
     };
-
-    console.log('Pipeline Config:', pipelineConfig);
     return pipelineConfig;
+  };
+
+  //
+  const findScheduleInterval = (node: any) => {
+    return node.find((n: any) => n.type === 'output')?.config?.scheduleInterval;
   };
 
   // 驗證 pipeline 完整性
