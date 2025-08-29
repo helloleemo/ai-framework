@@ -1,8 +1,8 @@
 import { fi } from 'date-fns/locale';
-import { POST, POST_urlencoded } from '.';
-import { API_URLS } from './base/api-baseurl';
-import { API_ENDPOINTS } from './base/api-endpoint';
-import { API_TOKEN } from './base/api-token';
+import { POST, POST_urlencoded } from '../shared/api';
+import { API_URLS } from '../shared/api/base/api-baseurl';
+import { API_ENDPOINTS } from '../shared/api/base/api-endpoint';
+import { API_TOKEN } from '../shared/api/base/api-token';
 
 export const getAuthPipelineAPI = (
   grant_type: string,

@@ -1,12 +1,8 @@
 import { logoutAPI } from '@/api/auth';
-import { LogoutIcon } from '@/components/icon/logout-icon';
-import { UserIcon } from '@/components/icon/user-icon';
-import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { LogoutIcon } from '@/shared/ui/icon/logout-icon';
+import { UserIcon } from '@/shared/ui/icon/user-icon';
+import { Button } from '@/shared/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

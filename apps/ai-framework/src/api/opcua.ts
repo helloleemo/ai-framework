@@ -1,7 +1,7 @@
-import { POST } from '.';
-import { API_URLS } from './base/api-baseurl';
-import { API_ENDPOINTS } from './base/api-endpoint';
-import { API_TOKEN } from './base/api-token';
+import { POST } from '../shared/api';
+import { API_URLS } from '../shared/api/base/api-baseurl';
+import { API_ENDPOINTS } from '../shared/api/base/api-endpoint';
+import { API_TOKEN } from '../shared/api/base/api-token';
 
 export const connectOpcuaAPI = (
   connectionString: string,

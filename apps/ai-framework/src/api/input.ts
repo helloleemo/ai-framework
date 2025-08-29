@@ -1,7 +1,7 @@
 // import { POST } from '.';
-import { POST_urlencoded } from '.';
-import { API_URLS } from './base/api-baseurl';
-import { API_ENDPOINTS } from './base/api-endpoint';
+import { POST_urlencoded } from '../shared/api';
+import { API_URLS } from '../shared/api/base/api-baseurl';
+import { API_ENDPOINTS } from '../shared/api/base/api-endpoint';
 
 export const getInputAPI = (
   client_id: string,

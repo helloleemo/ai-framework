@@ -24,7 +24,7 @@ import {
   InputNode,
   OutputNode,
   TransformNode,
-} from '@/components/re-build/artboard/node-type';
+} from '@/components/artboard/node-type';
 
 export interface PipelineNode {
   id: string;

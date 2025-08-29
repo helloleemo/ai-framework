@@ -1,12 +1,12 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
 import { useEffect, useState } from 'react';
 import { validateField } from '../utils/validators';
 // import { login as loginApi } from '@/api/auth';
 import { useNavigate } from 'react-router-dom';
 import { decodeTokenAPI, loginAPI } from '@/api/auth';
-import { useSpinner } from '@/hooks/use-spinner';
+import { useSpinner } from '@/shared/hooks/use-spinner';
 
 function Login() {
   // login -> dashboard
