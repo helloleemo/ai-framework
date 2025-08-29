@@ -1,11 +1,11 @@
 import { Routes, Route, Link } from 'react-router-dom';
-import Login from '@/pages/login';
-import Dashboard from '@/pages/dashboard';
-import ReBuildLayout from '@/components/layout';
-import Artboard from '@/components/artboard/artboard';
-import ViewAll from '@/components/view-all/view-all';
-import ArtboardMenu from '@/components/artboard/artboard-menu';
-import ArtboardTemp from '@/components/artboard/artboard-temp';
+import Login from '../features/auth/pages/login';
+import Dashboard from '../features/dashboard/pages/dashboard';
+import ReBuildLayout from '../shared/components/layout/layout';
+import Artboard from '../features/pipeline/components/artboard/artboard';
+import ViewAll from '../features/pipeline/components/view-all/view-all';
+import ArtboardMenu from '../features/pipeline/components/artboard/artboard-menu';
+import ArtboardTemp from '../features/pipeline/components/artboard/artboard-temp';
 
 function returnToPrevious() {
   return (
