@@ -3,6 +3,7 @@ export interface MenuItem {
   children: MenuItem[] | null;
   label?: string | null;
   type?: 'input' | 'output' | 'transform';
+  intro?: string | null;
   description?: string | null;
 }
 

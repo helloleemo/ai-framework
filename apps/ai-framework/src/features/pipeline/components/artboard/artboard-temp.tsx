@@ -11,7 +11,7 @@ import {
   Controls,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import RightPanel from '../artboard/right-panel';
+import RightPanel from './right-panel/right-panel';
 import TopTab from '../artboard/top-tab';
 import { useCallback, useEffect, useState } from 'react';
 import {

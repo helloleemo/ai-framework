@@ -13,6 +13,7 @@ export default function Hilbert({ activeNode }: { activeNode: any }) {
   // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const [errorMsg, setErrorMsg] = useState('');
 
   // setForm
   const handleFormChange = (field: string, value: any) => {
@@ -24,32 +25,42 @@ export default function Hilbert({ activeNode }: { activeNode: any }) {
 
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
-  const [form, setForm] = useState(() => ({
-    fs: node?.config?.fs ?? '',
-    rpm: node?.config?.rpm ?? '',
+  const [form, setForm] = useState<{
+    fs: number;
+    rpm: number;
+  }>(() => ({
+    fs: 0,
+    rpm: 0,
   }));
 
   useEffect(() => {
-    setForm({
-      fs: node?.config?.fs ?? '',
-      rpm: node?.config?.rpm ?? '',
-    });
+    if (node?.config) {
+      setForm({
+        fs: (node.config.fs as number) || 0,
+        rpm: (node.config.rpm as number) || 0,
+      });
+    } else {
+      setForm({
+        fs: 0,
+        rpm: 0,
+      });
+    }
   }, [activeNode, node]);
 
   // handler
-  const handleConnect = async () => {
+  const handleConnect = () => {
     setLoading(true);
-    try {
-      await updateNodeConfig(activeNode.id, form);
-      showSuccess('Connected successfully');
-    } catch (error) {
-      showError('Failed to connect');
-    } finally {
+    updateNodeConfig(activeNode.id, form);
+    if (form.fs <= 0 || form.rpm <= 0) {
+      setErrorMsg('全部數值必須大於0');
       setLoading(false);
-      console.log('form', form);
-      setNodeCompleted(activeNode.id, true);
-      setActiveNode(null);
+      return;
     }
+    showSuccess('設定成功！');
+    setNodeCompleted(activeNode.id, true);
+    setLoading(false);
+    console.log('form', form);
+    setActiveNode(null);
   };
 
   return (
@@ -73,7 +84,7 @@ export default function Hilbert({ activeNode }: { activeNode: any }) {
                     type="number"
                     id="fs"
                     placeholder="fs"
-                    value={form.fs ? form.fs : ''}
+                    value={form.fs === 0 ? '' : form.fs}
                     onChange={(e) => handleFormChange('fs', e.target.value)}
                   />
                 </div>
@@ -86,10 +97,11 @@ export default function Hilbert({ activeNode }: { activeNode: any }) {
                     type="number"
                     id="rpm"
                     placeholder="rpm"
-                    value={form.rpm ? form.rpm : ''}
+                    value={form.rpm === 0 ? '' : form.rpm}
                     onChange={(e) => handleFormChange('rpm', e.target.value)}
                   />
                 </div>
+                <p className="p-2 text-sm text-red-500">{errorMsg}</p>
               </div>
 
               <Button

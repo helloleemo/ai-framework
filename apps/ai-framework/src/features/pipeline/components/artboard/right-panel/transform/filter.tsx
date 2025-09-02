@@ -23,6 +23,7 @@ export default function Filter({ activeNode }: { activeNode: any }) {
   // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const [errorMsg, setErrorMsg] = useState('');
 
   // setForm
   const handleFormChange = (field: string, value: any) => {
@@ -34,32 +35,46 @@ export default function Filter({ activeNode }: { activeNode: any }) {
 
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
-  const [form, setForm] = useState(() => ({
-    fs: node?.config?.fs ?? '',
-    type: node?.config?.type ?? '',
+  const [form, setForm] = useState<{
+    fs: number;
+    lowcut: number;
+    highcut: number;
+  }>(() => ({
+    fs: 0,
+    lowcut: 0,
+    highcut: 0,
   }));
 
   useEffect(() => {
-    setForm({
-      fs: node?.config?.fs ?? '',
-      type: node?.config?.type ?? '',
-    });
+    if (node?.config) {
+      setForm({
+        fs: (node.config.fs as number) || 0,
+        lowcut: (node.config.lowcut as number) || 0,
+        highcut: (node.config.highcut as number) || 0,
+      });
+    } else {
+      setForm({
+        fs: 0,
+        lowcut: 0,
+        highcut: 0,
+      });
+    }
   }, [activeNode, node]);
 
   // handler
-  const handleConnect = async () => {
+  const handleConnect = () => {
     setLoading(true);
-    try {
-      await updateNodeConfig(activeNode.id, form);
-      showSuccess('Connected successfully');
-    } catch (error) {
-      showError('Failed to connect');
-    } finally {
+    updateNodeConfig(activeNode.id, form);
+    if (form.fs <= 0 || form.lowcut <= 0 || form.highcut <= 0) {
+      setErrorMsg('所有值必須大於0');
       setLoading(false);
-      console.log('form', form);
-      setNodeCompleted(activeNode.id, true);
-      setActiveNode(null);
+      return;
     }
+    showSuccess('設定成功！');
+    setNodeCompleted(activeNode.id, true);
+    setLoading(false);
+    console.log('form', form);
+    setActiveNode(null);
   };
 
   return (
@@ -71,31 +86,41 @@ export default function Filter({ activeNode }: { activeNode: any }) {
           {step === 1 && (
             <>
               <div className="form">
-                <Label className="text-sm" htmlFor="fs">
-                  窗函數類型
-                </Label>
-                <Select
-                  value={form.type}
-                  onValueChange={(value) => handleFormChange('type', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="窗函數類型" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>窗函數類型</SelectLabel>
-                      <SelectItem value="hanning">
-                        hanning: 漢寧窗，常用的平滑窗函數
-                      </SelectItem>
-                      <SelectItem value="flattop">
-                        flattop: 平頂窗，提供更準確的振幅測量
-                      </SelectItem>
-                      <SelectItem value="rectangular">
-                        rectangular: 矩形窗，不做任何修改（全為1）
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <div className="grid w-full max-w-sm items-center gap-1 pt-2">
+                  <Label className="text-sm" htmlFor="fs">
+                    採樣頻率 (Hz)
+                  </Label>
+                  <Input
+                    type="number"
+                    id="fs"
+                    placeholder="fs"
+                    value={form.fs === 0 ? '' : form.fs}
+                    onChange={(e) => handleFormChange('fs', e.target.value)}
+                  />
+                  <Label className="text-sm" htmlFor="lowcut">
+                    低頻截止頻率 (Hz)
+                  </Label>
+                  <Input
+                    type="number"
+                    id="lowcut"
+                    placeholder="lowcut"
+                    value={form.lowcut === 0 ? '' : form.lowcut}
+                    onChange={(e) => handleFormChange('lowcut', e.target.value)}
+                  />
+                  <Label className="text-sm" htmlFor="highcut">
+                    高頻截止頻率 (Hz)
+                  </Label>
+                  <Input
+                    type="number"
+                    id="highcut"
+                    placeholder="highcut"
+                    value={form.highcut === 0 ? '' : form.highcut}
+                    onChange={(e) =>
+                      handleFormChange('highcut', e.target.value)
+                    }
+                  />
+                  <p className="p-2 text-sm text-red-500">{errorMsg}</p>
+                </div>
               </div>
 
               <Button

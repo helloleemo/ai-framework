@@ -16,12 +16,27 @@ import {
   SelectValue,
 } from '@/shared/ui/select';
 
+type BearingConfig = {
+  BPFO?: number;
+  BPFI?: number;
+  BSF?: number;
+  FTF?: number;
+};
+
+type NodeConfig = {
+  fs?: number;
+  rpm?: number;
+  Bearing?: BearingConfig;
+  alias?: string;
+};
+
 export default function FeatSpec({ activeNode }: { activeNode: any }) {
   const { getNode, updateNodeConfig, setActiveNode, setNodeCompleted } =
     usePipeline();
   // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const [errorMsg, setErrorMsg] = useState('');
 
   // setForm
   const handleFormChange = (field: string, value: any) => {
@@ -33,34 +48,88 @@ export default function FeatSpec({ activeNode }: { activeNode: any }) {
 
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
-  const [form, setForm] = useState(() => ({
-    fs: node?.config?.fs ?? '',
-    rpm: node?.config?.rpm ?? '',
-    type: node?.config?.type ?? '',
+  const [form, setForm] = useState<{
+    fs: number;
+    rpm: number;
+    bpfo: number | '';
+    bpfi: number | '';
+    bsf: number | '';
+    ftf: number | '';
+    alias: string;
+  }>(() => ({
+    fs: 0,
+    rpm: 0,
+    bpfo: '',
+    bpfi: '',
+    bsf: '',
+    ftf: '',
+    alias: '',
   }));
 
   useEffect(() => {
-    setForm({
-      fs: node?.config?.fs ?? '',
-      rpm: node?.config?.rpm ?? '',
-      type: node?.config?.type ?? '',
-    });
+    if (node?.config) {
+      const config = node.config as NodeConfig;
+      setForm({
+        fs: config.fs || 0,
+        rpm: config.rpm || 0,
+        bpfo: config.Bearing?.BPFO || '',
+        bpfi: config.Bearing?.BPFI || '',
+        bsf: config.Bearing?.BSF || '',
+        ftf: config.Bearing?.FTF || '',
+        alias: config.alias || '',
+      });
+    } else {
+      setForm({
+        fs: 0,
+        rpm: 0,
+        bpfo: '',
+        bpfi: '',
+        bsf: '',
+        ftf: '',
+        alias: '',
+      });
+    }
   }, [activeNode, node]);
 
   // handler
-  const handleConnect = async () => {
+  const handleConnect = () => {
     setLoading(true);
-    try {
-      await updateNodeConfig(activeNode.id, form);
-      showSuccess('Connected successfully');
-    } catch (error) {
-      showError('Failed to connect');
-    } finally {
+
+    //
+    const configToSave = {
+      fs: Number(form.fs) || 0,
+      rpm: Number(form.rpm) || 0,
+      Bearing: {
+        BPFO: form.bpfo ? Number(form.bpfo) : undefined,
+        BPFI: form.bpfi ? Number(form.bpfi) : undefined,
+        BSF: form.bsf ? Number(form.bsf) : undefined,
+        FTF: form.ftf ? Number(form.ftf) : undefined,
+      },
+      alias: String(form.alias) || '',
+    };
+    updateNodeConfig(activeNode.id, configToSave);
+
+    if (form.fs <= 0 || form.rpm <= 0) {
+      setErrorMsg('採樣頻率(Hz)、轉速 (RPM) 必須大於0');
       setLoading(false);
-      console.log('form', form);
-      setNodeCompleted(activeNode.id, true);
-      setActiveNode(null);
+      return;
     }
+
+    const bearingValues = [form.bpfo, form.bpfi, form.bsf, form.ftf];
+    const hasAnyBearing = bearingValues.some((val) => val !== '');
+    const hasAllBearing = bearingValues.every((val) => val !== '');
+
+    if (hasAnyBearing && !hasAllBearing) {
+      setErrorMsg('請填寫完整的軸承缺陷頻率字典，或全部留空');
+      setLoading(false);
+      return;
+    }
+    //
+    showSuccess('設定成功！');
+    setNodeCompleted(activeNode.id, true);
+    setLoading(false);
+    console.log('form', form);
+    setActiveNode(null);
   };
 
   return (
@@ -76,6 +145,18 @@ export default function FeatSpec({ activeNode }: { activeNode: any }) {
                 <p className="text-sm font-bold text-neutral-800">
                   Basic information
                 </p>
+                <div className="grid w-full max-w-sm items-center gap-1 pt-2">
+                  <Label className="text-sm" htmlFor="alias">
+                    別名
+                  </Label>
+                  <Input
+                    type="text"
+                    id="alias"
+                    placeholder="alias"
+                    value={form.alias ? form.alias : ''}
+                    onChange={(e) => handleFormChange('alias', e.target.value)}
+                  />
+                </div>
                 <div className="grid w-full max-w-sm items-center gap-1 pt-2">
                   <Label className="text-sm" htmlFor="fs">
                     採樣頻率 (Hz)
@@ -100,36 +181,56 @@ export default function FeatSpec({ activeNode }: { activeNode: any }) {
                     onChange={(e) => handleFormChange('rpm', e.target.value)}
                   />
                 </div>
-                <div className="form pt-2">
-                  <Label className="text-sm" htmlFor="fs">
-                    軸承缺陷頻率字典 (可選)
+                <div className="grid max-w-sm grid-cols-4 items-center gap-2 pt-2">
+                  <Label className="col-span-4 text-sm" htmlFor="rpm">
+                    軸承缺陷頻率字典 (選填)
                   </Label>
-                  <Select
-                    value={form.type}
-                    onValueChange={(value) => handleFormChange('type', value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="軸承缺陷頻率字典" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>軸承缺陷頻率字典</SelectLabel>
-                        <SelectItem value="hanning">
-                          OA (Overall Amplitude): 總振幅特徵
-                        </SelectItem>
-                        <SelectItem value="flattop">
-                          轉速相關特徵: 0.25X 至 16X 轉速諧波振幅
-                        </SelectItem>
-                        <SelectItem value="bearing_fault">
-                          軸承缺陷特徵: BPFO、BPFI、BSF、FTF 及其諧波振幅
-                        </SelectItem>
-                        <SelectItem value="statistical">
-                          頻域統計特徵: 重心頻率、頻率標準差、頻率偏度等
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-sm" htmlFor="bpfo">
+                    BPFO
+                  </Label>
+                  <Input
+                    className="col-span-3"
+                    type="number"
+                    id="bpfo"
+                    placeholder="bpfo"
+                    value={form.bpfo ? form.bpfo : ''}
+                    onChange={(e) => handleFormChange('bpfo', e.target.value)}
+                  />
+                  <Label className="text-sm" htmlFor="bpfi">
+                    BPFI
+                  </Label>
+                  <Input
+                    className="col-span-3"
+                    type="number"
+                    id="bpfi"
+                    placeholder="bpfi"
+                    value={form.bpfi ? form.bpfi : ''}
+                    onChange={(e) => handleFormChange('bpfi', e.target.value)}
+                  />{' '}
+                  <Label className="text-sm" htmlFor="bsf">
+                    BSF
+                  </Label>
+                  <Input
+                    className="col-span-3"
+                    type="number"
+                    id="bsf"
+                    placeholder="bsf"
+                    value={form.bsf ? form.bsf : ''}
+                    onChange={(e) => handleFormChange('bsf', e.target.value)}
+                  />{' '}
+                  <Label className="text-sm" htmlFor="ftf">
+                    FTF
+                  </Label>
+                  <Input
+                    className="col-span-3"
+                    type="number"
+                    id="ftf"
+                    placeholder="ftf"
+                    value={form.ftf ? form.ftf : ''}
+                    onChange={(e) => handleFormChange('ftf', e.target.value)}
+                  />
                 </div>
+                <p className="p-2 text-sm text-red-500">{errorMsg}</p>
               </div>
 
               <Button

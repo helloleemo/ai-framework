@@ -23,6 +23,7 @@ export default function SignalPreprocess({ activeNode }: { activeNode: any }) {
   // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const [errorMsg, setErrorMsg] = useState('');
 
   // setForm
   const handleFormChange = (field: string, value: any) => {
@@ -34,32 +35,42 @@ export default function SignalPreprocess({ activeNode }: { activeNode: any }) {
 
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
-  const [form, setForm] = useState(() => ({
-    fs: node?.config?.fs ?? '',
-    type: node?.config?.type ?? '',
+  const [form, setForm] = useState<{
+    fs: number;
+    type: string;
+  }>(() => ({
+    fs: 0,
+    type: '線性平均',
   }));
 
   useEffect(() => {
-    setForm({
-      fs: node?.config?.fs ?? '',
-      type: node?.config?.type ?? '',
-    });
+    if (node?.config) {
+      setForm({
+        fs: (node.config.fs as number) || 0,
+        type: (node.config.type as string) || '線性平均',
+      });
+    } else {
+      setForm({
+        fs: 0,
+        type: '線性平均',
+      });
+    }
   }, [activeNode, node]);
 
   // handler
-  const handleConnect = async () => {
+  const handleConnect = () => {
     setLoading(true);
-    try {
-      await updateNodeConfig(activeNode.id, form);
-      showSuccess(`設定成功！`);
-    } catch (error) {
-      showError('Failed to connect');
-    } finally {
+    updateNodeConfig(activeNode.id, form);
+    if (form.fs <= 0) {
+      setErrorMsg('採樣頻率(Hz) 必須大於0');
       setLoading(false);
-      console.log('form', form);
-      setNodeCompleted(activeNode.id, true);
-      setActiveNode(null);
+      return;
     }
+    showSuccess('設定成功！');
+    setNodeCompleted(activeNode.id, true);
+    setLoading(false);
+    console.log('form', form);
+    setActiveNode(null);
   };
 
   return (
@@ -82,7 +93,7 @@ export default function SignalPreprocess({ activeNode }: { activeNode: any }) {
                     type="number"
                     id="fs"
                     placeholder="fs"
-                    value={form.fs ? form.fs : ''}
+                    value={form.fs === 0 ? '' : form.fs}
                     onChange={(e) => handleFormChange('fs', e.target.value)}
                   />
                   {/*  */}
@@ -114,6 +125,7 @@ export default function SignalPreprocess({ activeNode }: { activeNode: any }) {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
+                  <p className="p-2 text-sm text-red-500">{errorMsg}</p>
                 </div>
               </div>
 

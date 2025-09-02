@@ -4,7 +4,6 @@ export function useToaster() {
   const showSuccess = (message: string) => {
     toast.success(message, {
       style: {
-        // border: '1px solid #166534',
         padding: '16px',
         color: '#166534',
       },
@@ -17,7 +16,6 @@ export function useToaster() {
   const showError = (message: string) => {
     toast.error(message, {
       style: {
-        // border: '1px solid #dc2626',
         padding: '16px',
         color: '#dc2626',
       },

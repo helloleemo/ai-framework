@@ -1,6 +1,6 @@
-import { API_URLS } from '../../../shared/api/base/api-baseurl';
-import { API_ENDPOINTS } from '../../../shared/api/base/api-endpoint';
-import { POST } from '../../../shared/api/index';
+import { API_URLS } from '@/shared/api/base/api-baseurl';
+import { API_ENDPOINTS } from '@/shared/api/base/api-endpoint';
+import { POST } from '@/shared/api/index';
 import {
   DecodeTokenResponse,
   LoginResponse,

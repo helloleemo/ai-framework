@@ -40,7 +40,13 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
 
   const getDisplayBufferValue = () => {
     const bufferInMs = form.buffer ?? 0;
-    return bufferInMs / 1000; // 毫秒轉秒用於顯示
+    return bufferInMs / 1000; // displayed
+  };
+
+  // date time
+  const getCombinedDateTime = () => {
+    if (!form.date) return null;
+    return new Date(form.date).toISOString().split('T')[0];
   };
 
   // api
@@ -60,11 +66,25 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
         // form.username,
         // form.password,
       );
-      console.log('res', res);
+      // console.log('res', res);
       showSuccess('連線成功！');
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       showError('連線失敗！');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDagData = async () => {
+    setLoading(true);
+    try {
+      // const res = await getDagTemplateAPI();
+      // console.log('res', res);
+      showSuccess('取得成功！');
+    } catch (error) {
+      // console.error(error);
+      showError('取得失敗！');
     } finally {
       setLoading(false);
     }
@@ -94,7 +114,8 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
   const handleTagChange = () => {
     setLoading(true);
     updateNodeConfig(activeNode.id, {
-      tags: form.tags,
+      // tags: form.tags ? [] : '932ff8dd-dc1c-4dc5-9525-01e4551d920c',
+      tags: ['932ff8dd-dc1c-4dc5-9525-01e4551d920c'],
     });
     setLoading(false);
     setStep(3);
@@ -102,10 +123,14 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
 
   const handleSetNode = () => {
     setLoading(true);
+    const combinedDateTime = getCombinedDateTime();
+
     updateNodeConfig(activeNode.id, {
       ...form.config,
       buffer: form.buffer,
-      date: form.date,
+      date: combinedDateTime,
+      // selectedDate: form.date,
+      // selectedTime: form.time,
     });
     setLoading(false);
     showSuccess(`設定成功！`);
@@ -296,21 +321,6 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
                       />
                     </PopoverContent>
                   </Popover>
-                </div>
-                <div className="flex w-full flex-col">
-                  <Label
-                    htmlFor="time-picker"
-                    className="px-1 text-sm font-semibold"
-                  >
-                    Time
-                  </Label>
-                  <Input
-                    type="time"
-                    id="time-picker"
-                    step="1"
-                    defaultValue="10:30:00"
-                    className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                  />
                 </div>
               </div>
             </div>

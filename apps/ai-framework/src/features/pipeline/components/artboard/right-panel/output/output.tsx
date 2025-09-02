@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/shared/ui/select';
 import { Value } from '@radix-ui/react-select';
+import { Input } from '@/shared/ui/input';
 
 export default function Output({ activeNode }: { activeNode: any }) {
   const { getNode, updateNodeConfig, setActiveNode, setNodeCompleted } =
@@ -22,6 +23,7 @@ export default function Output({ activeNode }: { activeNode: any }) {
   // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const [errorMsg, setErrorMsg] = useState('');
   const intervalItem = [
     { value: '@once', label: '只執行一次' },
     { value: '*/10 * * * *', label: '每十分鐘執行一次' },
@@ -40,31 +42,42 @@ export default function Output({ activeNode }: { activeNode: any }) {
 
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
-  const [form, setForm] = useState(() => ({
-    scheduleInterval: node?.config?.scheduleInterval ?? '',
+  const [form, setForm] = useState<{
+    scheduleInterval: string;
+    output_filename?: string;
+  }>(() => ({
+    scheduleInterval: '@once',
+    output_filename: '',
   }));
 
   useEffect(() => {
-    setForm((prev: any) => ({
-      ...prev,
-      scheduleInterval: node?.config?.scheduleInterval ?? '',
-    }));
+    if (node?.config) {
+      setForm({
+        scheduleInterval: String(node.config.scheduleInterval ?? '@once'),
+        output_filename: (node.config.type as string) || '',
+      });
+    } else {
+      setForm({
+        scheduleInterval: '@once',
+        output_filename: '',
+      });
+    }
   }, [activeNode, node]);
 
   // handler
-  const handleConnect = async () => {
+  const handleConnect = () => {
     setLoading(true);
-    try {
-      await updateNodeConfig(activeNode.id, form);
-      showSuccess('Connected successfully');
-    } catch (error) {
-      showError('Failed to connect');
-    } finally {
+    updateNodeConfig(activeNode.id, form);
+    if (form.output_filename === '') {
+      setErrorMsg('別名欄位不得為空');
       setLoading(false);
-      console.log('form', form);
-      setNodeCompleted(activeNode.id, true);
-      setActiveNode(null);
+      return;
     }
+    showSuccess('設定成功！');
+    setNodeCompleted(activeNode.id, true);
+    setLoading(false);
+    console.log('form', form);
+    setActiveNode(null);
   };
   return (
     <>
@@ -102,6 +115,23 @@ export default function Output({ activeNode }: { activeNode: any }) {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
+                  <Label className="text-sm" htmlFor="fs">
+                    檔案名稱
+                  </Label>
+                  <Input
+                    type="text"
+                    id="output_filename"
+                    placeholder="output_filename"
+                    value={
+                      form.output_filename === undefined
+                        ? ''
+                        : form.output_filename
+                    }
+                    onChange={(e) =>
+                      handleFormChange('output_filename', e.target.value)
+                    }
+                  />
+                  <p className="mt-1 text-sm text-red-500">{errorMsg}</p>
                 </div>
               </div>
 

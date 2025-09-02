@@ -25,6 +25,7 @@ import {
   OutputNode,
   TransformNode,
 } from '@/features/pipeline/components/artboard/node-type';
+import { MenuList } from '@/features/menu';
 
 export interface PipelineNode {
   id: string;
@@ -34,6 +35,7 @@ export interface PipelineNode {
   description: string;
   config: Record<string, unknown>;
   completed?: boolean;
+  name?: string;
 }
 
 export interface DagTask {
@@ -66,6 +68,7 @@ interface ReactFlowNode {
     type?: string;
     label?: string;
     description?: string;
+    name?: string;
   };
   position?: { x: number; y: number };
 }
@@ -95,7 +98,7 @@ interface PipelineContextType {
   setNodeCompleted: (nodeId: string, completed: boolean) => void;
   getNodeCompleted: (nodeId: string) => boolean;
   buildPipelineConfig: () => PipelineConfigResult;
-  validatePipeline: () => { isValid: boolean; errors: string[] };
+  // validatePipeline: () => { isValid: boolean; errors: string[] };
 
   // React Flow 操作
   setReactFlowNodes: React.Dispatch<React.SetStateAction<Node[]>>;
@@ -107,6 +110,14 @@ interface PipelineContextType {
   onConnect: OnConnect;
   onNodeDoubleClick: (event: React.MouseEvent, node: Node) => void;
   onCanvasClick: () => void;
+
+  // load pipeline data
+  loadPipelineData: (data: {
+    nodes: PipelineNode[];
+    edges: PipelineEdgeConfig[];
+  }) => void;
+  loadFromDAG: (dagData: any) => void;
+  loadFromAPIResponse: (apiResponse: any) => void;
 }
 
 const PipelineContext = createContext<PipelineContextType | null>(null);
@@ -145,13 +156,14 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       const existingNode = prevNodes.find((n) => n.id === reactFlowNode.id);
       if (existingNode) return prevNodes;
 
-      console.log('Adding node:', reactFlowNode);
+      // console.log('Adding node:', reactFlowNode);
       const newNode: PipelineNode = {
         id: reactFlowNode.id,
         type: reactFlowNode.data?.type || 'default',
         label: reactFlowNode.data?.label || 'Unknown',
         position: reactFlowNode.position || { x: 0, y: 0 },
         description: reactFlowNode.data?.description || '',
+        name: reactFlowNode.data?.name || 'unknown',
         config: {},
       };
       console.log('New Pipeline Node:', newNode);
@@ -183,15 +195,14 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  // 取得 node
+  // get node
   const getNode = useCallback(
     (nodeId: string): PipelineNode | undefined => {
       return nodes.find((n) => n.id === nodeId);
     },
     [nodes],
   );
-
-  // 取得node狀態
+  // get node status
   const getNodeStatus = (nodeId: string): 'success' | 'failed' | 'pending' => {
     const node = getNode(nodeId);
     const status = node?.config?.status;
@@ -201,7 +212,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     return 'pending';
   };
 
-  // 設定node狀態
+  // set node status
   const setNodeStatus = (
     nodeId: string,
     status: 'success' | 'failed' | 'pending',
@@ -215,7 +226,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  // node設定完成狀態(right panel的設定)
+  //  set node completed
   const setNodeCompleted = (nodeId: string, completed: boolean) => {
     setNodes((prev) =>
       prev.map((node) =>
@@ -224,42 +235,42 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  // 取得node完成狀態
+  // get node completed
   const getNodeCompleted = (nodeId: string): boolean => {
     const node = nodes.find((n) => n.id === nodeId);
     const completed = node?.completed;
     return typeof completed === 'boolean' ? completed : false;
   };
 
-  // 轉換 processor_method 對應表
-  const getProcessorMethod = (nodeType: string, nodeLabel: string): string => {
-    const processorMapping: Record<string, string> = {
-      input: 'input_processor',
-      transform: 'transform_processor',
-      output: 'output_processor',
-      opcua: 'opcua_processor',
-      opcda: 'opcda_processor',
-      database: 'database_processor',
-      file: 'file_processor',
-      api: 'api_processor',
-    };
+  // translate node type to processor_method
+  // const getProcessorMethod = (nodeType: string, nodeLabel: string): string => {
+  //   const processorMapping: Record<string, string> = {
+  //     input: 'input_processor',
+  //     transform: 'transform_processor',
+  //     output: 'output_processor',
+  //     opcua: 'opcua_processor',
+  //     opcda: 'opcda_processor',
+  //     database: 'database_processor',
+  //     file: 'file_processor',
+  //     api: 'api_processor',
+  //   };
 
-    // 優先使用 nodeType，如果沒有對應則用 nodeLabel 的小寫
-    return (
-      processorMapping[nodeType.toLowerCase()] ||
-      processorMapping[nodeLabel.toLowerCase()] ||
-      `${nodeLabel.toLowerCase()}_processor`
-    );
-  };
+  //   // 優先使用 nodeType，如果沒有對應則用 nodeLabel 的小寫
+  //   return (
+  //     processorMapping[nodeType.toLowerCase()] ||
+  //     processorMapping[nodeLabel.toLowerCase()] ||
+  //     `${nodeLabel.toLowerCase()}_processor`
+  //   );
+  // };
 
-  // 建立 dependencies 關係
+  // build dependencies
   const buildDependencies = (nodeId: string): string[] => {
     return edges
       .filter((edge) => edge.target === nodeId)
       .map((edge) => edge.source);
   };
 
-  // 轉換單個 node 為 DAG task 格式
+  // turn node to dag task
   const transformNodeToDag = (node: PipelineNode) => {
     const dependencies = buildDependencies(node.id);
 
@@ -267,7 +278,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       task_id: node.id, // node id
       operator: 'PythonOperator',
       processor_stage: node.type, // node type
-      processor_method: getProcessorMethod(node.type, node.label), // 使用智能對應
+      processor_method: node.label,
       op_kwargs: {
         ...node.config,
       },
@@ -276,7 +287,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     };
   };
 
-  // React Flow 事件處理
+  // React Flow drag and drop
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
@@ -302,6 +313,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
               position: { x, y },
               type: data.type,
               description: data.description,
+              intro: data.intro,
             },
           };
           setReactFlowNodes((nodes: Node[]) => [...nodes, newNode]);
@@ -339,7 +351,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
 
   const onNodeDoubleClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
-      console.log('Node double clicked:', node);
+      // console.log('Node double clicked:', node);
       const pipelineNode = getNode(node.id);
       setActiveNode(pipelineNode || null);
       console.log('Active node set to:', node);
@@ -352,15 +364,15 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     setActiveNode(null);
   }, [setActiveNode]);
 
-  // Pipeline 格式
+  // Pipeline config
   const buildPipelineConfig = (): PipelineConfigResult => {
-    // 轉換所有 nodes 為 DAG tasks
+    // turn nodes to dag tasks
     const tasks = nodes.map((node) => transformNodeToDag(node));
 
     const pipelineConfig = {
       dag_id: `pipeline_${generateUUID()}`,
       schedule_interval: findScheduleInterval(nodes),
-      start_date: new Date().toISOString().split('T')[0],
+      start_date: findStartDate(nodes),
       catchup: false,
       owner: localStorage.getItem('code') || 'unknown',
       tasks: tasks,
@@ -372,95 +384,134 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
   const findScheduleInterval = (node: any) => {
     return node.find((n: any) => n.type === 'output')?.config?.scheduleInterval;
   };
-
-  // 驗證 pipeline 完整性
-  const validatePipeline = (): { isValid: boolean; errors: string[] } => {
-    const errors: string[] = [];
-
-    // 檢查是否有 nodes
-    if (nodes.length === 0) {
-      errors.push('Pipeline 必須至少包含一個 node');
-    }
-
-    // 檢查每個 node 是否已完成設定
-    const incompleteNodes = nodes.filter((node) => !getNodeCompleted(node.id));
-    if (incompleteNodes.length > 0) {
-      errors.push(
-        `以下 nodes 尚未完成設定: ${incompleteNodes.map((n) => n.label).join(', ')}`,
-      );
-    }
-
-    // 檢查是否有孤立的 nodes (沒有連接的)
-    const connectedNodeIds = new Set([
-      ...edges.map((e) => e.source),
-      ...edges.map((e) => e.target),
-    ]);
-    const isolatedNodes = nodes.filter(
-      (node) => !connectedNodeIds.has(node.id) && nodes.length > 1,
-    );
-    if (isolatedNodes.length > 0) {
-      errors.push(
-        `以下 nodes 沒有連接: ${isolatedNodes.map((n) => n.label).join(', ')}`,
-      );
-    }
-
-    // 檢查是否有循環依賴
-    const hasCycle = checkForCycles();
-    if (hasCycle) {
-      errors.push('Pipeline 中存在循環依賴');
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+  const findStartDate = (node: any) => {
+    return node.find((n: any) => n.type === 'input')?.config?.date;
   };
 
-  // 檢查循環依賴
-  const checkForCycles = (): boolean => {
-    const visited = new Set<string>();
-    const recStack = new Set<string>();
+  // load dags
+  const loadPipelineData = useCallback(
+    (data: { nodes: PipelineNode[]; edges: PipelineEdgeConfig[] }) => {
+      //
+      setNodes(data.nodes);
+      setEdges(data.edges);
 
-    const dfs = (nodeId: string): boolean => {
-      visited.add(nodeId);
-      recStack.add(nodeId);
+      // update react flow nodes and edges
+      const reactFlowNodes = data.nodes.map((node) => ({
+        id: node.id,
+        type: node.type,
+        position: node.position,
+        data: {
+          id: node.id,
+          name: node.name,
+          label: node.label,
+          type: node.type,
+          description: node.description,
+          intro: node.description,
+          completed: node.completed || true,
+          status: node.config?.status || 'pending',
+        },
+      }));
 
-      const dependencies = buildDependencies(nodeId);
-      for (const dep of dependencies) {
-        if (!visited.has(dep)) {
-          if (dfs(dep)) return true;
-        } else if (recStack.has(dep)) {
-          return true;
+      const reactFlowEdges = data.edges.map((edge) => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        type: 'custom',
+        sourceHandle: edge.sourceHandle,
+        targetHandle: edge.targetHandle,
+      }));
+
+      setReactFlowNodes(reactFlowNodes);
+      setReactFlowEdges(reactFlowEdges);
+    },
+    [setReactFlowNodes, setReactFlowEdges],
+  );
+
+  // load from dag data
+  const findLabel = (label: string) => {
+    const searchInMenuItems = (items: any[]): any => {
+      for (const item of items) {
+        if (item.label === label) {
+          return item;
+        }
+        if (item.children && Array.isArray(item.children)) {
+          const found = searchInMenuItems(item.children);
+          if (found) return found;
         }
       }
-
-      recStack.delete(nodeId);
-      return false;
+      return null;
     };
-
-    for (const node of nodes) {
-      if (!visited.has(node.id)) {
-        if (dfs(node.id)) return true;
-      }
-    }
-
-    return false;
+    return searchInMenuItems(MenuList.menuList);
   };
+  const loadFromDAG = useCallback(
+    (dagData: any) => {
+      const nodes: PipelineNode[] = dagData.tasks.map((task: any) => {
+        const menuItem = findLabel(task.processor_method);
+
+        return {
+          id: task.task_id,
+          type:
+            task.processor_stage === 'input'
+              ? 'input'
+              : task.processor_stage === 'output'
+                ? 'output'
+                : 'transform',
+          label: task.processor_method,
+          position: task.position || { x: 0, y: 0 },
+          description: menuItem?.description || '描述未找到',
+          name: menuItem?.name || task.task_id,
+          config: {
+            ...task.op_kwargs,
+          },
+          status: task.state || 'unknown',
+        };
+      });
+      //  edges
+      const edges: PipelineEdgeConfig[] = dagData.tasks.flatMap((task: any) =>
+        (task.dependencies || []).map((dep: string) => ({
+          id: `${dep}-${task.task_id}`,
+          source: dep,
+          target: task.task_id,
+        })),
+      );
+
+      loadPipelineData({ nodes, edges });
+    },
+    [loadPipelineData],
+  );
+
+  // load from api
+  const loadFromAPIResponse = useCallback(
+    (apiResponse: any) => {
+      if (
+        apiResponse.success &&
+        apiResponse.data &&
+        apiResponse.data.length > 0
+      ) {
+        // 取第一個 DAG
+        const dagData = apiResponse.data[0];
+        loadFromDAG(dagData);
+      } else {
+        console.error('Invalid API response format');
+      }
+    },
+    [loadFromDAG],
+  );
 
   return (
     <PipelineContext.Provider
       value={{
-        // Pipeline 狀態
+        // Pipeline
         nodes,
         activeNode,
 
-        // React Flow 狀態
+        // React Flow
         reactFlowNodes,
         reactFlowEdges,
         nodeTypes,
         edgeTypes,
 
-        // Pipeline 操作
+        // Pipeline
         setEdge,
         addNode,
         setActiveNode,
@@ -471,9 +522,8 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
         setNodeCompleted,
         getNodeCompleted,
         buildPipelineConfig,
-        validatePipeline,
 
-        // React Flow 操作
+        // React Flow
         setReactFlowNodes,
         onNodesChange,
         setReactFlowEdges,
@@ -483,6 +533,11 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
         onConnect,
         onNodeDoubleClick,
         onCanvasClick,
+
+        // load pipeline data
+        loadPipelineData,
+        loadFromDAG,
+        loadFromAPIResponse,
       }}
     >
       {children}

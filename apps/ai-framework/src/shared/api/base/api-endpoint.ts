@@ -27,5 +27,5 @@ export const API_ENDPOINTS = {
   PIPELINE_TOKEN: '/auth/token',
   DAG_TEMPLATE: '/api/dags/template_dags',
   DAG_CREATE: '/api/dags',
-  DAG: '/api/dags',
+  DAG: `/api/dags`,
 };

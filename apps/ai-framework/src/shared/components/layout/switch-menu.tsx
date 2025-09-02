@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const switchMenu = [
   {
-    name: '既有Pipeline',
+    name: '其他',
     icon: <PipeIcon className="h-5 w-5 text-sky-500" />,
     path: '/re-build/ai-framework/view-all',
   },

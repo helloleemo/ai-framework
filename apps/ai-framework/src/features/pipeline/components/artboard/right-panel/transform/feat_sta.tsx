@@ -13,6 +13,7 @@ export default function FeatSta({ activeNode }: { activeNode: any }) {
   // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const [errorMsg, setErrorMsg] = useState('');
 
   // setForm
   const handleFormChange = (field: string, value: any) => {
@@ -24,32 +25,38 @@ export default function FeatSta({ activeNode }: { activeNode: any }) {
 
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
-  const [form, setForm] = useState(() => ({
-    fs: node?.config?.fs ?? '',
-    rpm: node?.config?.rpm ?? '',
+  const [form, setForm] = useState<{
+    alias: string;
+  }>(() => ({
+    alias: '',
   }));
 
   useEffect(() => {
-    setForm({
-      fs: node?.config?.fs ?? '',
-      rpm: node?.config?.rpm ?? '',
-    });
+    if (node?.config) {
+      setForm({
+        alias: (node.config.alias as string) || '',
+      });
+    } else {
+      setForm({
+        alias: '',
+      });
+    }
   }, [activeNode, node]);
 
   // handler
-  const handleConnect = async () => {
+  const handleConnect = () => {
     setLoading(true);
-    try {
-      await updateNodeConfig(activeNode.id, form);
-      showSuccess('Connected successfully');
-    } catch (error) {
-      showError('Failed to connect');
-    } finally {
+    updateNodeConfig(activeNode.id, form);
+    if (form.alias === '') {
+      setErrorMsg('別名欄位不得為空');
       setLoading(false);
-      console.log('form', form);
-      setNodeCompleted(activeNode.id, true);
-      setActiveNode(null);
+      return;
     }
+    showSuccess('設定成功！');
+    setNodeCompleted(activeNode.id, true);
+    setLoading(false);
+    console.log('form', form);
+    setActiveNode(null);
   };
 
   return (
@@ -66,17 +73,18 @@ export default function FeatSta({ activeNode }: { activeNode: any }) {
                   Basic information
                 </p>
                 <div className="grid w-full max-w-sm items-center gap-1 pt-2">
-                  <Label className="text-sm" htmlFor="fs">
-                    沒有東西
+                  <Label className="text-sm" htmlFor="alias">
+                    別名
                   </Label>
-                  {/* <Input
+                  <Input
                     type="number"
-                    id="fs"
-                    placeholder="fs"
-                    value={form.fs ? form.fs : ''}
-                    onChange={(e) => handleFormChange('fs', e.target.value)}
-                  /> */}
+                    id="alias"
+                    placeholder="alias"
+                    value={form.alias ? form.alias : ''}
+                    onChange={(e) => handleFormChange('alias', e.target.value)}
+                  />
                 </div>
+                <p className="p-2 text-sm text-red-500">{errorMsg}</p>
               </div>
 
               <Button

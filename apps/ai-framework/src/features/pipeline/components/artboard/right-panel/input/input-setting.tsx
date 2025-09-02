@@ -5,6 +5,7 @@ import TopTitle from '../top-title';
 
 export default function InputSetting({ activeNode }: { activeNode: any }) {
   const { getNode } = usePipeline();
+  console.log('InputSetting activeNode', activeNode);
 
   // form state
   const node = getNode(activeNode.id);
@@ -28,7 +29,7 @@ export default function InputSetting({ activeNode }: { activeNode: any }) {
 
   return (
     <>
-      <TopTitle title={activeNode.label} description={activeNode.description} />
+      <TopTitle title={activeNode.name} description={activeNode.description} />
       <div className="mb-4 h-[calc(100vh-175px)] border border-b border-amber-500">
         <InputStep activeNode={node} form={form} setForm={setForm} />
       </div>

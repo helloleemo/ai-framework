@@ -23,6 +23,7 @@ export default function Window({ activeNode }: { activeNode: any }) {
   // ui
   const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const [errorMsg, setErrorMsg] = useState('');
 
   // setForm
   const handleFormChange = (field: string, value: any) => {
@@ -34,32 +35,38 @@ export default function Window({ activeNode }: { activeNode: any }) {
 
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
-  const [form, setForm] = useState(() => ({
-    fs: node?.config?.fs ?? '',
-    type: node?.config?.type ?? '',
+  const [form, setForm] = useState<{
+    type: string;
+  }>(() => ({
+    type: 'hanning',
   }));
 
   useEffect(() => {
-    setForm({
-      fs: node?.config?.fs ?? '',
-      type: node?.config?.type ?? '',
-    });
+    if (node?.config) {
+      setForm({
+        type: (node.config.type as string) || 'hanning',
+      });
+    } else {
+      setForm({
+        type: 'hanning',
+      });
+    }
   }, [activeNode, node]);
 
   // handler
-  const handleConnect = async () => {
+  const handleConnect = () => {
     setLoading(true);
-    try {
-      await updateNodeConfig(activeNode.id, form);
-      showSuccess('Connected successfully');
-    } catch (error) {
-      showError('Failed to connect');
-    } finally {
-      setLoading(false);
-      console.log('form', form);
-      setNodeCompleted(activeNode.id, true);
-      setActiveNode(null);
-    }
+    updateNodeConfig(activeNode.id, form);
+    // if (form.fs <= 0) {
+    //   setErrorMsg('fs必須大於0');
+    //   setLoading(false);
+    //   return;
+    // }
+    showSuccess('設定成功！');
+    setNodeCompleted(activeNode.id, true);
+    setLoading(false);
+    console.log('form', form);
+    setActiveNode(null);
   };
 
   return (
@@ -96,6 +103,7 @@ export default function Window({ activeNode }: { activeNode: any }) {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+                <p className="p-2 text-sm">{errorMsg}</p>
               </div>
 
               <Button

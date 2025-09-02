@@ -7,7 +7,7 @@ import {
   EdgeProps,
   getBezierPath,
 } from '@xyflow/react';
-import { excludedLabels } from './right-panel/no-setting-excluded-label';
+import { excludedLabels } from './right-panel/sidebar-items';
 import { CloseIcon } from '@/shared/ui/icon/close-icon';
 
 /** * Input node
@@ -24,7 +24,7 @@ export const InputNode = ({
   selected: boolean;
 }) => {
   const { getNodeCompleted, getNodeStatus, getNode } = usePipeline();
-  const completed = getNodeCompleted(data.id);
+  const completed = data.completed || getNodeCompleted(data.id);
   const status = getNodeStatus(data.id);
 
   const isExcluded = excludedLabels.some(
@@ -33,13 +33,13 @@ export const InputNode = ({
 
   return (
     <div
-      className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
+      className={`w-fit rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div className="absolute top-5 right-5 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
+      {/* <div className="z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
         <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
-      </div>
+      </div> */}
       <div>
-        <div className="tag">
+        {/* <div className="tag">
           <div className="flex items-center gap-4 pb-1">
             {[0, 1].map((_, index) => (
               <p
@@ -50,7 +50,7 @@ export const InputNode = ({
               </p>
             ))}
           </div>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2">
           <p className="text-start text-[16px] font-bold text-neutral-600">
             {data.name}
@@ -66,11 +66,10 @@ export const InputNode = ({
             }`}
           ></div>
         </div>
-        <div className="my-2 border-b"></div>
+        {/* <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
-          {data.description ||
-            'No Description Available. lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
-        </p>
+          {data.intro || ''}
+        </p> */}
       </div>
       <Handle
         style={
@@ -114,7 +113,7 @@ export const TransformNode = ({
   selected: boolean;
 }) => {
   const { getNodeCompleted, getNodeStatus, getNode } = usePipeline();
-  const completed = getNodeCompleted(data.id);
+  const completed = data.completed || getNodeCompleted(data.id);
   const status = getNodeStatus(data.id);
   const isExcluded = excludedLabels.some(
     (label) => getNode(data.id)?.label === label,
@@ -123,12 +122,12 @@ export const TransformNode = ({
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div className="absolute top-3 right-3 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
+      {/* <div className="absolute top-3 right-3 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
         <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
-      </div>
+      </div> */}
 
       <div>
-        <div className="tag">
+        {/* <div className="tag">
           <div className="flex items-center gap-4 pb-1">
             {[0, 1].map((_, index) => (
               <p
@@ -139,7 +138,7 @@ export const TransformNode = ({
               </p>
             ))}
           </div>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2">
           <p className="text-start text-[16px] font-bold text-neutral-600">
             {data.name}
@@ -155,11 +154,10 @@ export const TransformNode = ({
             }`}
           ></div>
         </div>
-        <div className="my-2 border-b"></div>
+        {/* <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
-          {data.description ||
-            'No Description Available. lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
-        </p>
+          {data.intro || ''}
+        </p> */}
       </div>
       <Handle
         style={{
@@ -210,17 +208,18 @@ export const OutputNode = ({
 }) => {
   const { getNodeStatus, getNodeCompleted } = usePipeline();
   const status = getNodeStatus(data.id);
-  const completed = getNodeCompleted(data.id);
+  const completed = data.completed || getNodeCompleted(data.id);
+
   return (
     <div
       className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      <div className="absolute top-5 right-5 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
+      {/* <div className="absolute top-5 right-5 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
         <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
-      </div>
+      </div> */}
 
       <div>
-        <div className="tag">
+        {/* <div className="tag">
           <div className="flex items-center gap-4 pb-1">
             {[0, 1].map((_, index) => (
               <p
@@ -231,7 +230,7 @@ export const OutputNode = ({
               </p>
             ))}
           </div>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2">
           <p className="text-start text-[16px] font-bold text-neutral-600">
             {data.name}
@@ -245,11 +244,10 @@ export const OutputNode = ({
             }`}
           ></div>
         </div>
-        <div className="my-2 border-b"></div>
+        {/* <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
-          {data.description ||
-            'No Description Available. lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
-        </p>
+          {data.intro || ''}
+        </p> */}
       </div>
       <Handle
         style={{

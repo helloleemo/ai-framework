@@ -1,4 +1,4 @@
-import { POST, POST_urlencoded } from '../../../shared/api';
+import { GET, POST, POST_urlencoded, PUT } from '../../../shared/api';
 import { API_URLS } from '../../../shared/api/base/api-baseurl';
 import { API_ENDPOINTS } from '../../../shared/api/base/api-endpoint';
 import { API_TOKEN } from '../../../shared/api/base/api-token';
@@ -25,6 +25,21 @@ export const getDagTemplateAPI = () =>
     API_URLS.PIPELINE,
     API_ENDPOINTS.DAG_TEMPLATE,
     {},
+    API_TOKEN.pipelineToken,
+  );
+
+export const getDagDataAPI = (dagId: string) =>
+  GET<any>(
+    API_URLS.PIPELINE,
+    `${API_ENDPOINTS.DAG}/${dagId}`,
+    `${API_TOKEN.pipelineToken}`,
+  );
+
+export const UpdatateDagAPI = (dagId: string, data: any) =>
+  PUT<any>(
+    API_URLS.PIPELINE,
+    `${API_ENDPOINTS.DAG}/${dagId}`,
+    data,
     API_TOKEN.pipelineToken,
   );
 
