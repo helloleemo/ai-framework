@@ -43,22 +43,22 @@ export default function Output({ activeNode }: { activeNode: any }) {
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
   const [form, setForm] = useState<{
-    scheduleInterval: string;
+    schedule_interval: string;
     output_filename?: string;
   }>(() => ({
-    scheduleInterval: '@once',
+    schedule_interval: '@once',
     output_filename: '',
   }));
 
   useEffect(() => {
     if (node?.config) {
       setForm({
-        scheduleInterval: String(node.config.scheduleInterval ?? '@once'),
-        output_filename: (node.config.type as string) || '',
+        schedule_interval: String(node.config.schedule_interval ?? '@once'),
+        output_filename: (node.config.output_filename as string) || '',
       });
     } else {
       setForm({
-        scheduleInterval: '@once',
+        schedule_interval: '@once',
         output_filename: '',
       });
     }
@@ -96,9 +96,9 @@ export default function Output({ activeNode }: { activeNode: any }) {
                     執行頻率
                   </Label>
                   <Select
-                    value={form.scheduleInterval}
+                    value={form.schedule_interval}
                     onValueChange={(value) =>
-                      handleFormChange('scheduleInterval', value)
+                      handleFormChange('schedule_interval', value)
                     }
                   >
                     <SelectTrigger className="w-full">
@@ -115,7 +115,7 @@ export default function Output({ activeNode }: { activeNode: any }) {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  <Label className="text-sm" htmlFor="fs">
+                  <Label className="text-sm" htmlFor="output_filename">
                     檔案名稱
                   </Label>
                   <Input

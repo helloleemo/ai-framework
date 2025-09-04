@@ -54,8 +54,10 @@ export default function PrebuildDeploy() {
       console.log('Get Dag data successfully:', res);
       if (res.success) {
         loadFromAPIResponse(res);
+        showSuccess('Get Dag data successfully');
+      } else {
+        showError('Get Dag data failed: ' + res.message);
       }
-      showSuccess('Get Dag data successfully');
     } catch (error) {
       console.error('Error getting Dag data:', error);
       showError('Error getting Dag data: ' + error);
@@ -66,8 +68,12 @@ export default function PrebuildDeploy() {
     const pipelineConfig = buildPipelineConfig();
     try {
       const res = await UpdatateDagAPI(dagId, pipelineConfig);
-      console.log('Get Dag data successfully:', res);
-      showSuccess('Get Dag data successfully');
+      if (res.success) {
+        console.log('Get Dag data successfully:', res);
+        showSuccess('Get Dag data successfully');
+      } else {
+        showError('Get Dag data failed: ' + res.message);
+      }
     } catch (error) {
       console.error('Error getting Dag data:', error);
       showError('Error getting Dag data: ' + error);
@@ -85,7 +91,6 @@ export default function PrebuildDeploy() {
         </div>
         <p className="text-sm text-neutral-600">Pre-run</p>
       </div>
-
       <div
         onClick={handleDeploy}
         className={`pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100`}

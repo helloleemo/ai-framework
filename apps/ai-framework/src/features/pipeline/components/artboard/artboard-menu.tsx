@@ -518,7 +518,7 @@ export default function ArtboardMenu() {
       name: '建立新畫布',
       description: '從空畫布開始新建Pipeline。',
       icon: <PipeIcon className="text-sky-500" />,
-      linkTo: '/re-build/ai-framework/artboard',
+      linkTo: '/ai-framework/artboard',
     },
     {
       name: '從範本建立',

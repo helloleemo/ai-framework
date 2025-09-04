@@ -1,8 +1,7 @@
-import { ReactFlow, Background, Controls, Handle } from '@xyflow/react';
+import { ReactFlow, Background, Controls } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import RightPanel from './right-panel/right-panel';
-import TopTab from './top-tab';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 import {
   useArtboardNodes,
@@ -11,7 +10,7 @@ import {
 } from '@/features/pipeline/hooks/use-context-pipeline';
 
 import PipelineDeploy from './prebuild-deploy';
-import { usePipelineLoader } from '../../hooks/use-pipeline-loader';
+import { usePipelineLoader } from '@/features/pipeline/hooks/use-pipeline-loader';
 
 // 轉換
 // export function dagToNodes(tasks: any[]) {
@@ -538,7 +537,7 @@ const apiResponse = {
 };
 
 function ArtboardRoot() {
-  const { loadPipelineFromData } = usePipelineLoader();
+  // const { loadPipelineFromData } = usePipelineLoader();
   // useEffect(() => {
   //   // 取pipeline token ，之後記得拿掉
   //   // tokenTaker();
@@ -564,9 +563,38 @@ function ArtboardRoot() {
     onConnect,
     onNodeDoubleClick,
     onCanvasClick,
+    deleteNode,
   } = useArtboardNodes();
 
   const { activeNode } = usePipeline();
+
+  // delete
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        //
+        const selectedNodes = nodes.filter((node) => node.selected);
+        if (selectedNodes.length > 0) {
+          const confirmDelete = window.confirm(
+            `確定要刪除 ${selectedNodes.length} 個節點嗎？這將同時刪除所有相關的連接線。`,
+          );
+          if (confirmDelete) {
+            selectedNodes.forEach((node) => {
+              deleteNode(node.id, true);
+            });
+          }
+        }
+      }
+    },
+    [nodes, deleteNode],
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   return (
     <>

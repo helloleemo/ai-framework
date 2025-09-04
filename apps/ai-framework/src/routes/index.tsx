@@ -6,6 +6,7 @@ import Artboard from '../features/pipeline/components/artboard/artboard';
 import ViewAll from '../features/pipeline/components/view-all/view-all';
 import ArtboardMenu from '../features/pipeline/components/artboard/artboard-menu';
 import ArtboardTemp from '../features/pipeline/components/artboard/artboard-temp';
+import CallbackPage from '@/features/auth/pages/call-back-page';
 
 function returnToPrevious() {
   return (
@@ -26,23 +27,17 @@ function returnToPrevious() {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/re-build" element={<ReBuildLayout />}>
-        <Route path="/re-build/ai-framework/artboard" element={<Artboard />} />
-        <Route
-          path="/re-build/ai-framework/artboard-temp"
-          element={<ArtboardTemp />}
-        />
-        <Route path="/re-build/ai-framework/menu" element={<ArtboardMenu />} />
-        <Route path="/re-build/ai-framework/view-all" element={<ViewAll />} />
-        <Route
-          path="/re-build/ai-framework/artboard-temp"
-          element={<ArtboardTemp />}
-        />
+      <Route path="/ai-framework" element={<ReBuildLayout />}>
+        <Route path="/ai-framework/artboard" element={<Artboard />} />
+        {/* <Route path="/ai-framework/artboard-temp" element={<ArtboardTemp />} /> */}
+        <Route path="/ai-framework/menu" element={<ArtboardMenu />} />
+        <Route path="/ai-framework/view-all" element={<ViewAll />} />
       </Route>
 
       {/* Others */}
-      <Route path="/" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      {/* <Route path="/" element={<Login />} /> */}
+      {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+      <Route path="/callback" element={<CallbackPage />} />
       <Route path="*" element={returnToPrevious()} />
     </Routes>
   );

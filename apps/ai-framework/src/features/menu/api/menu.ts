@@ -33,7 +33,7 @@ const menuList: MenuItem[] = [
         name: 'Output',
         children: null,
         type: 'output',
-        label: 'output',
+        label: 'csv_writer.standard',
         intro: '',
       },
     ],

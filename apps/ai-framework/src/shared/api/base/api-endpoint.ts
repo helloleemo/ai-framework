@@ -5,6 +5,10 @@ export const API_ENDPOINTS = {
   LOGOUT: '/api/auth/logout',
   REFRESH_TOKEN: '/api/auth/refresh-token',
   DECODE_TOKEN: '/api/auth/decode-token',
+  // redirection
+  GET_TOKENS: '/connect/token',
+  GET_REFRESH_TOKEN: '/connect/token',
+  SLM_LOGOUT: '/SLM/Logout',
 
   // MENU
   MENU_ITEM: '/api/options/menu-item',

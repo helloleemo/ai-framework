@@ -1,204 +1,128 @@
-import { decodeTokenAPI, refreshTokenAPI } from '../api/auth';
-import { useEffect, useState, useCallback } from 'react';
+// import { decodeTokenAPI, refreshTokenAPI } from '../api/auth';
+// import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface TokenInfo {
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': string;
-  displayName: string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': string;
-  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': string;
-  exp: string;
-  iss: string;
-  aud: string;
-}
+import { getTokenAPI, refreshTokenAPI } from '../api/auth';
+import { useEffect, useState } from 'react';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 export function useAuthGuard() {
   const navigate = useNavigate();
-  const [isAuthChecking, setIsAuthChecking] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userInfo, setUserInfo] = useState<TokenInfo | null>(null);
+  const redirectToLogin = () => {
+    const clientId = 'data-pipeline-ui';
+    const redirectUri = encodeURIComponent('http://localhost:3000/callback');
+    const responseType = 'code';
+    const scope = encodeURIComponent(
+      'openid profile api-client offline_access',
+    );
+    const state = 'test123';
+    const nonce = 'test456';
+    const codeChallenge = '8o_zJbxUWekgG0_yXlZot7P-pJNfJz6IV_Z1pL90SWg';
+    const codeChallengeMethod = 'S256';
 
-  const clearTokens = useCallback(() => {
-    localStorage.removeItem('code');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('userName');
-    setIsAuthenticated(false);
-    setUserInfo(null);
-    navigate('/');
-  }, [navigate]);
+    const authUrl = `http://192.168.0.103:7014/connect/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}&state=${state}&nonce=${nonce}&code_challenge=${codeChallenge}&code_challenge_method=${codeChallengeMethod}`;
 
-  const storeLoginData = useCallback(
-    (loginData: {
-      code: string;
-      accessToken: string;
-      refreshToken: string;
-      userName: string;
-    }) => {
-      localStorage.setItem('code', loginData.code);
-      localStorage.setItem('accessToken', loginData.accessToken);
-      localStorage.setItem('refreshToken', loginData.refreshToken);
-      localStorage.setItem('userName', loginData.userName);
-
-      checkAuth();
-    },
-    [],
-  );
-
-  const getCurrentTokens = () => {
-    const code = localStorage.getItem('code');
-    const accessToken = localStorage.getItem('accessToken');
-    const refresh = localStorage.getItem('refreshToken');
-    const userName = localStorage.getItem('userName');
-    return { code, accessToken, refresh, userName };
+    window.location.href = authUrl;
   };
 
-  const decodeToken = async (token: string): Promise<TokenInfo | null> => {
-    try {
-      const res = await decodeTokenAPI(token);
-      if (res.success && res.data) {
-        return res.data.tokenInfo as TokenInfo;
-      }
-      return null;
-    } catch (error) {
-      console.error('Decode token failed:', error);
-      return null;
-    }
-  };
+  const handleCallback = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
 
-  const refreshTokens = async () => {
-    const { code, accessToken, refresh } = getCurrentTokens();
-
-    if (!code || !accessToken || !refresh) {
+    if (!code || !state) {
+      console.error('Missing authorization code or state');
       return false;
     }
 
-    try {
-      const res = await refreshTokenAPI(code, accessToken, refresh);
-      if (res.success && res.data) {
-        localStorage.setItem('code', res.data.code);
-        localStorage.setItem('accessToken', res.data.accessToken);
-        localStorage.setItem('refreshToken', res.data.refreshToken);
-        return true;
-      }
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-    }
-    return false;
-  };
-
-  const extractUserInfo = (tokenInfo: TokenInfo) => {
-    const storedUserName = localStorage.getItem('userName');
-
-    return {
-      username:
-        tokenInfo['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
-      userId:
-        tokenInfo[
-          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
-        ],
-      displayName: tokenInfo.displayName,
-      email:
-        tokenInfo[
-          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'
-        ],
-      role: tokenInfo[
-        'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-      ],
-      exp: tokenInfo.exp,
-      iss: tokenInfo.iss,
-      aud: tokenInfo.aud,
-      userName: storedUserName,
+    const body = {
+      grant_type: 'authorization_code',
+      client_id: 'data-pipeline-ui',
+      code: code,
+      redirect_uri: 'http://localhost:3000/callback',
+      code_verifier: '104b4510bee3c3406984f1fac3e4dcc6370586e2cb81bfbee54a8e24',
     };
-  };
-
-  const isTokenExpired = (expString: string) => {
-    const expirationTime = Number(expString) * 1000;
-    const currentTime = Date.now();
-    return currentTime > expirationTime;
-  };
-
-  const isTokenExpiringSoon = (expString: string) => {
-    const expirationTime = Number(expString) * 1000;
-    const currentTime = Date.now();
-    const fiveMinutes = 5 * 60 * 1000;
-
-    return expirationTime - currentTime < fiveMinutes;
-  };
-
-  const checkAuth = useCallback(async () => {
-    setIsAuthChecking(true);
-
-    const { accessToken } = getCurrentTokens();
-
-    if (!accessToken) {
-      clearTokens();
-      setIsAuthChecking(false);
-      return;
-    }
 
     try {
-      const tokenInfo = await decodeToken(accessToken);
+      const res = await getTokenAPI(new URLSearchParams(body).toString());
+      const access_token = res.access_token;
+      const refresh_token = res.refresh_token;
 
-      if (!tokenInfo || !tokenInfo.exp) {
-        clearTokens();
-        setIsAuthChecking(false);
-        return;
-      }
-
-      if (isTokenExpired(tokenInfo.exp)) {
-        console.log('Token expired, attempting refresh...');
-        const refreshSuccess = await refreshTokens();
-        if (!refreshSuccess) {
-          clearTokens();
-          setIsAuthChecking(false);
-          return;
-        }
-
-        const { accessToken: newAccessToken } = getCurrentTokens();
-        if (newAccessToken) {
-          const newTokenInfo = await decodeToken(newAccessToken);
-          if (newTokenInfo) {
-            setUserInfo(newTokenInfo);
-          }
-        }
-      } else if (isTokenExpiringSoon(tokenInfo.exp)) {
-        console.log('Token expiring soon, refreshing...');
-        refreshTokens().catch(console.error);
-        setUserInfo(tokenInfo);
-      } else {
-        setUserInfo(tokenInfo);
-      }
-
-      setIsAuthenticated(true);
-      setIsAuthChecking(false);
+      localStorage.setItem('accessToken', access_token);
+      localStorage.setItem('refreshToken', refresh_token);
+      return true;
     } catch (error) {
-      console.error('Auth check failed:', error);
-      clearTokens();
-      setIsAuthChecking(false);
+      console.error('Error fetching tokens:', error);
+      return false;
     }
-  }, [clearTokens]);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  const recheckAuth = useCallback(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  const getUserInfo = useCallback(() => {
-    return userInfo ? extractUserInfo(userInfo) : null;
-  }, [userInfo]);
-
-  return {
-    isAuthChecking,
-    isAuthenticated,
-    userInfo: getUserInfo(),
-    clearTokens,
-    storeLoginData,
-    recheckAuth,
-    getCurrentTokens,
   };
+
+  const refreshToken = async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    if (!refreshToken) {
+      console.error('No refresh token available');
+      return false;
+    }
+
+    const body = {
+      grant_type: 'refresh_token',
+      client_id: 'data-pipeline-ui',
+      refresh_token: refreshToken,
+    };
+
+    try {
+      const res = await getTokenAPI(new URLSearchParams(body).toString());
+      console.log('Refresh Token API response:', res);
+      const access_token = res.access_token;
+      const refresh_token = res.refresh_token;
+      const id_token = res.id_token;
+
+      localStorage.setItem('accessToken', access_token);
+      localStorage.setItem('refreshToken', refresh_token);
+      localStorage.setItem('idToken', id_token);
+
+      const decoded = jwtDecode<JwtPayload>(access_token);
+      console.log('Decoded access token:', decoded);
+
+      const { name, client_id, role } = decoded as JwtPayload & {
+        name?: string;
+        client_id?: string;
+        role?: string;
+      };
+      localStorage.setItem('name', name || '');
+      localStorage.setItem('client_id', client_id || '');
+      localStorage.setItem('role', role || '');
+
+      console.log(name, client_id, role);
+
+      return true;
+    } catch (error) {
+      console.error('Error refreshing tokens:', error);
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('idToken');
+      return false;
+    }
+  };
+
+  const checkAuth = () => {
+    const accessToken = localStorage?.getItem('accessToken');
+    const storedRefreshToken = localStorage?.getItem('refreshToken');
+
+    if (!accessToken || !storedRefreshToken) {
+      console.log('No access token or refresh token found');
+      redirectToLogin();
+      return false;
+    } else {
+      const refreshSuccess = refreshToken();
+      console.log('Refresh token success:', refreshSuccess);
+      if (!refreshSuccess) {
+        redirectToLogin();
+        return false;
+      }
+      return true;
+    }
+  };
+
+  return { redirectToLogin, handleCallback, refreshToken, checkAuth };
 }

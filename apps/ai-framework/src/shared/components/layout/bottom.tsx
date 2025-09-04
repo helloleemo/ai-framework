@@ -1,4 +1,4 @@
-import { logoutAPI } from '@/features/auth/api/auth';
+import { useAuthGuard } from '@/features/auth/hooks/use-auth';
 import { CogIcon } from '@/shared/ui/icon/cog-icon';
 import { LogoutIcon } from '@/shared/ui/icon/logout-icon';
 import { UserIcon } from '@/shared/ui/icon/user-icon';
@@ -7,13 +7,12 @@ import { useNavigate } from 'react-router-dom';
 
 export default function BottomMenu() {
   const navigator = useNavigate();
-  const [userName, setUserName] = useState(
-    localStorage.getItem('userName') || '',
-  );
+  const [name, setName] = useState(localStorage.getItem('name') || '');
+  const { redirectToLogin } = useAuthGuard();
 
   const bottomMenu = [
     {
-      name: userName,
+      name: name,
       icon: <UserIcon />,
       linkTo: '/user',
       onClick: (navigate: any) => navigate('/user'),
@@ -27,27 +26,24 @@ export default function BottomMenu() {
     {
       name: 'Logout',
       icon: <LogoutIcon />,
-      linkTo: '/logout',
       onClick: (navigate: any, handleLogout: any) => handleLogout(),
     },
   ];
-
-  const [login, setLogin] = useState(false);
+  const removeItem = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('client_id');
+    localStorage.removeItem('name');
+    localStorage.removeItem('idToken');
+    localStorage.removeItem('role');
+  };
 
   const handleLogout = () => {
-    logoutAPI()
-      .then(() => {
-        setLogin(false);
-        setUserName('');
-        localStorage.removeItem('code');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        navigator('/');
-      })
-      .catch((error) => {
-        console.error('Logout failed:', error);
-      })
-      .finally(() => console.log('Logout process completed'));
+    window.location.href = 'http://192.168.0.103:7014/SLM/Logout';
+    //
+    setName('');
+    removeItem();
+    //
   };
   return (
     <div className="border-t pt-2">

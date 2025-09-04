@@ -18,6 +18,7 @@ import {
   EdgeTypes,
   OnNodesChange,
   OnEdgesChange,
+  NodeChange,
 } from '@xyflow/react';
 import {
   edgeType,
@@ -87,6 +88,7 @@ interface PipelineContextType {
   // Pipeline 操作
   setEdge: (edge: PipelineEdgeConfig) => void;
   addNode: (reactFlowNode: ReactFlowNode) => void;
+  deleteNode: (nodeId: string, skipConfirm?: boolean) => void;
   updateNodeConfig: (nodeId: string, config: Record<string, unknown>) => void;
   setActiveNode: (node: PipelineNode | null) => void;
   getNode: (nodeId: string) => PipelineNode | undefined;
@@ -140,10 +142,46 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     custom: edgeType,
   };
 
-  const [reactFlowNodes, setReactFlowNodes, onNodesChange] =
+  const [reactFlowNodes, setReactFlowNodes, onNodesChangeOriginal] =
     useNodesState(initialNodes);
   const [reactFlowEdges, setReactFlowEdges, onEdgesChange] =
     useEdgesState(initialEdges);
+
+  //
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      onNodesChangeOriginal(changes);
+      const positionChanges = changes.filter(
+        (
+          change,
+        ): change is NodeChange & {
+          type: 'position';
+          position: { x: number; y: number };
+        } =>
+          change.type === 'position' &&
+          'position' in change &&
+          change.position !== undefined,
+      );
+
+      if (positionChanges.length > 0) {
+        setNodes((prevNodes) =>
+          prevNodes.map((node) => {
+            const positionChange = positionChanges.find(
+              (change) => change.id === node.id,
+            );
+            if (positionChange) {
+              return {
+                ...node,
+                position: positionChange.position,
+              };
+            }
+            return node;
+          }),
+        );
+      }
+    },
+    [onNodesChangeOriginal],
+  );
 
   // set edge
   const setEdge = useCallback((edge: PipelineEdgeConfig) => {
@@ -171,6 +209,43 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       return [...prevNodes, newNode];
     });
   }, []);
+
+  // delete node
+  const deleteNode = useCallback(
+    (nodeId: string, skipConfirm = false) => {
+      if (!skipConfirm) {
+        const confirmDelete = window.confirm(
+          '確定要刪除這個節點嗎？這將同時刪除所有相關的連接線。',
+        );
+        if (!confirmDelete) {
+          return;
+        }
+      }
+
+      setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
+
+      setEdges((prevEdges) =>
+        prevEdges.filter(
+          (edge) => edge.source !== nodeId && edge.target !== nodeId,
+        ),
+      );
+
+      setReactFlowNodes((prevNodes) =>
+        prevNodes.filter((node) => node.id !== nodeId),
+      );
+
+      setReactFlowEdges((prevEdges) =>
+        prevEdges.filter(
+          (edge) => edge.source !== nodeId && edge.target !== nodeId,
+        ),
+      );
+
+      setActiveNodeState((prevActiveNode) =>
+        prevActiveNode?.id === nodeId ? null : prevActiveNode,
+      );
+    },
+    [setReactFlowNodes, setReactFlowEdges],
+  );
 
   // active node
   const setActiveNode = useCallback((node: PipelineNode | null) => {
@@ -270,9 +345,21 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       .map((edge) => edge.source);
   };
 
+  // Exclude keys from object
+  const excludeKeys = (
+    obj: Record<string, unknown>,
+    keysToExclude: string[],
+  ) => {
+    const result = { ...obj };
+    keysToExclude.forEach((key) => delete result[key]);
+    return result;
+  };
+
   // turn node to dag task
   const transformNodeToDag = (node: PipelineNode) => {
     const dependencies = buildDependencies(node.id);
+    const excludedKeys = ['start_date', 'schedule_interval'];
+    const filteredConfig = excludeKeys(node.config, excludedKeys);
 
     return {
       task_id: node.id, // node id
@@ -280,7 +367,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       processor_stage: node.type, // node type
       processor_method: node.label,
       op_kwargs: {
-        ...node.config,
+        ...filteredConfig,
       },
       dependencies: dependencies,
       position: node.position,
@@ -382,10 +469,11 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
 
   //
   const findScheduleInterval = (node: any) => {
-    return node.find((n: any) => n.type === 'output')?.config?.scheduleInterval;
+    return node.find((n: any) => n.type === 'output')?.config
+      ?.schedule_interval;
   };
   const findStartDate = (node: any) => {
-    return node.find((n: any) => n.type === 'input')?.config?.date;
+    return node.find((n: any) => n.type === 'input')?.config?.start_date;
   };
 
   // load dags
@@ -448,6 +536,22 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       const nodes: PipelineNode[] = dagData.tasks.map((task: any) => {
         const menuItem = findLabel(task.processor_method);
 
+        let nodeConfig = {
+          ...task.op_kwargs,
+        };
+
+        if (task.processor_stage === 'input') {
+          nodeConfig = {
+            ...nodeConfig,
+            start_date: dagData.start_date || '',
+          };
+        } else if (task.processor_stage === 'output') {
+          nodeConfig = {
+            ...nodeConfig,
+            schedule_interval: dagData.schedule_interval || '',
+          };
+        }
+
         return {
           id: task.task_id,
           type:
@@ -458,11 +562,9 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
                 : 'transform',
           label: task.processor_method,
           position: task.position || { x: 0, y: 0 },
-          description: menuItem?.description || '描述未找到',
+          description: menuItem?.description || 'No description found',
           name: menuItem?.name || task.task_id,
-          config: {
-            ...task.op_kwargs,
-          },
+          config: nodeConfig,
           status: task.state || 'unknown',
         };
       });
@@ -488,7 +590,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
         apiResponse.data &&
         apiResponse.data.length > 0
       ) {
-        // 取第一個 DAG
+        //
         const dagData = apiResponse.data[0];
         loadFromDAG(dagData);
       } else {
@@ -514,6 +616,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
         // Pipeline
         setEdge,
         addNode,
+        deleteNode,
         setActiveNode,
         updateNodeConfig,
         getNode,
@@ -571,6 +674,7 @@ export function useArtboardNodes() {
     onCanvasClick,
     activeNode,
     setActiveNode,
+    deleteNode,
   } = usePipeline();
 
   return {
@@ -584,6 +688,7 @@ export function useArtboardNodes() {
     edgeTypes,
     activeNode,
     setActiveNode,
+    deleteNode,
     handleDrop,
     handleDragOver,
     onConnect,

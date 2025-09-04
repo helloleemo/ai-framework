@@ -23,7 +23,8 @@ export const InputNode = ({
   data: any;
   selected: boolean;
 }) => {
-  const { getNodeCompleted, getNodeStatus, getNode } = usePipeline();
+  const { getNodeCompleted, getNodeStatus, getNode, deleteNode } =
+    usePipeline();
   const completed = data.completed || getNodeCompleted(data.id);
   const status = getNodeStatus(data.id);
 
@@ -31,13 +32,15 @@ export const InputNode = ({
     (label) => getNode(data.id)?.label === label,
   );
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteNode(data.id);
+  };
+
   return (
     <div
-      className={`w-fit rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
+      className={`relative w-fit rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      {/* <div className="z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
-        <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
-      </div> */}
       <div>
         {/* <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -60,12 +63,19 @@ export const InputNode = ({
               className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
             />
           )}
-          <div
+          {/* <div
             className={`top-5 right-5 h-4 w-4 rounded-full ${
               status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
             }`}
-          ></div>
+          ></div> */}
+          <div
+            onClick={handleDelete}
+            className="rounded-full p-1 transition-colors hover:bg-neutral-100"
+          >
+            <CloseIcon className="h-4 w-4 cursor-pointer text-neutral-500 hover:text-red-500" />
+          </div>
         </div>
+
         {/* <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
           {data.intro || ''}
@@ -79,14 +89,14 @@ export const InputNode = ({
                 width: '1rem',
                 height: '1rem',
                 position: 'absolute',
-                right: '10px',
+                // right: '10px',
                 border: '2px solid #38bdf8',
                 borderRadius: '9999px',
               }
             : {
                 backgroundColor: '#fff',
                 position: 'absolute',
-                right: '10px',
+                // right: '10px',
                 width: '1rem',
                 height: '1rem',
                 border: '2px solid #aaa',
@@ -112,20 +122,23 @@ export const TransformNode = ({
   data: any;
   selected: boolean;
 }) => {
-  const { getNodeCompleted, getNodeStatus, getNode } = usePipeline();
+  const { getNodeCompleted, getNodeStatus, getNode, deleteNode } =
+    usePipeline();
   const completed = data.completed || getNodeCompleted(data.id);
   const status = getNodeStatus(data.id);
   const isExcluded = excludedLabels.some(
     (label) => getNode(data.id)?.label === label,
   );
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteNode(data.id);
+  };
+
   return (
     <div
-      className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
+      className={`relative rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      {/* <div className="absolute top-3 right-3 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
-        <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
-      </div> */}
-
       <div>
         {/* <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -148,11 +161,17 @@ export const TransformNode = ({
               className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
             />
           )}
-          <div
+          {/* <div
             className={`top-3 right-3 h-4 w-4 rounded-full ${
               status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
             }`}
-          ></div>
+          ></div> */}
+          <div className="rounded-full p-1 transition-colors hover:bg-neutral-100">
+            <CloseIcon
+              className="h-4 w-4 cursor-pointer text-neutral-500 hover:text-red-500"
+              onClick={handleDelete}
+            />
+          </div>
         </div>
         {/* <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
@@ -206,18 +225,19 @@ export const OutputNode = ({
   data: any;
   selected: boolean;
 }) => {
-  const { getNodeStatus, getNodeCompleted } = usePipeline();
+  const { getNodeStatus, getNodeCompleted, deleteNode } = usePipeline();
   const status = getNodeStatus(data.id);
   const completed = data.completed || getNodeCompleted(data.id);
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteNode(data.id);
+  };
+
   return (
     <div
-      className={`rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
+      className={`relative rounded-md bg-white px-5 py-3 ${selected ? 'border-3 border-sky-500' : 'border-2 border-neutral-400'} `}
     >
-      {/* <div className="absolute top-5 right-5 z-50 rounded-full p-1 transition-colors hover:bg-neutral-100">
-        <CloseIcon className="h-5 w-5 cursor-pointer text-neutral-500" />
-      </div> */}
-
       <div>
         {/* <div className="tag">
           <div className="flex items-center gap-4 pb-1">
@@ -238,11 +258,17 @@ export const OutputNode = ({
           <CheckIcon
             className={`h-5 w-5 ${completed ? 'text-sky-500' : 'text-neutral-200'} `}
           />
-          <div
+          {/* <div
             className={`top-5 right-5 h-4 w-4 rounded-full ${
               status === 'success' ? 'bg-sky-500' : 'bg-neutral-200'
             }`}
-          ></div>
+          ></div> */}
+          <div className="rounded-full p-1 transition-colors hover:bg-neutral-100">
+            <CloseIcon
+              className="h-4 w-4 cursor-pointer text-neutral-500 hover:text-red-500"
+              onClick={handleDelete}
+            />
+          </div>
         </div>
         {/* <div className="my-2 border-b"></div>
         <p className="w-[240px] text-start text-[12px] text-neutral-500">
@@ -258,7 +284,7 @@ export const OutputNode = ({
           border: selected ? '2px solid #38bdf8' : '2px solid #aaa',
           marginRight: '-12px',
           position: 'absolute',
-          left: '10px',
+          left: '0px',
         }}
         type="target"
         position={Position.Left}

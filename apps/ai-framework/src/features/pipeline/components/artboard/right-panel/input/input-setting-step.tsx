@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
 import { getInputAPI } from '../../../../api/input';
 import turnToMs from '@/shared/utils/turn-to-ms';
+import formatDateToYYYYMMDD from '@/shared/utils/format-date';
 
 type InputProps = {
   activeNode: any;
@@ -128,7 +129,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
     updateNodeConfig(activeNode.id, {
       ...form.config,
       buffer: form.buffer,
-      date: combinedDateTime,
+      start_date: combinedDateTime,
       // selectedDate: form.date,
       // selectedTime: form.time,
     });
@@ -283,7 +284,9 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
       {step === 3 && (
         <>
           <div className="form">
-            <p className="text-sm font-bold text-neutral-800">執行起始日</p>
+            <p className="text-sm font-bold text-neutral-800">
+              Basic information
+            </p>
             <div className="grid w-full max-w-sm items-center gap-1 pt-2">
               <div className="flex w-full gap-2">
                 <div className="flex w-full flex-col">
@@ -301,7 +304,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
                         className="justify-between font-normal"
                       >
                         {form.date
-                          ? form.date.toLocaleDateString()
+                          ? formatDateToYYYYMMDD(form.date)
                           : 'Select date'}
                         <ChevronDownIcon />
                       </Button>

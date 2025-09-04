@@ -2,12 +2,23 @@ import BottomMenu from './bottom';
 import SidebarMenu from './sidebar-menu';
 import SwitchMenu from './switch-menu';
 import HeaderTop from './header-top';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CollapseIcon } from '../../ui/icon/collapse-icon';
-import { Outlet } from 'react-router-dom';
-import { useAuthGuard } from '../../../features/auth/hooks/use-auth';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useAuthGuard } from '@/features/auth/hooks/use-auth';
 
 export default function ReBuildLayout() {
+  const { checkAuth, redirectToLogin } = useAuthGuard();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isAuth = checkAuth();
+    if (!isAuth) {
+      console.log('NOOOOOOOOOOOO!!');
+      redirectToLogin();
+    }
+  });
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeMenu, setActiveMenu] = useState(0);
 

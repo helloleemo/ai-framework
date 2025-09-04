@@ -8,12 +8,12 @@ const switchMenu = [
   {
     name: '其他',
     icon: <PipeIcon className="h-5 w-5 text-sky-500" />,
-    path: '/re-build/ai-framework/view-all',
+    path: '/ai-framework/view-all',
   },
   {
     name: '畫布',
     icon: <ArtboardIcon className="h-5 w-5 text-sky-500" />,
-    path: '/re-build/ai-framework/artboard',
+    path: '/ai-framework/artboard',
   },
 ];
 export default function SwitchMenu({

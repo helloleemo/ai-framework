@@ -1,12 +1,13 @@
-import { Button } from '../../../shared/ui/button';
-import { Input } from '../../../shared/ui/input';
-import { Label } from '../../../shared/ui/label';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
 import { useEffect, useState } from 'react';
-import { validateField } from '../../../shared/utils/validators';
+import { validateField } from '@/shared/utils/validators';
 // import { login as loginApi } from '@/api/auth';
 import { useNavigate } from 'react-router-dom';
-import { decodeTokenAPI, loginAPI } from '../api/auth';
-import { useSpinner } from '../../../shared/hooks/use-spinner';
+// import { decodeTokenAPI, loginAPI } from '../api/auth';
+import { useSpinner } from '@/shared/hooks/use-spinner';
+import { useAuthGuard } from '../hooks/use-auth';
 
 function Login() {
   // login -> dashboard
@@ -38,6 +39,8 @@ function Login() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const { loading, setLoading, Spinner } = useSpinner();
 
+  const { redirectToLogin } = useAuthGuard();
+
   const validate = () => {
     const userNameError = validateField('userName', userName);
     const passwordError = validateField('password', password);
@@ -48,33 +51,35 @@ function Login() {
   const handleLogin = () => {
     setLoginError(null);
     setLoading(true);
-    if (validate()) {
-      loginAPI(userName, password)
-        .then((res) => {
-          if (res.success) {
-            console.log('Login successful:', res);
-            localStorage.setItem('code', res.data.code);
-            localStorage.setItem('refreshToken', res.data.refreshToken);
-            localStorage.setItem('accessToken', res.data.accessToken);
-            localStorage.setItem('userName', res.data.userName);
+    const authUrl = redirectToLogin();
+    navigate(authUrl);
+    // if (validate()) {
+    //   loginAPI(userName, password)
+    //     .then((res) => {
+    //       if (res.success) {
+    //         console.log('Login successful:', res);
+    //         localStorage.setItem('code', res.data.code);
+    //         localStorage.setItem('refreshToken', res.data.refreshToken);
+    //         localStorage.setItem('accessToken', res.data.accessToken);
+    //         localStorage.setItem('userName', res.data.userName);
 
-            navigate('/dashboard');
-          } else {
-            console.log('Login failed:', res.message);
-          }
-        })
-        .catch((err) => {
-          console.log('Login error:', err);
-          // setLoginError(err.message);
-          setLoginError('Login failed. Please check your credentials.');
-        })
-        .finally(() => {
-          setLoading(false);
-          navigate('/dashboard'); // 之後記得刪掉
-        });
-    } else {
-      setLoading(false);
-    }
+    //         navigate('/dashboard');
+    //       } else {
+    //         console.log('Login failed:', res.message);
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log('Login error:', err);
+    //       // setLoginError(err.message);
+    //       setLoginError('Login failed. Please check your credentials.');
+    //     })
+    //     .finally(() => {
+    //       setLoading(false);
+    //       navigate('/dashboard'); // 之後記得刪掉
+    //     });
+    // } else {
+    //   setLoading(false);
+    // }
   };
   return (
     <div className="flex h-screen items-center justify-center">

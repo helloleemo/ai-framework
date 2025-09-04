@@ -12,7 +12,7 @@ const platformItems: PlatformItem[] = [
     description:
       'This is the description for AI Framework. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     image: 'login/dashboard-2.jpg',
-    linkTo: '/re-build/ai-framework/menu',
+    linkTo: '/ai-framework/menu',
   },
   {
     title: 'Item 2',
