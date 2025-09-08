@@ -21,6 +21,10 @@ export default function Dwt({ activeNode }: { activeNode: any }) {
 
   // step
   const [step, setStep] = useState(1);
+  const totalSteps = 1;
+  const nextStep = () => {
+    if (step < totalSteps) setStep(step + 1);
+  };
 
   // form state
   const node = activeNode ? getNode(activeNode.id) : undefined;
@@ -49,12 +53,26 @@ export default function Dwt({ activeNode }: { activeNode: any }) {
       setActiveNode(null);
     }
   };
+
   return (
     <>
       <TopTitle title={activeNode.name} description={activeNode.description} />
+      11
       <div className="mb-4 h-[calc(100vh-220px)] border border-b border-amber-500">
-        {/*  */}
+        {/* Progress Bar */}
+        <div className="step flex items-start gap-2">
+          {totalSteps > 1 &&
+            Array.from({ length: totalSteps }).map((_, idx) => (
+              <div
+                key={idx}
+                className={`my-2 w-full border-b-2 ${
+                  idx < step ? 'border-sky-500' : 'border-gray-300'
+                }`}
+              ></div>
+            ))}
+        </div>
         <div className="flex h-full flex-col justify-between">
+          {/* Steps */}
           {step === 1 && (
             <>
               <div className="form">

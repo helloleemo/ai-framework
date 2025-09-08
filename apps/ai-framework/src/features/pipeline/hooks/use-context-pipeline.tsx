@@ -100,7 +100,6 @@ interface PipelineContextType {
   setNodeCompleted: (nodeId: string, completed: boolean) => void;
   getNodeCompleted: (nodeId: string) => boolean;
   buildPipelineConfig: () => PipelineConfigResult;
-  // validatePipeline: () => { isValid: boolean; errors: string[] };
 
   // React Flow 操作
   setReactFlowNodes: React.Dispatch<React.SetStateAction<Node[]>>;
@@ -495,7 +494,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
           type: node.type,
           description: node.description,
           intro: node.description,
-          completed: node.completed || true,
+          completed: node.completed || false,
           status: node.config?.status || 'pending',
         },
       }));
@@ -585,12 +584,9 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
   // load from api
   const loadFromAPIResponse = useCallback(
     (apiResponse: any) => {
-      if (
-        apiResponse.success &&
-        apiResponse.data &&
-        apiResponse.data.length > 0
-      ) {
+      if (apiResponse.success) {
         //
+        console.log('API Response Data:', apiResponse.data);
         const dagData = apiResponse.data[0];
         loadFromDAG(dagData);
       } else {

@@ -26,6 +26,8 @@ export const API_ENDPOINTS = {
 
   // INPUT (indata)
   INPUT: '/api/input',
+  TAGS: '/api/opc/server/tags',
+  TAGS_VALUES: '/api/opc/server/values',
 
   // PIPELINE
   PIPELINE_TOKEN: '/auth/token',

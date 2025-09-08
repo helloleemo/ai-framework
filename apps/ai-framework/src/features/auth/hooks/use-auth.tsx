@@ -72,7 +72,7 @@ export function useAuthGuard() {
 
     try {
       const res = await getTokenAPI(new URLSearchParams(body).toString());
-      console.log('Refresh Token API response:', res);
+      // console.log('Refresh Token API response:', res);
       const access_token = res.access_token;
       const refresh_token = res.refresh_token;
       const id_token = res.id_token;
@@ -82,7 +82,7 @@ export function useAuthGuard() {
       localStorage.setItem('idToken', id_token);
 
       const decoded = jwtDecode<JwtPayload>(access_token);
-      console.log('Decoded access token:', decoded);
+      // console.log('Decoded access token:', decoded);
 
       const { name, client_id, role } = decoded as JwtPayload & {
         name?: string;
@@ -93,7 +93,7 @@ export function useAuthGuard() {
       localStorage.setItem('client_id', client_id || '');
       localStorage.setItem('role', role || '');
 
-      console.log(name, client_id, role);
+      // console.log(name, client_id, role);
 
       return true;
     } catch (error) {
@@ -110,12 +110,12 @@ export function useAuthGuard() {
     const storedRefreshToken = localStorage?.getItem('refreshToken');
 
     if (!accessToken || !storedRefreshToken) {
-      console.log('No access token or refresh token found');
+      // console.log('No access token or refresh token found');
       redirectToLogin();
       return false;
     } else {
       const refreshSuccess = refreshToken();
-      console.log('Refresh token success:', refreshSuccess);
+      // console.log('Refresh token success:', refreshSuccess);
       if (!refreshSuccess) {
         redirectToLogin();
         return false;

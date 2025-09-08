@@ -1,4 +1,5 @@
-import { POST_urlencoded } from '../../../shared/api';
+import { API_TOKEN } from '@/shared/api/base/api-token';
+import { POST, POST_urlencoded } from '../../../shared/api';
 import { API_URLS } from '../../../shared/api/base/api-baseurl';
 import { API_ENDPOINTS } from '../../../shared/api/base/api-endpoint';
 
@@ -16,3 +17,19 @@ export const getInputAPI = (
     username,
     password,
   });
+
+export const getTagsIndataAPI = (body: any) =>
+  POST<any>(
+    API_URLS.INDATA_7000,
+    API_ENDPOINTS.TAGS,
+    body,
+    API_TOKEN.accessToken,
+  );
+
+export const getTagsAPIValues = (body: any) =>
+  POST<any>(
+    API_URLS.INDATA_7000,
+    API_ENDPOINTS.TAGS_VALUES,
+    body,
+    API_TOKEN.accessToken,
+  );

@@ -88,27 +88,28 @@ export default function SidebarMenu({ activeMenu }: { activeMenu: number }) {
 
   useEffect(() => {
     setMenu(menuList);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    setLoading(false);
+    // setTimeout(() => {
+    //   setLoading(false);
+    // }, 1000);
     // fetchMenuItems();
   }, []);
 
-  const fetchMenuItems = async () => {
-    try {
-      setLoading(true);
-      const res = await getMenuItemsAPI();
-      if (res.success) {
-        setMenu(res.data);
-      } else {
-        console.error('Failed to fetch menu items:', res.message);
-      }
-    } catch (error) {
-      console.error('Failed to fetch menu items:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchMenuItems = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const res = await getMenuItemsAPI();
+  //     if (res.success) {
+  //       setMenu(res.data);
+  //     } else {
+  //       console.error('Failed to fetch menu items:', res.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to fetch menu items:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="h-[calc(100vh-250px)] flex-col overflow-y-auto">

@@ -7,28 +7,60 @@ import { useToaster } from '@/shared/hooks/use-toaster';
 import {
   createDagAPI,
   getDagDataAPI,
+  getDagTemplateAPI,
   pipelineTokenTaker,
   UpdatateDagAPI,
 } from '@/features/pipeline/api/pipeline';
-import checkPipelineFunction from './check-pipeline';
+import checkPipelineFunction, { sequenceCheck } from './check-pipeline';
+import { TemplateIcon } from '@/shared/ui/icon/template-icon';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@radix-ui/react-dialog';
+import { Button } from '@/shared/ui/button';
+import { DialogFooter, DialogHeader } from '@/shared/ui/dialog';
+import { Label } from '@radix-ui/react-label';
+import { Input } from '@/shared/ui/input';
 
 export default function PrebuildDeploy() {
   useEffect(() => {
     pipelineTokenTaker();
   }, []);
 
-  const { buildPipelineConfig, getNodeCompleted, loadFromAPIResponse } =
-    usePipeline();
+  const {
+    buildPipelineConfig,
+    getNodeCompleted,
+    loadFromAPIResponse,
+    loadFromDAG,
+  } = usePipeline();
   const { showSuccess, showError } = useToaster();
 
   const handlePreRun = () => {
     const pipelineConfig = buildPipelineConfig();
     console.log('Pipeline Config:', pipelineConfig);
     const result = checkPipelineFunction(pipelineConfig, getNodeCompleted);
+    //
+    const currnetTaskProcessorMethod = 'pdm_features.feat_spec';
+    const dependencyTaskProcessorMethod = 'pdm_freq.fft';
+    const sequenceResult = sequenceCheck(
+      pipelineConfig,
+      currnetTaskProcessorMethod,
+      dependencyTaskProcessorMethod,
+    );
+    console.log('Sequence Check Result:', sequenceResult);
 
-    if (result.isValid) {
+    if (result.isValid && sequenceResult) {
       showSuccess('成功！');
     } else {
+      if (!sequenceResult) {
+        showError(
+          `${currnetTaskProcessorMethod} 必須在 ${dependencyTaskProcessorMethod} 之後`,
+        );
+      }
       showError(`${result.errors}`);
       console.log('Pipeline has errors:', result.errors);
       console.log('Pipeline warnings:', result.warnings);
@@ -47,38 +79,27 @@ export default function PrebuildDeploy() {
     }
   };
 
-  const [dagId, setDagId] = useState('1');
-  const handleGetDag = async () => {
-    try {
-      const res = await getDagDataAPI(dagId);
-      console.log('Get Dag data successfully:', res);
-      if (res.success) {
-        loadFromAPIResponse(res);
-        showSuccess('Get Dag data successfully');
-      } else {
-        showError('Get Dag data failed: ' + res.message);
-      }
-    } catch (error) {
-      console.error('Error getting Dag data:', error);
-      showError('Error getting Dag data: ' + error);
-    }
-  };
+  // const hadleMockLoad = (mock: any) => {
+  //   loadFromDAG(mock);
+  //   showSuccess('Load mock DAG successfully');
+  // };
 
-  const handleUpdateDag = async () => {
-    const pipelineConfig = buildPipelineConfig();
-    try {
-      const res = await UpdatateDagAPI(dagId, pipelineConfig);
-      if (res.success) {
-        console.log('Get Dag data successfully:', res);
-        showSuccess('Get Dag data successfully');
-      } else {
-        showError('Get Dag data failed: ' + res.message);
-      }
-    } catch (error) {
-      console.error('Error getting Dag data:', error);
-      showError('Error getting Dag data: ' + error);
-    }
-  };
+  // const [dagId, setDagId] = useState('1');
+  // const handleGetDag = async () => {
+  //   try {
+  //     const res = await getDagDataAPI(dagId);
+  //     console.log('Get Dag data successfully:', res);
+  //     if (res.success) {
+  //       loadFromAPIResponse(res);
+  //       showSuccess('Get Dag data successfully');
+  //     } else {
+  //       showError('Get Dag data failed: ' + res.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error getting Dag data:', error);
+  //     showError('Error getting Dag data: ' + error);
+  //   }
+  // };
 
   return (
     <div className="flex items-center gap-2">
@@ -100,8 +121,11 @@ export default function PrebuildDeploy() {
         </div>
         <p className={`text-sm text-neutral-600`}>Deploy</p>
       </div>
+
       {/*  */}
-      <div className="pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100">
+
+      {/*  */}
+      {/* <div className="pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100">
         <p className="text-sm">Get</p>
         <input
           onInput={(e) => setDagId((e.currentTarget as HTMLInputElement).value)}
@@ -114,7 +138,7 @@ export default function PrebuildDeploy() {
         <button onClick={handleUpdateDag} className="border text-sm">
           Update
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

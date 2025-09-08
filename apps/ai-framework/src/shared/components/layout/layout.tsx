@@ -9,12 +9,11 @@ import { useAuthGuard } from '@/features/auth/hooks/use-auth';
 
 export default function ReBuildLayout() {
   const { checkAuth, redirectToLogin } = useAuthGuard();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const isAuth = checkAuth();
     if (!isAuth) {
-      console.log('NOOOOOOOOOOOO!!');
+      console.log('YOU CANNOT PASS!');
       redirectToLogin();
     }
   });
@@ -25,6 +24,10 @@ export default function ReBuildLayout() {
   return (
     <div className="flex h-screen">
       <div
+        style={{
+          width: isCollapsed ? '0px' : '320px',
+          transition: 'width 0.1s ease-in-out',
+        }}
         className={`relative border-r transition-all duration-100 ${
           isCollapsed ? 'w-[0px]' : 'min-w-[320px]'
         }`}
@@ -59,7 +62,7 @@ export default function ReBuildLayout() {
           )}
         </div>
       </div>
-      <div className="content m-2 w-full border border-red-500 bg-neutral-100">
+      <div className="content m-2 w-full bg-neutral-100">
         <Outlet />
       </div>
     </div>

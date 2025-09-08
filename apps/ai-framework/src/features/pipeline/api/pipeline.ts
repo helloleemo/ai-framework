@@ -21,10 +21,9 @@ export const getAuthPipelineAPI = (
   });
 
 export const getDagTemplateAPI = () =>
-  POST<any>(
+  GET<any>(
     API_URLS.PIPELINE,
     API_ENDPOINTS.DAG_TEMPLATE,
-    {},
     API_TOKEN.pipelineToken,
   );
 

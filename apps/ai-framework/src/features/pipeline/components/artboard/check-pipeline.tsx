@@ -308,6 +308,35 @@ function findIsolatedNodes(tasks: any[]) {
 }
 
 /**
+ * feat_spec only can after fft
+ */
+function sequenceCheck(
+  pipelineConfig: any,
+  currentTaskProcessorMethod: string, // feat_spec
+  dependencyTaskProcessorMethod: string, // fft
+): boolean {
+  if (pipelineConfig.tasks.length === 0) return true;
+
+  for (const task of pipelineConfig.tasks) {
+    if (task.processor_method === currentTaskProcessorMethod) {
+      const hasDependency = task.dependencies.some((depId: string) => {
+        const depTask = pipelineConfig.tasks.find(
+          (t: any) => t.task_id === depId,
+        );
+        return (
+          depTask && depTask.processor_method === dependencyTaskProcessorMethod
+        );
+      });
+      if (!hasDependency) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
  * log analysis
  */
 function logPipelineAnalysis(pipelineConfig: any) {
@@ -338,4 +367,5 @@ export {
   checkCompletedNodes,
   findConnectedComponents,
   findIsolatedNodes,
+  sequenceCheck,
 };

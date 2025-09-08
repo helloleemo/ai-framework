@@ -3,7 +3,6 @@ import SignalPreprocess from './transform/signal_preprocess';
 import Window from './transform/window';
 import Filter from './transform/filter';
 import Fft from './transform/fft';
-import Dwt from './transform/dwt';
 import Integ from './transform/integ';
 import Hilbert from './transform/hilbert';
 import FeatSpec from './transform/feat_spec';
