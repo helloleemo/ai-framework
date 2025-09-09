@@ -460,7 +460,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       schedule_interval: findScheduleInterval(nodes),
       start_date: findStartDate(nodes),
       catchup: false,
-      owner: localStorage.getItem('code') || 'unknown',
+      owner: localStorage.getItem('client_id') || 'unknown',
       tasks: tasks,
     };
     return pipelineConfig;

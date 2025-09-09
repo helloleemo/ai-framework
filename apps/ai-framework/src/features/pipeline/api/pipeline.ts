@@ -50,6 +50,9 @@ export const createDagAPI = (data: any) =>
     API_TOKEN.pipelineToken,
   );
 
+export const getAllDagsAPI = () =>
+  GET<any>(API_URLS.PIPELINE, API_ENDPOINTS.ALL_DAGS, API_TOKEN.pipelineToken);
+
 export const pipelineTokenTaker = () => {
   //
   const credentials = {

@@ -1,3 +1,5 @@
+import { GET } from '..';
+
 export const API_ENDPOINTS = {
   // AUTH
   TOKEN: '/connect/token',
@@ -25,13 +27,13 @@ export const API_ENDPOINTS = {
   INPUT_AUTH: '/connect/token',
 
   // INPUT (indata)
-  INPUT: '/api/input',
-  TAGS: '/api/opc/server/tags',
-  TAGS_VALUES: '/api/opc/server/values',
+  GET_TAGS: '/api/server/tag/list',
+  GET_TAGS_VALUES: '/api/server/tags/value',
 
   // PIPELINE
   PIPELINE_TOKEN: '/auth/token',
   DAG_TEMPLATE: '/api/dags/template_dags',
   DAG_CREATE: '/api/dags',
   DAG: `/api/dags`,
+  ALL_DAGS: '/api/dags/all_dags',
 };

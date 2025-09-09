@@ -1,5 +1,5 @@
 import { API_TOKEN } from '@/shared/api/base/api-token';
-import { POST, POST_urlencoded } from '../../../shared/api';
+import { GET_withParams, POST, POST_urlencoded } from '../../../shared/api';
 import { API_URLS } from '../../../shared/api/base/api-baseurl';
 import { API_ENDPOINTS } from '../../../shared/api/base/api-endpoint';
 
@@ -18,18 +18,18 @@ export const getInputAPI = (
     password,
   });
 
-export const getTagsIndataAPI = (body: any) =>
-  POST<any>(
-    API_URLS.INDATA_7000,
-    API_ENDPOINTS.TAGS,
-    body,
+export const getTagsIndataAPI = (params: Record<string, unknown>) =>
+  GET_withParams<unknown>(
+    API_URLS.INDATA_17000,
+    API_ENDPOINTS.GET_TAGS,
+    Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     API_TOKEN.accessToken,
   );
 
-export const getTagsAPIValues = (body: any) =>
+export const getTagsValuesAPI = (body: any) =>
   POST<any>(
-    API_URLS.INDATA_7000,
-    API_ENDPOINTS.TAGS_VALUES,
+    API_URLS.INDATA_17000,
+    API_ENDPOINTS.GET_TAGS_VALUES,
     body,
     API_TOKEN.accessToken,
   );

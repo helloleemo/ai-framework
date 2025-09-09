@@ -123,8 +123,6 @@ export default function PrebuildDeploy() {
       </div>
 
       {/*  */}
-
-      {/*  */}
       {/* <div className="pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100">
         <p className="text-sm">Get</p>
         <input

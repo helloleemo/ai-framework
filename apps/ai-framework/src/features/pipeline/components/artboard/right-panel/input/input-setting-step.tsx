@@ -7,10 +7,13 @@ import { Input } from '@/shared/ui/input';
 import { usePipeline } from '@/features/pipeline/hooks/use-context-pipeline';
 import { Calendar } from '@/shared/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
-import { ChevronDownIcon } from 'lucide-react';
+import { ChevronDownIcon, List } from 'lucide-react';
 import { getInputAPI, getTagsIndataAPI } from '@/features/pipeline/api/input';
 import turnToMs from '@/shared/utils/turn-to-ms';
 import formatDateToYYYYMMDD from '@/shared/utils/format-date';
+import { se } from 'date-fns/locale';
+import TreeView from './tree-view';
+import { CloseIcon } from '@/shared/ui/icon/close-icon';
 
 type InputProps = {
   activeNode: any;
@@ -22,8 +25,11 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
   const { getNode, updateNodeConfig, setActiveNode, setNodeCompleted } =
     usePipeline();
   // ui
-  const { loading, setLoading, Spinner } = useSpinner();
+  const { loading, setLoading, Spinner, createSpinner } = useSpinner();
   const { showSuccess, showError } = useToaster();
+  const [errorMsg, setErrorMsg] = useState('');
+  const [listTags, setListTags] = useState<any>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   // step
   const [step, setStep] = useState(1);
@@ -57,51 +63,78 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
   // useEffect
 
   useEffect(() => {
-    // fetchTagsData();
+    fetchTagsData();
+    setForm((prevForm: any) => ({
+      ...prevForm,
+      tags: activeNode.config?.tags ?? prevForm.tags,
+      buffer: activeNode.config?.buffer ?? '',
+      date: activeNode.config?.date ?? undefined,
+    }));
   }, []);
 
-  // api
-  const fetchData = async () => {
-    setLoading(true);
-    // const base_url = `http://${form.ip}:${form.port}`;
-    try {
-      const res = await getInputAPI(
-        'api-client',
-        'api-client',
-        'password',
-        'sa',
-        '0x90133115',
-        // form.client_id,
-        // form.client_secret,
-        // form.grant_type,
-        // form.username,
-        // form.password,
-      );
-      // console.log('res', res);
-      showSuccess('連線成功！');
-    } catch (error) {
-      // console.error(error);
-      showError('連線失敗！');
-    } finally {
-      setLoading(false);
-    }
+  // set tree
+  function buildTree(data: string[]) {
+    const tree: any = {};
+
+    data.forEach((item) => {
+      const parts = item.split('.');
+      let currentLevel = tree;
+
+      parts.forEach((part) => {
+        if (!currentLevel[part]) {
+          currentLevel[part] = {};
+        }
+        currentLevel = currentLevel[part];
+      });
+    });
+
+    return tree;
+  }
+
+  // tag select
+  const handleTagSelect = (tag: string) => {
+    setForm((prevForm: any) => {
+      const updatedTags = prevForm.tags.includes(tag)
+        ? prevForm.tags.filter((t: string) => t !== tag)
+        : [...prevForm.tags, tag];
+
+      return {
+        ...prevForm,
+        tags: updatedTags,
+      };
+    });
   };
 
+  const handleTagDelete = (tag: string) => {
+    setForm((prevForm: any) => {
+      const updatedTags = prevForm.tags.filter((t: string) => t !== tag);
+
+      return {
+        ...prevForm,
+        tags: updatedTags,
+      };
+    });
+  };
+
+  // api
   const fetchTagsData = async () => {
     setLoading(true);
     try {
       const body = {
         tags: null,
-        searchNodeName: '',
         searchPage: 1,
-        pages: 1000,
+        searchNodeName: '',
+        pages: 100,
       };
       const res = await getTagsIndataAPI(body);
-      console.log('res', res);
+      const tagsArray = Array.isArray(res) ? (res as string[]) : [];
+      const tree = buildTree(tagsArray);
+      setListTags(tree);
       showSuccess('取得成功！');
     } catch (error) {
-      // console.error(error);
       showError('取得失敗！');
+      setErrorMsg('標籤取得失敗，請稍後在試。');
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -110,8 +143,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
   const handleTagChange = () => {
     setLoading(true);
     updateNodeConfig(activeNode.id, {
-      // tags: form.tags ? [] : '932ff8dd-dc1c-4dc5-9525-01e4551d920c',
-      tags: ['932ff8dd-dc1c-4dc5-9525-01e4551d920c'],
+      tags: form.tags ? [] : '932ff8dd-dc1c-4dc5-9525-01e4551d920c',
     });
     setLoading(false);
     setStep(2);
@@ -120,13 +152,10 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
   const handleSetNode = () => {
     setLoading(true);
     const combinedDateTime = getCombinedDateTime();
-
     updateNodeConfig(activeNode.id, {
       ...form.config,
       buffer: form.buffer,
       start_date: combinedDateTime,
-      // selectedDate: form.date,
-      // selectedTime: form.time,
     });
     setLoading(false);
     showSuccess(`設定成功！`);
@@ -157,23 +186,41 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
         {step === 1 && (
           <>
             <div className="form">
-              <p className="text-sm font-bold text-neutral-800">Select tags</p>
-              <div className="grid w-full max-w-sm items-center gap-1 pt-2">
-                <button onClick={fetchTagsData} className="border">
-                  get tags test
-                </button>
-                {/* <Label className="text-sm" htmlFor="tags">
-                Tags
-              </Label>
-              <Input
-                type="text"
-                id="tags"
-                placeholder="tags"
-                value={form.tags?.join(', ') ?? ''}
-                onChange={(e) =>
-                  handleFormChange('tags', e.target.value.split(', '))
-                }
-              /> */}
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold text-neutral-800">
+                  Select tags
+                </p>
+                {loading && (
+                  <span>{createSpinner({ size: 'sm', color: 'blue' })}</span>
+                )}
+              </div>
+              <div className="grid h-[calc(100vh-250px)] w-full max-w-sm items-center gap-1 overflow-y-auto pt-2">
+                {errorMsg}
+                {/* selected tags */}
+                <div className="">
+                  <div className="flex flex-wrap gap-1">
+                    {selectedTags.map((tag) => (
+                      <div
+                        key={tag}
+                        className="flex items-center gap-[2px] rounded border pr-1 pl-2"
+                      >
+                        <span className="text-sm text-neutral-500">{tag}</span>
+                        <div
+                          onClick={() => handleTagDelete(tag)}
+                          className="cursor-pointer"
+                        >
+                          <CloseIcon className="text-neutral-500 hover:text-neutral-800"></CloseIcon>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* render tags */}
+                <TreeView
+                  tree={listTags}
+                  onTagSelect={handleTagSelect}
+                  selectedTags={form.tags || []}
+                />
               </div>
             </div>
             <div>
@@ -269,7 +316,7 @@ export default function InputStep({ activeNode, form, setForm }: InputProps) {
                 {loading ? Spinner : 'Connect'}
               </Button>
               <Button
-                onClick={() => setStep(2)}
+                onClick={() => setStep(1)}
                 variant={'outline'}
                 className={`mt-4 flex w-full items-center justify-center gap-2`}
               >

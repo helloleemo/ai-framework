@@ -10,6 +10,7 @@ import OPCUA from './opcua/opcua';
 import { excludedLabels } from './sidebar-items';
 import Output from './output/output';
 import FeatSta from './transform/feat_sta';
+import InputConfig from './input/input';
 
 export default function RightPanel({ activeNode }: { activeNode: any }) {
   // console.log('RightPanel activeNode', activeNode);
@@ -28,7 +29,7 @@ export default function RightPanel({ activeNode }: { activeNode: any }) {
           {}
           {/* Input */}
           {activeNode.label === 'indata_reader.standard' && (
-            <InputSetting activeNode={activeNode} />
+            <InputConfig activeNode={activeNode} />
           )}
           {/* OPC UA(demo) */}
           {activeNode.label === 'opcua_demo' && (

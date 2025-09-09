@@ -24,18 +24,6 @@ import { Button } from '@/shared/ui/button';
 import { GetTempDialog } from './get-temp-dialog';
 
 function ArtboardRoot() {
-  // const { loadPipelineFromData } = usePipelineLoader();
-  // useEffect(() => {
-  //   // 取pipeline token ，之後記得拿掉
-  //   // tokenTaker();
-  //   const apiData = {
-  //     success: true,
-  //     message: 'Retrieve successful',
-  //     data: [apiResponse],
-  //   };
-  //   loadPipelineFromData(apiData);
-  // }, [loadPipelineFromData]);
-
   const {
     nodes,
     setNodes,

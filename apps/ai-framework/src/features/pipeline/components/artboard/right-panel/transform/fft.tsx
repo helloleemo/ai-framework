@@ -48,7 +48,6 @@ export default function Fft({ activeNode }: { activeNode: any }) {
   }, [activeNode, node]);
 
   // handler
-  // handler
   const handleConnect = () => {
     setLoading(true);
     updateNodeConfig(activeNode.id, form);

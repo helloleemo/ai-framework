@@ -26,6 +26,26 @@ export async function GET<T>(
   return handleResponse<T>(res);
 }
 
+export async function GET_withParams<T>(
+  baseUrl: string,
+  endpoint: string,
+  params: Record<string, string>,
+  token?: string,
+): Promise<T> {
+  const accessToken = localStorage.getItem(token ?? '');
+  const queryString = new URLSearchParams(params).toString();
+  const url = `${baseUrl}${endpoint}${queryString ? `?${queryString}` : ''}`;
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return handleResponse<T>(res);
+}
+
 // POST
 export async function POST<T>(
   baseUrl: string,

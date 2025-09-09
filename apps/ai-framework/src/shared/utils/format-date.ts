@@ -1,6 +1,6 @@
 const formatDateToYYYYMMDD = (
   date: Date | string | null | undefined,
-): string => {
+): string | Date | undefined => {
   if (!date) {
     return '';
   }

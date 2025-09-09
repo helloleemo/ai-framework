@@ -1,29 +1,4 @@
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-  VisibilityState,
-} from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import {
   Table,
   TableBody,
   TableCaption,
@@ -32,8 +7,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/ui/table';
+import { getAllDagsAPI } from '../../api/pipeline';
+import { useEffect } from 'react';
 
 export default function ViewAll() {
+  const fetchData = async () => {
+    try {
+      const res = await getAllDagsAPI();
+      console.log('res', res);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <div className="h-full w-full bg-white">
       <div className="table border">
