@@ -44,8 +44,8 @@ export default function FeatSpec({ activeNode }: { activeNode: any }) {
   };
 
   // step
-  const [step, setStep] = useState(3);
-  const totalSteps = 3;
+  const [step, setStep] = useState(1);
+  const totalSteps = 1;
   const nextStep = () => {
     if (step < totalSteps) setStep(step + 1);
   };

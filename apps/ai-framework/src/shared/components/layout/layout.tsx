@@ -11,11 +11,11 @@ export default function ReBuildLayout() {
   const { checkAuth, redirectToLogin } = useAuthGuard();
 
   useEffect(() => {
-    const isAuth = checkAuth();
-    if (!isAuth) {
-      console.log('YOU CANNOT PASS!');
-      redirectToLogin();
-    }
+    // const isAuth = checkAuth();
+    // if (!isAuth) {
+    //   console.log('YOU CANNOT PASS!');
+    //   redirectToLogin();
+    // }
   });
 
   const [isCollapsed, setIsCollapsed] = useState(false);
