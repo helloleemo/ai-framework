@@ -6,6 +6,7 @@ import { useToaster } from '@/shared/hooks/use-toaster';
 import { useSpinner } from '@/shared/hooks/use-spinner';
 import { Label } from '@/shared/ui/label';
 import { Input } from '@/shared/ui/input';
+// import { transformConfig } from './transform_config';
 
 export default function Dwt({ activeNode }: { activeNode: any }) {
   const { getNode, updateNodeConfig, setActiveNode, setNodeCompleted } =
@@ -15,6 +16,7 @@ export default function Dwt({ activeNode }: { activeNode: any }) {
   const { showSuccess, showError } = useToaster();
 
   // setForm
+  // const fieldConfigs = transformConfig.dwt || [];
   const handleFormChange = (field: string, value: any) => {
     setForm((prev: any) => ({ ...prev, [field]: value }));
   };

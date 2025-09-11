@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { PipelineNode } from '../types/pipeline-context';
+import { PipelineNode } from '@/features/pipeline/types/pipeline';
 import { PipelineEdgeConfig } from '../types/pipeline';
 import { MenuList } from '@/features/menu';
 
@@ -25,26 +25,36 @@ export function usePipelineLoader(
     return searchInMenuItems(MenuList.menuList);
   };
 
+  // 檢查node的config是否完整
+  // const checkNodeConfigComplete = (node:PipelineNode)=>{
+
+  // }
+
   const loadPipelineData = useCallback(
     (data: { nodes: PipelineNode[]; edges: PipelineEdgeConfig[] }) => {
       setNodes(data.nodes);
       setEdges(data.edges);
 
-      const reactFlowNodes = data.nodes.map((node) => ({
-        id: node.id,
-        type: node.type,
-        position: node.position,
-        data: {
+      const reactFlowNodes = data.nodes.map((node) => {
+        // 檢查config是否完整，自動設定completed狀態
+        // const isConfigComplete = checkNodeConfigComplete(node);
+
+        return {
           id: node.id,
-          name: node.name,
-          label: node.label,
           type: node.type,
-          description: node.description,
-          intro: node.description,
-          completed: node.completed || false,
-          status: node.config?.status || 'pending',
-        },
-      }));
+          position: node.position,
+          data: {
+            id: node.id,
+            name: node.name,
+            label: node.label,
+            type: node.type,
+            description: node.description,
+            intro: node.description,
+            completed: node.completed, // || isConfigComplete,
+            status: node.config?.status || 'pending',
+          },
+        };
+      });
 
       const reactFlowEdges = data.edges.map((edge) => ({
         id: edge.id,
@@ -58,7 +68,13 @@ export function usePipelineLoader(
       setReactFlowNodes(reactFlowNodes);
       setReactFlowEdges(reactFlowEdges);
     },
-    [setNodes, setEdges, setReactFlowNodes, setReactFlowEdges],
+    [
+      setNodes,
+      setEdges,
+      setReactFlowNodes,
+      setReactFlowEdges,
+      // checkNodeConfigComplete,
+    ],
   );
 
   const loadFromDAG = useCallback(

@@ -18,8 +18,34 @@ function AppRoutes() {
     <Routes>
       <Route path="/ai-framework" element={<ReBuildLayout />}>
         <Route path="/ai-framework/artboard" element={<Artboard />} />
+        <Route path="/ai-framework/artboard/:id" element={<Artboard />} />
         {/* <Route path="/ai-framework/menu" element={<ArtboardMenu />} /> */}
         <Route path="/ai-framework/view-all" element={<ViewAll />} />
+        <Route path="/ai-framework/logs" element={<ViewAll />} />
+        {/* 其他資料夾的路由 */}
+        <Route path="/ai-framework/view-all" element={<ViewAll />} />
+        <Route path="/ai-framework/logs" element={<div>執行記錄頁面</div>} />
+
+        {/* 系統管理資料夾的路由 */}
+        <Route
+          path="/ai-framework/settings"
+          element={<div>系統設定頁面</div>}
+        />
+        <Route path="/ai-framework/users" element={<div>使用者管理頁面</div>} />
+        <Route
+          path="/ai-framework/permissions"
+          element={<div>權限設定頁面</div>}
+        />
+
+        {/* 監控中心資料夾的路由 */}
+        <Route
+          path="/ai-framework/monitoring"
+          element={<div>系統監控頁面</div>}
+        />
+        <Route
+          path="/ai-framework/performance"
+          element={<div>效能分析頁面</div>}
+        />
       </Route>
 
       {/* Others */}

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 export function useAuthGuard() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const redirectToLogin = () => {
     const clientId = 'data-pipeline-ui';
     const redirectUri = encodeURIComponent('http://localhost:3000/callback');

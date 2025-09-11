@@ -13,20 +13,14 @@ import {
 } from '@/features/pipeline/api/pipeline';
 import checkPipelineFunction, { sequenceCheck } from './check-pipeline';
 import { TemplateIcon } from '@/shared/ui/icon/template-icon';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from '@radix-ui/react-dialog';
-import { Button } from '@/shared/ui/button';
-import { DialogFooter, DialogHeader } from '@/shared/ui/dialog';
-import { Label } from '@radix-ui/react-label';
-import { Input } from '@/shared/ui/input';
+import { useEditMode } from './artboard';
+import { usePipelineState } from '../../hooks/use-pipeline-state';
+import { useNavigate } from 'react-router-dom';
 
 export default function PrebuildDeploy() {
+  const [createdDagId, setCreatedDagId] = useState<string | null>(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
     pipelineTokenTaker();
   }, []);
@@ -36,14 +30,16 @@ export default function PrebuildDeploy() {
     getNodeCompleted,
     loadFromAPIResponse,
     loadFromDAG,
+    clearCanvas,
   } = usePipeline();
   const { showSuccess, showError } = useToaster();
+  const { isEditMode, currentDagId } = useEditMode();
 
   const handlePreRun = () => {
     const pipelineConfig = buildPipelineConfig();
     console.log('Pipeline Config:', pipelineConfig);
     const result = checkPipelineFunction(pipelineConfig, getNodeCompleted);
-    //
+
     const currnetTaskProcessorMethod = 'pdm_features.feat_spec';
     const dependencyTaskProcessorMethod = 'pdm_freq.fft';
     const sequenceResult = sequenceCheck(
@@ -67,39 +63,57 @@ export default function PrebuildDeploy() {
     }
   };
 
-  const handleDeploy = async () => {
-    const pipelineConfig = buildPipelineConfig();
+  const handleSave = async () => {
+    console.log('Edit mode:', isEditMode);
+    console.log('Current DAG ID:', currentDagId);
+
     try {
-      const res = await createDagAPI(pipelineConfig);
-      console.log('Pipeline created successfully:', res);
-      showSuccess('Pipeline created successfully');
+      if (isEditMode && currentDagId) {
+        // Edit
+        console.log('Updating existing DAG:', currentDagId);
+        const pipelineConfig = buildPipelineConfig();
+        //
+        pipelineConfig.dag_id = currentDagId;
+        console.log('Update payload:', pipelineConfig);
+        const res = await UpdatateDagAPI(currentDagId, pipelineConfig);
+        if (res.success) {
+          console.log('Pipeline updated successfully:', res);
+          showSuccess('Pipeline 更新成功');
+        } else {
+          showError('Pipeline 更新失敗: ' + res.message);
+        }
+      } else {
+        // New
+        console.log('Creating new DAG');
+        const pipelineConfig = buildPipelineConfig();
+        console.log('Create payload:', pipelineConfig);
+        const res = await createDagAPI(pipelineConfig);
+        console.log('Pipeline created successfully:', res);
+        showSuccess('Pipeline 創建成功');
+      }
     } catch (error) {
-      console.error('Error creating pipeline:', error);
-      showError('Error creating pipeline: ' + error);
+      console.error('Error saving pipeline:', error);
+      if (isEditMode) {
+        showError('更新 Pipeline 失敗: ' + error);
+      } else {
+        showError('創建 Pipeline 失敗: ' + error);
+      }
     }
   };
 
-  // const hadleMockLoad = (mock: any) => {
-  //   loadFromDAG(mock);
-  //   showSuccess('Load mock DAG successfully');
-  // };
-
-  // const [dagId, setDagId] = useState('1');
-  // const handleGetDag = async () => {
-  //   try {
-  //     const res = await getDagDataAPI(dagId);
-  //     console.log('Get Dag data successfully:', res);
-  //     if (res.success) {
-  //       loadFromAPIResponse(res);
-  //       showSuccess('Get Dag data successfully');
-  //     } else {
-  //       showError('Get Dag data failed: ' + res.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error getting Dag data:', error);
-  //     showError('Error getting Dag data: ' + error);
-  //   }
-  // };
+  const handleCreate = () => {
+    if (isEditMode || createdDagId) {
+      const comfirmClear = window.confirm(
+        '目前畫布上的內容將會被清空，確定要建立新畫布嗎？',
+      );
+      if (comfirmClear) {
+        navigate('/ai-framework/artboard');
+        clearCanvas();
+        setCreatedDagId(null);
+        showSuccess('畫布已清空！');
+      }
+    }
+  };
 
   return (
     <div className="flex items-center gap-2">
@@ -112,31 +126,18 @@ export default function PrebuildDeploy() {
         </div>
         <p className="text-sm text-neutral-600">Pre-run</p>
       </div>
+
       <div
-        onClick={handleDeploy}
+        onClick={handleSave}
         className={`pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100`}
       >
         <div className="icon">
           <DeployIcon className={`h-5 w-5 text-neutral-600`} />
         </div>
-        <p className={`text-sm text-neutral-600`}>Deploy</p>
+        <p className={`text-sm text-neutral-600`}>
+          {(isEditMode && currentDagId) || createdDagId ? 'Update' : 'Save'}
+        </p>
       </div>
-
-      {/*  */}
-      {/* <div className="pre-build flex cursor-pointer items-center gap-2 rounded-md border bg-white p-2 hover:bg-neutral-100">
-        <p className="text-sm">Get</p>
-        <input
-          onInput={(e) => setDagId((e.currentTarget as HTMLInputElement).value)}
-          type="text"
-          className="rounded-sm border"
-        />
-        <button onClick={handleGetDag} className="border text-sm">
-          Get
-        </button>
-        <button onClick={handleUpdateDag} className="border text-sm">
-          Update
-        </button>
-      </div> */}
     </div>
   );
 }

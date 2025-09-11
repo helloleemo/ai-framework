@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
-import { PipelineNode, ReactFlowNode } from '../types/pipeline-context';
+import {
+  PipelineNode,
+  ReactFlowNode,
+} from '@/features/pipeline/types/pipeline';
 import { PipelineEdgeConfig } from '../types/pipeline';
 
 export function usePipelineState() {
@@ -38,7 +41,7 @@ export function usePipelineState() {
         (edge) => edge.source !== nodeId && edge.target !== nodeId,
       ),
     );
-    setActiveNodeState((prevActiveNode) =>
+    setActiveNodeState((prevActiveNode: any) =>
       prevActiveNode?.id === nodeId ? null : prevActiveNode,
     );
   }, []);

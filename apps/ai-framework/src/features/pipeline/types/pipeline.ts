@@ -55,6 +55,7 @@ export interface DagTask {
   processor_method: string;
   op_kwargs: Record<string, unknown>;
   dependencies: string[];
+  position?: { x: number; y: number }; // 添加位置屬性
 }
 
 export interface PipelineConfigResult {
@@ -63,7 +64,7 @@ export interface PipelineConfigResult {
   start_date: string;
   catchup: boolean;
   owner: string;
-  tasks: DagTask[];
+  tasks: (DagTask & { position?: { x: number; y: number } })[]; // 更新 tasks 類型以包含位置
 }
 
 export interface ReactFlowNode {
@@ -102,7 +103,7 @@ export interface PipelineContextType {
   ) => void;
   setNodeCompleted: (nodeId: string, completed: boolean) => void;
   getNodeCompleted: (nodeId: string) => boolean;
-  buildPipelineConfig: () => PipelineConfigResult;
+  buildPipelineConfig: (dagId?: string) => PipelineConfigResult;
 
   // React Flow 操作
   setReactFlowNodes: React.Dispatch<React.SetStateAction<Node[]>>;
@@ -119,4 +120,5 @@ export interface PipelineContextType {
   loadPipelineData: (data: { nodes: PipelineNode[]; edges: any[] }) => void;
   loadFromDAG: (dagData: any) => void;
   loadFromAPIResponse: (apiResponse: any) => void;
+  clearCanvas: () => void;
 }

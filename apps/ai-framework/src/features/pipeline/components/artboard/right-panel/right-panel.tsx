@@ -1,4 +1,3 @@
-import InputSetting from './input/input-setting';
 import SignalPreprocess from './transform/signal_preprocess';
 import Window from './transform/window';
 import Filter from './transform/filter';

@@ -1,7 +1,7 @@
 import { ReactFlow, Background, Controls } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import RightPanel from './right-panel/right-panel';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, createContext, useContext } from 'react';
 
 import {
   useArtboardNodes,
@@ -22,6 +22,20 @@ import {
 } from '@/shared/ui/dialog';
 import { Button } from '@/shared/ui/button';
 import { GetTempDialog } from './get-temp-dialog';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getDagDataAPI } from '../../api/pipeline';
+import { useToaster } from '@/shared/hooks/use-toaster';
+
+// 創建編輯模式的 Context
+const EditModeContext = createContext<{
+  isEditMode: boolean;
+  currentDagId: string | null;
+}>({
+  isEditMode: false,
+  currentDagId: null,
+});
+
+export const useEditMode = () => useContext(EditModeContext);
 
 function ArtboardRoot() {
   const {
@@ -41,13 +55,19 @@ function ArtboardRoot() {
     deleteNode,
   } = useArtboardNodes();
 
-  const { activeNode } = usePipeline();
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const { showSuccess, showError } = useToaster();
+  const { activeNode, loadFromAPIResponse, loadFromDAG } = usePipeline();
+
+  // 判斷是否為編輯模式
+  const isEditMode = !!id;
+  const currentDagId = id || null;
 
   // delete
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Delete' || event.key === 'Backspace') {
-        //
         const selectedNodes = nodes.filter((node) => node.selected);
         if (selectedNodes.length > 0) {
           const confirmDelete = window.confirm(
@@ -64,18 +84,57 @@ function ArtboardRoot() {
     [nodes, deleteNode],
   );
 
+  // get dag
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
+    if (id) {
+      console.log('Loading DAG with id:', id);
+
+      const fetchDagData = async () => {
+        try {
+          const res = await getDagDataAPI(id);
+          console.log('Full API response:', res);
+          if (res && res.success === true) {
+            const data = res.data;
+            console.log('DAG data:', data);
+
+            if (Array.isArray(data)) {
+              const dagData = data.find((dag) => dag.dag_id === id);
+              if (dagData) {
+                loadFromDAG(dagData);
+                showSuccess('資料載入成功');
+              } else {
+                showError(`找不到 ID 為 ${id} 的 DAG`);
+              }
+            } else {
+              loadFromDAG(data);
+              showSuccess('資料載入成功');
+            }
+          } else {
+            console.error('API response indicates failure:', res);
+            showError(res?.message || '資料獲取失敗');
+          }
+        } catch (error) {
+          console.error('Error fetching DAG data:', error);
+          showError('資料獲取失敗，請重新再試');
+        }
+      };
+
+      fetchDagData();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) {
+      console.log('Creating new pipeline');
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [id, handleKeyDown]);
 
   return (
-    <>
-      {/* TEST */}
-      {/* <div className="fixed left-[10px] z-10"></div> */}
-
+    <EditModeContext.Provider value={{ isEditMode, currentDagId }}>
       {/* content */}
       <div className="h-full w-full" onClick={onCanvasClick}>
         <div
@@ -84,8 +143,8 @@ function ArtboardRoot() {
           onDragOver={handleDragOver}
         >
           <div className="absolute z-10 ml-10 flex items-center gap-2">
-            <PipelineDeploy />
             <GetTempDialog />
+            <PipelineDeploy />
           </div>
 
           <ReactFlow
@@ -103,11 +162,9 @@ function ArtboardRoot() {
             <Background bgColor="#fff" />
           </ReactFlow>
         </div>
-        <div className="absolute top-5 left-5 z-10"></div>
       </div>
       <RightPanel activeNode={activeNode} />
-      {/*  */}
-    </>
+    </EditModeContext.Provider>
   );
 }
 

@@ -1,4 +1,5 @@
 import { MenuItem } from '@/shared/api/types/menu';
+import path from 'path';
 
 const menuList: MenuItem[] = [
   {
@@ -168,10 +169,69 @@ const menuList: MenuItem[] = [
   },
 ];
 
-const existingPipeline = [
+const folders = [
   {
-    name: '管線列表',
+    name: '其他',
+    id: 'others',
+    defaultPath: '/ai-framework/view-all',
+    hasRoute: false,
+    children: [
+      {
+        name: '管線列表',
+        path: '/ai-framework/view-all',
+        hasRoute: true,
+      },
+      {
+        name: '執行記錄',
+        path: '/ai-framework/logs',
+        hasRoute: true,
+      },
+    ],
+  },
+  {
+    name: '系統管理',
+    id: 'system',
+    defaultPath: '/ai-framework/settings',
+    hasRoute: false,
+    children: [
+      {
+        name: '系統設定',
+        path: '/ai-framework/settings',
+        hasRoute: true,
+      },
+      {
+        name: '使用者管理',
+        path: '/ai-framework/users',
+        hasRoute: true,
+      },
+      {
+        name: '權限設定',
+        path: '/ai-framework/permissions',
+        hasRoute: true,
+      },
+    ],
+  },
+  {
+    name: '監控中心',
+    id: 'monitoring',
+    defaultPath: '/ai-framework/monitoring',
+    hasRoute: false,
+    children: [
+      {
+        name: '系統監控',
+        path: '/ai-framework/monitoring',
+        hasRoute: true,
+      },
+      {
+        name: '效能分析',
+        path: '/ai-framework/performance',
+        hasRoute: true,
+      },
+    ],
   },
 ];
 
-export default { menuList, existingPipeline };
+const existingPipeline =
+  folders.find((folder) => folder.id === 'others')?.children || [];
+
+export default { menuList, existingPipeline, folders };

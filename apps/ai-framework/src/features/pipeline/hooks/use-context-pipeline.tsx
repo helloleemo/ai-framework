@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useCallback } from 'react';
-import { PipelineContextType } from '../types/pipeline-context';
+import { PipelineContextType } from '@/features/pipeline/types/pipeline';
 import { usePipelineState } from './use-pipeline-state';
 import { useReactFlow } from './use-react-flow';
 import { usePipelineLoader } from './use-pipeline-loader';
@@ -37,9 +37,54 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     reactFlow.setReactFlowEdges,
   );
 
-  const handleBuildPipelineConfig = useCallback(() => {
-    return buildPipelineConfig(pipelineState.nodes, pipelineState.edges);
-  }, [pipelineState.nodes, pipelineState.edges]);
+  // const handleBuildPipelineConfig = useCallback(() => {
+  //   return buildPipelineConfig(pipelineState.nodes, pipelineState.edges);
+  // }, [pipelineState.nodes, pipelineState.edges]);
+
+  const handleBuildPipelineConfig = useCallback(
+    (dagId?: string) => {
+      const config = buildPipelineConfig(
+        pipelineState.nodes,
+        pipelineState.edges,
+      );
+
+      //
+      const tasksWithPosition = config.tasks?.map((task) => {
+        const node = pipelineState.nodes.find((n) => n.id === task.task_id);
+        return {
+          ...task,
+          position: node?.position || { x: 0, y: 0 },
+        };
+      });
+
+      return {
+        ...config,
+        dag_id: dagId || config.dag_id,
+        schedule_interval:
+          typeof config.schedule_interval === 'string'
+            ? config.schedule_interval
+            : '',
+        start_date:
+          typeof config.start_date === 'string' ? config.start_date : '',
+        tasks: tasksWithPosition,
+      };
+    },
+    [pipelineState.nodes, pipelineState.edges],
+  );
+
+  const clearCanvas = useCallback(() => {
+    pipelineState.setNodes([]);
+    pipelineState.setEdges([]);
+    reactFlow.setReactFlowNodes([]);
+    reactFlow.setReactFlowEdges([]);
+    pipelineState.setActiveNode(null);
+  }, [
+    pipelineState.setNodes,
+    pipelineState.setEdges,
+    reactFlow.setReactFlowNodes,
+    reactFlow.setReactFlowEdges,
+    pipelineState.setActiveNode,
+  ]);
 
   return (
     <PipelineContext.Provider
@@ -82,6 +127,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
         loadPipelineData: loader.loadPipelineData,
         loadFromDAG: loader.loadFromDAG,
         loadFromAPIResponse: loader.loadFromAPIResponse,
+        clearCanvas,
       }}
     >
       {children}
