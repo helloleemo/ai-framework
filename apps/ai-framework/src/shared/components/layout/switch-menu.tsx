@@ -27,8 +27,8 @@ export default function SwitchMenu({
   const [switchMenuActive, setSwitchMenuActive] = useState(0);
 
   useEffect(() => {
-    const foundIndex = switchMenu.findIndex(
-      (item) => location.pathname === item.path,
+    const foundIndex = switchMenu.findIndex((item) =>
+      location.pathname.includes(item.path),
     );
     if (foundIndex !== -1) {
       setSwitchMenuActive(foundIndex);

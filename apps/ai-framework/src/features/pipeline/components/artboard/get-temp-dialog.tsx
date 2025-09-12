@@ -64,7 +64,7 @@ export function GetTempDialog() {
 
   // 創建空白畫布
   const handleCreateBlank = () => {
-    const hasContent = true; // 假設有內容，可以根據實際狀況判斷
+    const hasContent = true;
 
     if (hasContent) {
       const confirmClear = window.confirm(
@@ -89,7 +89,7 @@ export function GetTempDialog() {
       return;
     }
 
-    const hasContent = true; // 假設有內容，可以根據實際狀況判斷
+    const hasContent = true;
 
     if (hasContent) {
       const confirmClear = window.confirm(
@@ -99,6 +99,7 @@ export function GetTempDialog() {
     }
 
     try {
+      navigate('/ai-framework/artboard');
       loadFromDAG(templates[index]);
       setIsDialogOpen(false);
       showSuccess('從模板建立成功！');

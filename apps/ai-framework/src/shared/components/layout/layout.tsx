@@ -22,7 +22,7 @@ export default function ReBuildLayout() {
   const [activeMenu, setActiveMenu] = useState(0);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       <div
         style={{
           width: isCollapsed ? '0px' : '320px',
@@ -62,7 +62,7 @@ export default function ReBuildLayout() {
           )}
         </div>
       </div>
-      <div className="content m-2 w-full bg-neutral-100">
+      <div className="content m-2 w-full border border-amber-300 bg-neutral-100">
         <Outlet />
       </div>
     </div>

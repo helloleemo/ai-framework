@@ -11,39 +11,51 @@ import {
 } from '@/shared/ui/dialog';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
-export default function ArtboardMenu() {
+import { da } from 'date-fns/locale';
+import { useState } from 'react';
+
+export default function DialogOpen({
+  title,
+  description,
+  data,
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  description: string;
+  data: any;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const handleConfirm = (e: React.FormEvent) => {
+    e.preventDefault();
+    onConfirm();
+  };
+
+  const handleCancel = () => {
+    onCancel();
+  };
+
+  const dataDetails = data ? JSON.stringify(data, null, 2) : '';
+
   return (
-    <Dialog>
-      <form>
-        <DialogTrigger asChild>
-          <Button variant="outline">Open Dialog</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={true} onOpenChange={handleCancel}>
+      <DialogContent className="sm:max-w-[425px]">
+        <form onSubmit={handleConfirm}>
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you&apos;re
-              done.
-            </DialogDescription>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="name-1">Name</Label>
-              <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="username-1">Username</Label>
-              <Input id="username-1" name="username" defaultValue="@peduarte" />
-            </div>
-          </div>
+          <div className="my-2">{dataDetails ?? ''}</div>
+          <div className="my-3 w-full border-b"></div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Save changes</Button>
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button type="submit">Confirm</Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }

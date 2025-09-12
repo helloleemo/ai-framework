@@ -1,7 +1,7 @@
-import { GET, POST, POST_urlencoded, PUT } from '../../../shared/api';
-import { API_URLS } from '../../../shared/api/base/api-baseurl';
-import { API_ENDPOINTS } from '../../../shared/api/base/api-endpoint';
-import { API_TOKEN } from '../../../shared/api/base/api-token';
+import { DELETE, GET, POST, POST_urlencoded, PUT } from '@/shared/api';
+import { API_URLS } from '@/shared/api/base/api-baseurl';
+import { API_ENDPOINTS } from '@/shared/api/base/api-endpoint';
+import { API_TOKEN } from '@/shared/api/base/api-token';
 
 export const getAuthPipelineAPI = (
   grant_type: string,
@@ -19,6 +19,13 @@ export const getAuthPipelineAPI = (
     client_id,
     client_secret,
   });
+
+export const deleteDagAPI = (dagId: string) =>
+  DELETE<any>(
+    API_URLS.PIPELINE,
+    `${API_ENDPOINTS.DAG}/${dagId}`,
+    API_TOKEN.pipelineToken,
+  );
 
 export const getDagTemplateAPI = () =>
   GET<any>(
